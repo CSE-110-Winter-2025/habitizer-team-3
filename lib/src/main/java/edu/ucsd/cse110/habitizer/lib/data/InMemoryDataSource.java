@@ -32,7 +32,7 @@ public class InMemoryDataSource {
     }
 
     public Subject<Routine> getRoutineSubject(int id) {
-        if (routineSubjects.containsKey(id)) {
+        if (!routineSubjects.containsKey(id)) {
             var subject = new Subject<Routine>();
             subject.setValue(getRoutine(id));
             routineSubjects.put(id, subject);
