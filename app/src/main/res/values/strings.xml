@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Habitizer</string>
+    <string name="app_title">Habitizer</string>
 </resources>
