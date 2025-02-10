@@ -26,7 +26,7 @@ public class InMemoryDataSourceTest {
                 new Task(1, "Wake Up", 0),
                 new Task(2, "Brush Teeth", 1)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks);
+        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
         dataSource.putRoutine(routine);
         Routine retrieved = dataSource.getRoutine(42);
@@ -42,7 +42,7 @@ public class InMemoryDataSourceTest {
         List<Task> tasks = List.of(
                 new Task(1, "Wake Up", 0)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks);
+        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
         dataSource.putRoutine(routine);
         Subject<Routine> subject = dataSource.getRoutineSubject(42);
@@ -62,8 +62,8 @@ public class InMemoryDataSourceTest {
                 new Task(2, "Sleep", 0)
         );
 
-        Routine routine1 = new Routine(1, "Morning Routine", tasks1);
-        Routine routine2 = new Routine(2, "Evening Routine", tasks2);
+        Routine routine1 = new Routine(1, "Morning Routine", tasks1, 30);
+        Routine routine2 = new Routine(2, "Evening Routine", tasks2, 30);
 
         dataSource.putRoutine(routine1);
         dataSource.putRoutine(routine2);
@@ -88,10 +88,10 @@ public class InMemoryDataSourceTest {
                 new Task(2, "Exercise", 1)
         );
 
-        Routine original = new Routine(42, "Morning Routine", originalTasks);
+        Routine original = new Routine(42, "Morning Routine", originalTasks, 30);
         dataSource.putRoutine(original);
 
-        Routine updated = new Routine(42, "Updated Routine", updatedTasks);
+        Routine updated = new Routine(42, "Updated Routine", updatedTasks, 30);
         dataSource.putRoutine(updated);
 
         Routine retrieved = dataSource.getRoutine(42);
@@ -119,7 +119,7 @@ public class InMemoryDataSourceTest {
         List<Task> tasks = List.of(
                 new Task(1, "Wake Up", 0)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks);
+        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
         dataSource.putRoutine(routine);
         Subject<Routine> subject = dataSource.getRoutineSubject(42);
@@ -131,7 +131,7 @@ public class InMemoryDataSourceTest {
                 new Task(1, "Wake Up", 0),
                 new Task(2, "Exercise", 1)
         );
-        Routine updated = new Routine(42, "Updated Routine", newTasks);
+        Routine updated = new Routine(42, "Updated Routine", newTasks, 30);
         dataSource.putRoutine(updated);
 
         assertTrue("observer should be notified of changes", wasNotified[0]);

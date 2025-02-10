@@ -44,4 +44,8 @@ public class MainViewModel extends ViewModel {
     public Subject<List<Routine>> getAllRoutines() {
         return allRoutines;
     }
+
+    public void updateRoutine(Routine routine) {
+        routineRepository.save(routine);
+    }
 }
