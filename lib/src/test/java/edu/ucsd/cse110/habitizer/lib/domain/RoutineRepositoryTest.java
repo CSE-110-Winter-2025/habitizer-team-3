@@ -27,7 +27,7 @@ public class RoutineRepositoryTest {
                 new Task(1, "Wake up", 0),
                 new Task(2, "Brush teeth", 1)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks);
+        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
         repository.save(routine);
         Subject<Routine> found = repository.find(42);
@@ -50,8 +50,8 @@ public class RoutineRepositoryTest {
                 new Task(4, "Sleep", 1)
         );
 
-        Routine routine1 = new Routine(10, "Morning Routine", morningTasks);
-        Routine routine2 = new Routine(20, "Evening Routine", eveningTasks);
+        Routine routine1 = new Routine(10, "Morning Routine", morningTasks, 30);
+        Routine routine2 = new Routine(20, "Evening Routine", eveningTasks, 30);
 
         repository.save(routine1);
         repository.save(routine2);
@@ -77,10 +77,10 @@ public class RoutineRepositoryTest {
                 new Task(2, "Exercise", 1)
         );
 
-        Routine original = new Routine(42, "Morning Routine", originalTasks);
+        Routine original = new Routine(42, "Morning Routine", originalTasks, 30);
         repository.save(original);
 
-        Routine updated = new Routine(42, "Updated Routine", updatedTasks);
+        Routine updated = new Routine(42, "Updated Routine", updatedTasks, 30);
         repository.save(updated);
 
         Subject<Routine> found = repository.find(42);
@@ -96,7 +96,7 @@ public class RoutineRepositoryTest {
         List<Task> tasks = List.of(
                 new Task(1, "Wake up", 0)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks);
+        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
         repository.save(routine);
 
         Subject<Routine> routineSubject = repository.find(42);
@@ -107,7 +107,7 @@ public class RoutineRepositoryTest {
                 new Task(1, "Wake up", 0),
                 new Task(2, "Exercise", 1)
         );
-        Routine updated = new Routine(42, "Updated Routine", newTasks);
+        Routine updated = new Routine(42, "Updated Routine", newTasks, 30);
         repository.save(updated);
 
         assertTrue("observer should be notified of changes", wasNotified[0]);
