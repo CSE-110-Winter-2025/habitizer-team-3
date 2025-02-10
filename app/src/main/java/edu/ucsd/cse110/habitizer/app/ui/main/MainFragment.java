@@ -60,6 +60,7 @@ public class MainFragment extends Fragment {
         // Initialize the View
         this.view = FragmentMainBinding.inflate(inflater, container, false);
 
+        view.routineName.setText("Morning");
         view.taskList.setAdapter(adapter);
 
         return view.getRoot();
