@@ -109,7 +109,7 @@ public class InMemoryDataSourceTest {
         Routine defaultRoutine = routines.get(0);
         assertEquals("default routine should have id 0", (Integer) 0, defaultRoutine.id());
         assertEquals("default routine should be named Morning", "Morning", defaultRoutine.name());
-        assertEquals("default routine should have 6 tasks", 6, defaultRoutine.tasks().size());
+        assertEquals("default routine should have 6 tasks", 7, defaultRoutine.tasks().size());
     }
 
     @Test
