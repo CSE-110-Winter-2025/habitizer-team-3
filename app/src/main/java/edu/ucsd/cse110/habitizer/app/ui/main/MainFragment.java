@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -62,6 +63,11 @@ public class MainFragment extends Fragment {
 
         view.routineName.setText("Morning");
         view.taskList.setAdapter(adapter);
+
+        view.addTaskButton.setOnClickListener(v -> {
+            DialogFragment addTaskFragment = new AddTaskDialogFragment();
+            addTaskFragment.show(getActivity().getSupportFragmentManager(), "add task dialog");
+        });
 
         return view.getRoot();
     }

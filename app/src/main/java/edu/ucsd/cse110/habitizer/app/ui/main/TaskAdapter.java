@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,15 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         // populate the view with routine's data.
         binding.taskName.setText(task.name());
+
+        // listen for checking off a task
+        binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            task.setCheckedOff(isChecked);
+
+            // strikethrough the task name if it is checked off
+            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
+            notifyDataSetChanged();
+        });
 
         return binding.getRoot();
     }

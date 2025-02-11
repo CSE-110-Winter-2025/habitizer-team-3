@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,5 +42,10 @@ public class Routine implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, tasks);
+    }
+
+    public void addTask(@NonNull Task task) {
+        assert tasks != null;
+        tasks.add(task);
     }
 }

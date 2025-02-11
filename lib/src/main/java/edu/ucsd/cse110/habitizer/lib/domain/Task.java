@@ -10,6 +10,7 @@ public class Task implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String name;
     private final int sortOrder;
+    private boolean checkedOff = false;
 
     public Task(@Nullable Integer id, @NonNull String name, int sortOrder) {
         this.id = id;
@@ -22,6 +23,14 @@ public class Task implements Serializable {
     public @NonNull String name() { return name; }
 
     public int sortOrder() { return sortOrder; }
+
+    public boolean isCheckedOff() {
+        return checkedOff;
+    }
+
+    public void setCheckedOff(boolean checkedOff) {
+        this.checkedOff = checkedOff;
+    }
 
     @Override
     public boolean equals(Object o) {
