@@ -51,10 +51,21 @@
         android:layout_marginEnd="16dp"
         android:text="Time"
         app:layout_constraintBottom_toTopOf="@+id/task_list"
-        app:layout_constraintEnd_toStartOf="@+id/time"
+        app:layout_constraintEnd_toStartOf="@+id/of"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Buttons (Spread across the bottom) -->
+
+    <TextView
+        android:id="@+id/of"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="of"
+        app:layout_constraintBottom_toTopOf="@+id/task_list"
+        app:layout_constraintEnd_toStartOf="@+id/time"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/start_button"
         android:layout_width="0dp"
