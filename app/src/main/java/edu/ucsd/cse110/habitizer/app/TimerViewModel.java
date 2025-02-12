@@ -16,6 +16,7 @@ public class TimerViewModel extends ViewModel {
     public void startTimer() {
         if (timer == null) {
             timer = new Timer();
+            elapsedSeconds.postValue(0);
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
