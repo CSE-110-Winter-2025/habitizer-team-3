@@ -5,16 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/Start_rountine"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginBottom="4dp"
-        android:text=" Start rountine"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+    <!-- Routine Name -->
     <TextView
         android:id="@+id/routine_name"
         android:layout_width="0dp"
@@ -24,10 +15,12 @@
         android:layout_marginEnd="16dp"
         android:text="Routine"
         android:textSize="28sp"
-        app:layout_constraintEnd_toStartOf="@+id/time"
+        app:layout_constraintBottom_toTopOf="@+id/task_list"
+        app:layout_constraintEnd_toStartOf="@+id/timer_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Time EditText -->
     <EditText
         android:id="@+id/time"
         android:layout_width="wrap_content"
@@ -40,18 +33,56 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Task List -->
     <ListView
         android:id="@+id/task_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/Start_rountine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/routine_name"
-        tools:layout="@layout/list_item_task">
+        tools:layout="@layout/list_item_task" />
 
-    </ListView>
+    <!-- Timer Text -->
+    <TextView
+        android:id="@+id/timer_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Time"
+        app:layout_constraintBottom_toTopOf="@+id/task_list"
+        app:layout_constraintEnd_toStartOf="@+id/time"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Buttons (Spread across the bottom) -->
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/stop_button"
+        app:layout_constraintHorizontal_bias="0.5" />
+
+    <Button
+        android:id="@+id/stop_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Stop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/start_button"
+        app:layout_constraintEnd_toStartOf="@+id/reset_button"
+        app:layout_constraintHorizontal_bias="0.5" />
+
+    <Button
+        android:id="@+id/reset_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Reset"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/stop_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

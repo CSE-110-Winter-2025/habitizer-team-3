@@ -14,11 +14,13 @@ import java.util.List;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
+import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentMainBinding view;
     private TaskAdapter adapter;
+    private TimerViewModel timerViewModel;
 
     public MainFragment() {
 
@@ -35,6 +37,9 @@ public class MainFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        timerViewModel = new ViewModelProvider(requireActivity()).get(TimerViewModel.class);
+        timerViewModel.startTimer();
+
         // Initialize the Model
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -49,6 +54,16 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Initialize the View
         this.view = FragmentMainBinding.inflate(inflater, container, false);
+
+        // Observe the timer's LiveData
+        timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
+            // Update a TextView to show elapsed seconds
+            view.timerText.setText(String.valueOf(seconds));
+        });
+
+        view.startButton.setOnClickListener(v -> timerViewModel.startTimer());
+        view.stopButton.setOnClickListener(v -> timerViewModel.stopTimer());
+        view.resetButton.setOnClickListener(v -> timerViewModel.resetTimer());
 
         view.taskList.setAdapter(adapter);
 
@@ -96,5 +111,11 @@ public class MainFragment extends Fragment {
             adapter.addAll(tasks);
             adapter.notifyDataSetChanged();
         });
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // If you want to stop the timer when the Fragment is destroyed
+        // timerViewModel.stopTimer();
     }
 }
