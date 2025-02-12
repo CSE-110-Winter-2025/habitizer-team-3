@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
@@ -43,5 +44,9 @@ public class MainViewModel extends ViewModel {
     // Getters so the Activity/Fragment can observe or retrieve the Subjects
     public Subject<List<Routine>> getAllRoutines() {
         return allRoutines;
+    }
+
+    public void addTaskToRoutine(int routineId, Task task) {
+        routineRepository.addTaskToRoutine(routineId, task);
     }
 }

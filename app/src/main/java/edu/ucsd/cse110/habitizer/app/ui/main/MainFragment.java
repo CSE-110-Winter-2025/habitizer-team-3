@@ -15,6 +15,7 @@ import java.util.List;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
@@ -65,8 +66,8 @@ public class MainFragment extends Fragment {
         view.taskList.setAdapter(adapter);
 
         view.addTaskButton.setOnClickListener(v -> {
-            DialogFragment addTaskFragment = new AddTaskDialogFragment();
-            addTaskFragment.show(getActivity().getSupportFragmentManager(), "add task dialog");
+            var dialogFragment = AddTaskDialogFragment.newInstance();
+            dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
         });
 
         return view.getRoot();

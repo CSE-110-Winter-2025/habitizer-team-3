@@ -1,62 +1,74 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.R;
+import edu.ucsd.cse110.habitizer.app.databinding.FragmentAddTaskDialogBinding;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class AddTaskDialogFragment extends DialogFragment {
+    private MainViewModel activityModel;
+    private FragmentAddTaskDialogBinding view;
 
-    public interface AddTaskDialogListener {
-        void onTaskAdded(String taskName);
+    AddTaskDialogFragment() {
+        // Required empty public constructor
     }
 
-    private AddTaskDialogListener listener;
+    public static AddTaskDialogFragment newInstance() {
+        var fragment = new AddTaskDialogFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-    public void setAddTaskDialogListener(AddTaskDialogListener listener) {
-        this.listener = listener;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceBundle) {
+        super.onCreate(savedInstanceBundle);
+
+        var modelOwner = requireActivity();
+        var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
+        var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
+        this.activityModel = modelProvider.get(MainViewModel.class);
     }
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Inflate the layout for the dialog
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.fragment_add_task_dialog, null);
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceBundle) {
+        this.view = FragmentAddTaskDialogBinding.inflate(getLayoutInflater());
 
-        // Get references to the views
-        EditText taskInput = view.findViewById(R.id.task_name_input);
-        Button addButton = view.findViewById(R.id.add_button);
-        Button cancelButton = view.findViewById(R.id.cancel_button);
+        return new AlertDialog.Builder(getActivity())
+                .setTitle("New Task")
+                .setMessage("Please provide the new task name.")
+                .setView(view.getRoot())
+                .setPositiveButton("Create", this::onPositiveButtonClick)
+                .setNegativeButton("Cancel", this::onNegativeButtonClick)
+                .create();
+    }
 
-        // Create the dialog
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
-        builder.setView(view);
+    private void onPositiveButtonClick(DialogInterface dialog, int which) {
+        var taskName = view.taskNameInput.getText().toString().trim();
+        var task = new Task(null, taskName, -1);
 
-        // Set up the add button
-        addButton.setOnClickListener(v -> {
-            String taskName = taskInput.getText().toString().trim();
-            if (!taskName.isEmpty()) {
-                // Notify the listener that a task was added
-                if (listener != null) {
-                    listener.onTaskAdded(taskName);
-                }
-                dismiss(); // Close the dialog
-            } else {
-                taskInput.setError("Task name cannot be empty");
-            }
-        });
+        activityModel.addTaskToRoutine(0, task);
 
-        // Set up the cancel button
-        cancelButton.setOnClickListener(v -> dismiss());
+        dialog.dismiss();
+    }
 
-        return builder.create();
+    private void onNegativeButtonClick(DialogInterface dialog, int which) {
+        dialog.cancel();
     }
 }

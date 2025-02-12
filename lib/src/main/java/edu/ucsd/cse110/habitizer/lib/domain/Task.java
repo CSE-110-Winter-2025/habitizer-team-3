@@ -44,4 +44,8 @@ public class Task implements Serializable {
     public int hashCode() {
         return Objects.hash(id, name, sortOrder);
     }
+
+    public Task withIdAndSortOrder(int id, int sortOrder) {
+        return new Task(id, this.name, sortOrder);
+    }
 }
