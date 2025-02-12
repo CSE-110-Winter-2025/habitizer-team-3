@@ -93,17 +93,17 @@
         android:text="Stop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/start_button"
-        app:layout_constraintEnd_toStartOf="@+id/reset_button"
+        app:layout_constraintEnd_toStartOf="@+id/fastforward_button"
         app:layout_constraintHorizontal_bias="0.5" />
 
     <Button
-        android:id="@+id/reset_button"
+        android:id="@+id/fastforward_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Reset"
+        android:text="Forward"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/stop_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/stop_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

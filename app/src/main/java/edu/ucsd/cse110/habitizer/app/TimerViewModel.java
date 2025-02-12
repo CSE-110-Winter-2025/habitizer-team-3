@@ -35,8 +35,10 @@ public class TimerViewModel extends ViewModel {
         }
     }
 
-    public void resetTimer() {
-        elapsedSeconds.setValue(0);
+    public void forwardTimer() {
+        Integer currentValue = elapsedSeconds.getValue();
+        if (currentValue == null) currentValue = 0;
+        elapsedSeconds.postValue(currentValue + 30);
     }
 
     // The Fragment/Activity can observe this LiveData

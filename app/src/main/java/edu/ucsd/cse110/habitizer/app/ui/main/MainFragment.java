@@ -54,16 +54,32 @@ public class MainFragment extends Fragment {
         // Initialize the View
         this.view = FragmentMainBinding.inflate(inflater, container, false);
 
+        // Initially hide stop and fast-forward buttons
+        view.stopButton.setVisibility(View.GONE);
+        view.fastforwardButton.setVisibility(View.GONE);
+
         // Observe the timer's LiveData
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
-            // Update a TextView to show elapsed seconds
+            // Update a TextView to show elapsed minutes
             int minutes = seconds / 60;
             view.timerText.setText(String.valueOf(minutes));
         });
 
-        view.startButton.setOnClickListener(v -> timerViewModel.startTimer());
-        view.stopButton.setOnClickListener(v -> timerViewModel.stopTimer());
-        view.resetButton.setOnClickListener(v -> timerViewModel.resetTimer());
+        view.startButton.setOnClickListener(v -> {
+            timerViewModel.startTimer();
+            view.startButton.setVisibility(View.GONE);
+            view.stopButton.setVisibility(View.VISIBLE);
+            view.fastforwardButton.setVisibility(View.VISIBLE);
+        });
+
+        view.stopButton.setOnClickListener(v -> {
+            timerViewModel.stopTimer();
+            view.startButton.setVisibility(View.VISIBLE);
+            view.stopButton.setVisibility(View.GONE);
+            view.fastforwardButton.setVisibility(View.GONE);
+        });
+
+        view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
 
         view.taskList.setAdapter(adapter);
 
