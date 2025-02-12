@@ -57,6 +57,7 @@ public class MainFragment extends Fragment {
         // Initially hide stop and fast-forward buttons
         view.stopButton.setVisibility(View.GONE);
         view.fastforwardButton.setVisibility(View.GONE);
+        view.endButton.setVisibility(View.GONE);
 
         // Observe the timer's LiveData
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
@@ -69,13 +70,21 @@ public class MainFragment extends Fragment {
             timerViewModel.startTimer();
             view.startButton.setVisibility(View.GONE);
             view.stopButton.setVisibility(View.VISIBLE);
+            view.endButton.setVisibility(View.VISIBLE);
             view.fastforwardButton.setVisibility(View.VISIBLE);
         });
 
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
+        });
+
+        view.endButton.setOnClickListener(v -> {
+            timerViewModel.stopTimer();
             view.startButton.setVisibility(View.VISIBLE);
+            view.startButton.setText("Routine Ended");
+            view.startButton.setEnabled(false);
             view.stopButton.setVisibility(View.GONE);
+            view.endButton.setVisibility(View.GONE);
             view.fastforwardButton.setVisibility(View.GONE);
         });
 
