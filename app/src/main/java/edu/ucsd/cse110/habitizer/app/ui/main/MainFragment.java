@@ -38,7 +38,6 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         timerViewModel = new ViewModelProvider(requireActivity()).get(TimerViewModel.class);
-        timerViewModel.startTimer();
 
         // Initialize the Model
         var modelOwner = requireActivity();
@@ -58,7 +57,8 @@ public class MainFragment extends Fragment {
         // Observe the timer's LiveData
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
             // Update a TextView to show elapsed seconds
-            view.timerText.setText(String.valueOf(seconds));
+            int minutes = seconds / 60;
+            view.timerText.setText(String.valueOf(minutes));
         });
 
         view.startButton.setOnClickListener(v -> timerViewModel.startTimer());
