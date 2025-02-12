@@ -3,7 +3,10 @@ package edu.ucsd.cse110.habitizer.lib.domain;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
@@ -38,11 +41,14 @@ public class RoutineRepository {
             throw new IllegalArgumentException("Routine with ID " + routineId + " not found.");
         }
 
+        // Add the new task to the task list
         var numTasks = routine.tasks().size();
         var newTask = task.withIdAndSortOrder(numTasks, numTasks);
-        routine.addTask(newTask);
+        var taskList = routine.tasks();
+        var newTaskList = Stream.concat(taskList.stream(), Stream.of(newTask)).collect(Collectors.toList());
 
-        var newRoutine = new Routine(routineId, routine.name(), routine.tasks());
+        // Create a new routine object to save
+        Routine newRoutine = new Routine(routineId, routine.name(), newTaskList);
 
         dataSource.putRoutine(newRoutine);
     }
