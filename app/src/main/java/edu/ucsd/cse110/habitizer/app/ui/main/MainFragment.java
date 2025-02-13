@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -15,7 +14,8 @@ import java.util.List;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
-import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
@@ -44,10 +44,15 @@ public class MainFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         // Initialize the Adapter (empty for now)
-        this.adapter = new TaskAdapter(requireContext(), List.of());
+        this.adapter = new TaskAdapter(requireContext(), List.of(), 0, editTaskDialogParams -> {
+            var dialogFragment = EditTaskDialogFragment.newInstance(editTaskDialogParams);
+            dialogFragment.show(getParentFragmentManager(), "EditTaskDialogFragment");
+        });
+
         activityModel.getAllRoutines().observe(routines -> {
             if (routines == null) return;
 
+            // TODO: assign the routine id dynamically
             var morningRoutine = routines.get(0);
             var tasks = morningRoutine.tasks();
 

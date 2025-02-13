@@ -3,8 +3,8 @@ package edu.ucsd.cse110.habitizer.lib.domain;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,11 +35,7 @@ public class RoutineRepository {
     }
 
     public void addTaskToRoutine(int routineId, @NonNull Task task) {
-        Routine routine = find(routineId).getValue();
-
-        if (routine == null) {
-            throw new IllegalArgumentException("Routine with ID " + routineId + " not found.");
-        }
+        Routine routine = Objects.requireNonNull(find(routineId).getValue());
 
         // Add the new task to the task list
         var numTasks = routine.tasks().size();
@@ -49,6 +45,23 @@ public class RoutineRepository {
 
         // Create a new routine object to save
         Routine newRoutine = new Routine(routineId, routine.name(), newTaskList);
+
+        dataSource.putRoutine(newRoutine);
+    }
+
+    public void editTask(int routineId, int taskId, int sortOrder, @NonNull String taskName) {
+        Routine routine = Objects.requireNonNull(find(routineId).getValue());
+
+        // Make a new task object with the new name
+        var newTask = new Task(taskId, taskName, sortOrder);
+
+        // Create a new list with the new task in the correct position
+        var taskList = new ArrayList<>(List.copyOf(routine.tasks()));
+        taskList.remove(sortOrder);
+        taskList.add(sortOrder, newTask);
+
+        // Make a new routine with the updated task list
+        Routine newRoutine = new Routine(routineId, routine.name(), taskList);
 
         dataSource.putRoutine(newRoutine);
     }

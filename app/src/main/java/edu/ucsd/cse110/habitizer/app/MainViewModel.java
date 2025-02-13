@@ -5,10 +5,9 @@ import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLI
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
@@ -46,7 +45,15 @@ public class MainViewModel extends ViewModel {
         return allRoutines;
     }
 
-    public void addTaskToRoutine(int routineId, Task task) {
+    public void addTaskToRoutine(Integer routineId, Task task) {
         routineRepository.addTaskToRoutine(routineId, task);
+    }
+    public void editTask(EditTaskRequest req) {
+        routineRepository.editTask(
+                req.routineId(),
+                req.taskId(),
+                req.sortOrder(),
+                req.taskName()
+        );
     }
 }

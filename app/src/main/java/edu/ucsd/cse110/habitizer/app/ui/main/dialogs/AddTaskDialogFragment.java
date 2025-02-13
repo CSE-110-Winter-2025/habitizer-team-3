@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.habitizer.app.ui.main;
+package edu.ucsd.cse110.habitizer.app.ui.main.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,14 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
-import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentAddTaskDialogBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 

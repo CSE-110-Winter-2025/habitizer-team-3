@@ -11,13 +11,21 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
+import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
-    public TaskAdapter(Context context, List<Task> tasks) {
+    Consumer<EditTaskDialogParams> onEditClick;
+    private final int routineId;
+
+    public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
         super(context, 0, new ArrayList<>(tasks));
+        this.onEditClick = onEditClick;
+        this.routineId = routineId;
     }
 
     @NonNull
@@ -48,6 +56,15 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             // strikethrough the task name if it is checked off
             binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
             notifyDataSetChanged();
+        });
+
+        // listen for editing a task
+        binding.taskEditButton.setOnClickListener(v -> {
+            var taskId = Objects.requireNonNull(task.id());
+            var sortOrder = task.sortOrder();
+
+            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder);
+            onEditClick.accept(params);
         });
 
         return binding.getRoot();
