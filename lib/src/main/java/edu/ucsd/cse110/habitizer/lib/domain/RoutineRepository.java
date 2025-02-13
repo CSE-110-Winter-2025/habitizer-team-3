@@ -44,7 +44,7 @@ public class RoutineRepository {
         var newTaskList = Stream.concat(taskList.stream(), Stream.of(newTask)).collect(Collectors.toList());
 
         // Create a new routine object to save
-        Routine newRoutine = new Routine(routineId, routine.name(), newTaskList);
+        Routine newRoutine = routine.withTasks(newTaskList);
 
         dataSource.putRoutine(newRoutine);
     }
@@ -61,7 +61,7 @@ public class RoutineRepository {
         taskList.add(sortOrder, newTask);
 
         // Make a new routine with the updated task list
-        Routine newRoutine = new Routine(routineId, routine.name(), taskList);
+        Routine newRoutine = routine.withTasks(taskList);
 
         dataSource.putRoutine(newRoutine);
     }

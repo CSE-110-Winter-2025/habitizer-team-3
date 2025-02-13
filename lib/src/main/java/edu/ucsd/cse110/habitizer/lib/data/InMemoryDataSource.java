@@ -61,7 +61,7 @@ public class InMemoryDataSource {
                     new Task(4, "Make Lunch", 4),
                     new Task(5, "Dinner Prep", 5),
                     new Task(6, "Pack Bag", 6)
-            ))
+            ), 30)
     );
 
     public static InMemoryDataSource fromDefault() {

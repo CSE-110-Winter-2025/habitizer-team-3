@@ -48,6 +48,7 @@ public class MainViewModel extends ViewModel {
     public void addTaskToRoutine(Integer routineId, Task task) {
         routineRepository.addTaskToRoutine(routineId, task);
     }
+
     public void editTask(EditTaskRequest req) {
         routineRepository.editTask(
                 req.routineId(),
@@ -55,5 +56,9 @@ public class MainViewModel extends ViewModel {
                 req.sortOrder(),
                 req.taskName()
         );
+    }
+
+    public void updateRoutine(Routine routine) {
+        routineRepository.save(routine);
     }
 }

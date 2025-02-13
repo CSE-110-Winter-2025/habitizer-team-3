@@ -13,11 +13,12 @@ public class RoutineTest {
                 new Task(0, "Wake up", 0),
                 new Task(1, "Brush teeth", 1)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks);
+        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
         assertEquals("routine id should match", (Integer) 42, routine.id());
         assertEquals("routine name should match", "Morning Routine", routine.name());
         assertEquals("routine tasks should match", tasks, routine.tasks());
+        assertEquals("routine time should match", (Integer) 30, routine.time());
     }
 
     @Test
@@ -25,7 +26,7 @@ public class RoutineTest {
         List<Task> tasks = List.of(
                 new Task(0, "Wake up", 0)
         );
-        Routine original = new Routine(null, "Unnamed", tasks);
+        Routine original = new Routine(null, "Unnamed", tasks, 30);
 
         Routine updated = original.withId(99);
         assertNotEquals("updated and original should not be the same object", original, updated);
@@ -47,9 +48,9 @@ public class RoutineTest {
                 new Task(3, "Shower", 0)
         );
 
-        Routine r1 = new Routine(10, "Routine A", tasks1);
-        Routine r2 = new Routine(10, "Routine A", tasks1);
-        Routine r3 = new Routine(11, "Routine B", tasks2);
+        Routine r1 = new Routine(10, "Routine A", tasks1, 30);
+        Routine r2 = new Routine(10, "Routine A", tasks1, 30);
+        Routine r3 = new Routine(11, "Routine B", tasks2, 30);
 
         // r1 and r2 have same fields => should be equal
         assertEquals("routines with same fields should be equal", r1, r2);
