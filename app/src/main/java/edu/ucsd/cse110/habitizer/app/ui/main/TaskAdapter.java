@@ -21,7 +21,9 @@ import edu.ucsd.cse110.habitizer.lib.domain.Task;
 public class TaskAdapter extends ArrayAdapter<Task> {
     Consumer<EditTaskDialogParams> onEditClick;
     private final int routineId;
-    private boolean routineInProgress = false;
+    private boolean showEditButton = true;
+    private boolean showCheckbox = false;
+    private boolean enableCheckbox = false;
 
     public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
         super(context, 0, new ArrayList<>(tasks));
@@ -50,13 +52,19 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // populate the view with routine's data.
         binding.taskName.setText(task.name());
 
-        if (routineInProgress) {
+        if (showEditButton) {
+            binding.taskEditButton.setVisibility(View.VISIBLE);
+        } else {
             binding.taskEditButton.setVisibility(View.GONE);
+        }
+
+        if (showCheckbox) {
             binding.taskCheckbox.setVisibility(View.VISIBLE);
         } else {
-            binding.taskEditButton.setVisibility(View.VISIBLE);
             binding.taskCheckbox.setVisibility(View.GONE);
         }
+
+        binding.taskCheckbox.setEnabled(enableCheckbox);
 
         // listen for checking off a task
         binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -97,7 +105,14 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     }
 
     public void onStartButtonPressed() {
-        routineInProgress = true;
+        showCheckbox = true;
+        showEditButton = false;
+        enableCheckbox = true;
+        notifyDataSetChanged();
+    }
+
+    public void onEndButtonPressed() {
+        enableCheckbox = false;
         notifyDataSetChanged();
     }
 }

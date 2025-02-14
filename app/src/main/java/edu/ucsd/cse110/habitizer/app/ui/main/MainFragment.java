@@ -95,6 +95,8 @@ public class MainFragment extends Fragment {
             view.stopButton.setVisibility(View.GONE);
             view.endButton.setVisibility(View.GONE);
             view.fastforwardButton.setVisibility(View.GONE);
+
+            adapter.onEndButtonPressed();
         });
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
