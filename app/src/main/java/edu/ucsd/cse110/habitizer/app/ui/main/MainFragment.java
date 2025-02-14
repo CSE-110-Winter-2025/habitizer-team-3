@@ -117,12 +117,12 @@ public class MainFragment extends Fragment {
                     activityModel.updateRoutine(updateRoutine);
                 }
             }
+        });
 
-            // Open the add task dialog upon clicking the add task button
-            view.addTaskButton.setOnClickListener(w -> {
-                var dialogFragment = AddTaskDialogFragment.newInstance();
-                dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
-            });
+        // Open the add task dialog upon clicking the add task button
+        view.addTaskButton.setOnClickListener(w -> {
+            var dialogFragment = AddTaskDialogFragment.newInstance();
+            dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
         });
 
         return view.getRoot();
