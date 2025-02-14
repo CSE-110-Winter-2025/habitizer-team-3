@@ -14,7 +14,6 @@ public class Routine implements Serializable {
     private final @NonNull List<Task> tasks;
     private final @Nullable Integer time;
 
-
     public Routine(@Nullable Integer id, @NonNull String name, @Nullable List<Task> tasks, @Nullable Integer time) {
         this.id = id;
         this.name = name;

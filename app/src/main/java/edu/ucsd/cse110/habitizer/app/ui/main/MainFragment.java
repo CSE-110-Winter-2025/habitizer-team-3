@@ -14,6 +14,7 @@ import java.util.List;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
+import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 
@@ -21,6 +22,7 @@ public class MainFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentMainBinding view;
     private TaskAdapter adapter;
+    private TimerViewModel timerViewModel;
 
     public MainFragment() {
 
@@ -36,6 +38,8 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        timerViewModel = new ViewModelProvider(requireActivity()).get(TimerViewModel.class);
 
         // Initialize the Model
         var modelOwner = requireActivity();
@@ -54,6 +58,42 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Initialize the View
         this.view = FragmentMainBinding.inflate(inflater, container, false);
+
+        // Initially hide stop and fast-forward buttons
+        view.stopButton.setVisibility(View.GONE);
+        view.fastforwardButton.setVisibility(View.GONE);
+        view.endButton.setVisibility(View.GONE);
+
+        // Observe the timer's LiveData
+        timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
+            // Update a TextView to show elapsed minutes
+            int minutes = seconds / 60;
+            view.timerText.setText(String.valueOf(minutes));
+        });
+
+        view.startButton.setOnClickListener(v -> {
+            timerViewModel.startTimer();
+            view.startButton.setVisibility(View.GONE);
+            view.stopButton.setVisibility(View.VISIBLE);
+            view.endButton.setVisibility(View.VISIBLE);
+            view.fastforwardButton.setVisibility(View.VISIBLE);
+        });
+
+        view.stopButton.setOnClickListener(v -> {
+            timerViewModel.stopTimer();
+        });
+
+        view.endButton.setOnClickListener(v -> {
+            timerViewModel.stopTimer();
+            view.startButton.setVisibility(View.VISIBLE);
+            view.startButton.setText("Routine Ended");
+            view.startButton.setEnabled(false);
+            view.stopButton.setVisibility(View.GONE);
+            view.endButton.setVisibility(View.GONE);
+            view.fastforwardButton.setVisibility(View.GONE);
+        });
+
+        view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
 
         view.taskList.setAdapter(adapter);
 
@@ -108,5 +148,11 @@ public class MainFragment extends Fragment {
             adapter.addAll(tasks);
             adapter.notifyDataSetChanged();
         });
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // If you want to stop the timer when the Fragment is destroyed
+        // timerViewModel.stopTimer();
     }
 }
