@@ -50,12 +50,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public void editTask(EditTaskRequest req) {
-        routineRepository.editTask(
-                req.routineId(),
-                req.taskId(),
-                req.sortOrder(),
-                req.taskName()
-        );
+        routineRepository.editTask(req);
     }
 
     public void updateRoutine(Routine routine) {

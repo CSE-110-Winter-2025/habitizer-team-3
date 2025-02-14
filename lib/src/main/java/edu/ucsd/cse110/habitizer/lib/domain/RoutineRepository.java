@@ -39,6 +39,8 @@ public class RoutineRepository {
 
         // Add the new task to the task list
         var numTasks = routine.tasks().size();
+
+        // new task should have id and sortOrder of numTasks
         var newTask = task.withIdAndSortOrder(numTasks, numTasks);
         var taskList = routine.tasks();
         var newTaskList = Stream.concat(taskList.stream(), Stream.of(newTask)).collect(Collectors.toList());
@@ -49,16 +51,16 @@ public class RoutineRepository {
         dataSource.putRoutine(newRoutine);
     }
 
-    public void editTask(int routineId, int taskId, int sortOrder, @NonNull String taskName) {
-        Routine routine = Objects.requireNonNull(find(routineId).getValue());
+    public void editTask(EditTaskRequest req) {
+        Routine routine = Objects.requireNonNull(find(req.routineId()).getValue());
 
         // Make a new task object with the new name
-        var newTask = new Task(taskId, taskName, sortOrder);
+        var newTask = new Task(req.taskId(), req.taskName(), req.sortOrder());
 
         // Create a new list with the new task in the correct position
         var taskList = new ArrayList<>(List.copyOf(routine.tasks()));
-        taskList.remove(sortOrder);
-        taskList.add(sortOrder, newTask);
+        taskList.remove((int) req.sortOrder());
+        taskList.add(req.sortOrder(), newTask);
 
         // Make a new routine with the updated task list
         Routine newRoutine = routine.withTasks(taskList);
