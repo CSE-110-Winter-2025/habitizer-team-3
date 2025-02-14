@@ -35,20 +35,20 @@ is **not sufficient** since it is not repeatable and does not protect against re
 Perform a self-review using the following checklist. Some items may not apply to your PR if it
 is for a bug fix. You can check an item by replacing the [ ] with [x].
 
-- [ ] **The code is understandable.**
-    - [ ] The code is follows formatting conventions (spacing, indents, etc).
-    - [ ] The code makes use of names that sound like behavior.
-    - [ ] The code is commented in hard-to-understand areas.
-    - [ ] The code contains changes to documentation if needed.
+- [] **The code is understandable.**
+    - [] The code is follows formatting conventions (spacing, indents, etc).
+    - [] The code makes use of names that sound like behavior.
+    - [] The code is commented in hard-to-understand areas.
+    - [] The code contains changes to documentation if needed.
 
-- [ ] **The code is well structured.**
-    - [ ] The code is organized into logical components.
-    - [ ] The components sound like the behavior (requirements) they implement.
-    - [ ] The components have clearly defined single responsibilities.
+- [] **The code is well structured.**
+    - [] The code is organized into logical components.
+    - [] The components sound like the behavior (requirements) they implement.
+    - [] The components have clearly defined single responsibilities.
 
-- [ ] **The code is correct.**
-    - [ ] The changes include tests that prove the fix is effective or that the feature fully works.
-    - [ ] The changes generate no new failed tests, build errors, or warnings.
+- [] **The code is correct.**
+    - [] The changes include tests that prove the fix is effective or that the feature fully works.
+    - [] The changes generate no new failed tests, build errors, or warnings.
 
 # Pending Items
 
