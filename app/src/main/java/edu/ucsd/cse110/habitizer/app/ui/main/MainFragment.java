@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.List;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
+import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
@@ -77,6 +78,7 @@ public class MainFragment extends Fragment {
             view.stopButton.setVisibility(View.VISIBLE);
             view.endButton.setVisibility(View.VISIBLE);
             view.fastforwardButton.setVisibility(View.VISIBLE);
+            view.addTaskButton.setVisibility(View.GONE);
         });
 
         view.stopButton.setOnClickListener(v -> {
@@ -86,7 +88,7 @@ public class MainFragment extends Fragment {
         view.endButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
             view.startButton.setVisibility(View.VISIBLE);
-            view.startButton.setText("Routine Ended");
+            view.startButton.setText(R.string.routine_ended);
             view.startButton.setEnabled(false);
             view.stopButton.setVisibility(View.GONE);
             view.endButton.setVisibility(View.GONE);
