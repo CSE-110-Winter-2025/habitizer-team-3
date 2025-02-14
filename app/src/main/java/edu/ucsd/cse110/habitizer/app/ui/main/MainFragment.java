@@ -79,6 +79,8 @@ public class MainFragment extends Fragment {
             view.endButton.setVisibility(View.VISIBLE);
             view.fastforwardButton.setVisibility(View.VISIBLE);
             view.addTaskButton.setVisibility(View.GONE);
+
+            adapter.onStartButtonPressed();
         });
 
         view.stopButton.setOnClickListener(v -> {

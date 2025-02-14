@@ -21,6 +21,7 @@ import edu.ucsd.cse110.habitizer.lib.domain.Task;
 public class TaskAdapter extends ArrayAdapter<Task> {
     Consumer<EditTaskDialogParams> onEditClick;
     private final int routineId;
+    private boolean routineInProgress = false;
 
     public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
         super(context, 0, new ArrayList<>(tasks));
@@ -48,6 +49,14 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         // populate the view with routine's data.
         binding.taskName.setText(task.name());
+
+        if (routineInProgress) {
+            binding.taskEditButton.setVisibility(View.GONE);
+            binding.taskCheckbox.setVisibility(View.VISIBLE);
+        } else {
+            binding.taskEditButton.setVisibility(View.VISIBLE);
+            binding.taskCheckbox.setVisibility(View.GONE);
+        }
 
         // listen for checking off a task
         binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -85,5 +94,10 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         assert id != null;
 
         return id;
+    }
+
+    public void onStartButtonPressed() {
+        routineInProgress = true;
+        notifyDataSetChanged();
     }
 }
