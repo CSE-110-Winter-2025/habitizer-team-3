@@ -48,7 +48,7 @@ public class Routine implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Routine routine = (Routine) o;
-        return Objects.equals(id, routine.id) && Objects.equals(name, routine.name) && Objects.equals(tasks, routine.tasks);
+        return Objects.equals(id, routine.id) && Objects.equals(name, routine.name) && Objects.equals(tasks, routine.tasks) && Objects.equals(time, routine.time);
     }
 
     @Override

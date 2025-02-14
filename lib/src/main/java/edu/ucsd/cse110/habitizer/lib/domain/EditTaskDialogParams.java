@@ -1,4 +1,6 @@
 package edu.ucsd.cse110.habitizer.lib.domain;
 
-public record EditTaskDialogParams(int routineId, int taskId, int sortOrder) {
+import androidx.annotation.NonNull;
+
+public record EditTaskDialogParams(@NonNull Integer routineId, @NonNull Integer taskId, @NonNull Integer sortOrder) {
 }

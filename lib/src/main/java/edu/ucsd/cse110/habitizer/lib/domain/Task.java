@@ -9,10 +9,10 @@ import java.util.Objects;
 public class Task implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String name;
-    private final int sortOrder;
+    private final @NonNull Integer sortOrder;
     private boolean checkedOff = false;
 
-    public Task(@Nullable Integer id, @NonNull String name, int sortOrder) {
+    public Task(@Nullable Integer id, @NonNull String name, @NonNull Integer sortOrder) {
         this.id = id;
         this.name = name;
         this.sortOrder = sortOrder;
@@ -37,7 +37,7 @@ public class Task implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return sortOrder == task.sortOrder && Objects.equals(id, task.id) && Objects.equals(name, task.name);
+        return Objects.equals(sortOrder, task.sortOrder) && Objects.equals(id, task.id) && Objects.equals(name, task.name) && checkedOff == task.checkedOff;
     }
 
     @Override
