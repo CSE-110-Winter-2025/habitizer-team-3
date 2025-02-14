@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,13 +11,22 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
+import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
-    public TaskAdapter(Context context, List<Task> tasks) {
+    Consumer<EditTaskDialogParams> onEditClick;
+    private final int routineId;
+    private boolean routineInProgress = false;
+
+    public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
         super(context, 0, new ArrayList<>(tasks));
+        this.onEditClick = onEditClick;
+        this.routineId = routineId;
     }
 
     @NonNull
@@ -40,6 +50,32 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // populate the view with routine's data.
         binding.taskName.setText(task.name());
 
+        if (routineInProgress) {
+            binding.taskEditButton.setVisibility(View.GONE);
+            binding.taskCheckbox.setVisibility(View.VISIBLE);
+        } else {
+            binding.taskEditButton.setVisibility(View.VISIBLE);
+            binding.taskCheckbox.setVisibility(View.GONE);
+        }
+
+        // listen for checking off a task
+        binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            task.setCheckedOff(isChecked);
+
+            // strikethrough the task name if it is checked off
+            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
+            notifyDataSetChanged();
+        });
+
+        // listen for editing a task
+        binding.taskEditButton.setOnClickListener(v -> {
+            var taskId = Objects.requireNonNull(task.id());
+            var sortOrder = task.sortOrder();
+
+            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder);
+            onEditClick.accept(params);
+        });
+
         return binding.getRoot();
     }
 
@@ -58,5 +94,10 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         assert id != null;
 
         return id;
+    }
+
+    public void onStartButtonPressed() {
+        routineInProgress = true;
+        notifyDataSetChanged();
     }
 }

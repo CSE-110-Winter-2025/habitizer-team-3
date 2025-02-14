@@ -11,8 +11,10 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
+import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModelTest {
@@ -75,11 +77,37 @@ public class MainViewModelTest {
                 testRoutine, fakeRepo.savedRoutine);
     }
 
+    @Test
+    public void testAddTaskToRoutineCallsRepository() {
+        int routineId = 1;
+        Task newTask = new Task(null, "New Task", 0);
+
+        viewModel.addTaskToRoutine(routineId, newTask);
+
+        // Verify the repository method was called (would require a spy/mocking framework like Mockito)
+        // Here we assume FakeRoutineRepository records the last add task request
+        assertEquals("Repository should receive correct routine ID", routineId, fakeRepo.lastAddedTaskRoutineId);
+        assertEquals("Repository should receive correct task", newTask, fakeRepo.lastAddedTask);
+    }
+
+    @Test
+    public void testEditTaskCallsRepository() {
+        EditTaskRequest request = new EditTaskRequest(1, 2, 1, "Updated Task");
+
+        viewModel.editTask(request);
+
+        // Verify the repository method was called
+        assertEquals("Repository should receive correct edit request", request, fakeRepo.lastEditTaskRequest);
+    }
+
 //    A fake implementation of RoutineRepository.
     private static class FakeRoutineRepository extends RoutineRepository {
         // Expose a Subject so we can simulate routines.
         final Subject<List<Routine>> fakeAllRoutines = new Subject<>();
         Routine savedRoutine = null;
+        Task lastAddedTask;
+        int lastAddedTaskRoutineId;
+        EditTaskRequest lastEditTaskRequest;
 
         public FakeRoutineRepository() {
             // Pass a fake InMemoryDataSource to satisfy the superclass constructor.
@@ -94,6 +122,17 @@ public class MainViewModelTest {
         @Override
         public void save(Routine routine) {
             savedRoutine = routine;
+        }
+
+        @Override
+        public void addTaskToRoutine(int routineId, Task task) {
+            this.lastAddedTaskRoutineId = routineId;
+            this.lastAddedTask = task;
+        }
+
+        @Override
+        public void editTask(EditTaskRequest req) {
+            this.lastEditTaskRequest = req;
         }
     }
 

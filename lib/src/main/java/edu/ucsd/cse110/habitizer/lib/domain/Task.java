@@ -9,9 +9,10 @@ import java.util.Objects;
 public class Task implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String name;
-    private final int sortOrder;
+    private final @NonNull Integer sortOrder;
+    private boolean checkedOff = false;
 
-    public Task(@Nullable Integer id, @NonNull String name, int sortOrder) {
+    public Task(@Nullable Integer id, @NonNull String name, @NonNull Integer sortOrder) {
         this.id = id;
         this.name = name;
         this.sortOrder = sortOrder;
@@ -23,16 +24,28 @@ public class Task implements Serializable {
 
     public int sortOrder() { return sortOrder; }
 
+    public boolean isCheckedOff() {
+        return checkedOff;
+    }
+
+    public void setCheckedOff(boolean checkedOff) {
+        this.checkedOff = checkedOff;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return sortOrder == task.sortOrder && Objects.equals(id, task.id) && Objects.equals(name, task.name);
+        return Objects.equals(sortOrder, task.sortOrder) && Objects.equals(id, task.id) && Objects.equals(name, task.name) && checkedOff == task.checkedOff;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, sortOrder);
+    }
+
+    public Task withIdAndSortOrder(int id, int sortOrder) {
+        return new Task(id, this.name, sortOrder);
     }
 }

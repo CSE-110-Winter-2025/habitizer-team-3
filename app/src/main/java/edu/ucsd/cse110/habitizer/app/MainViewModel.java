@@ -5,12 +5,12 @@ import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLI
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
@@ -43,6 +43,14 @@ public class MainViewModel extends ViewModel {
     // Getters so the Activity/Fragment can observe or retrieve the Subjects
     public Subject<List<Routine>> getAllRoutines() {
         return allRoutines;
+    }
+
+    public void addTaskToRoutine(Integer routineId, Task task) {
+        routineRepository.addTaskToRoutine(routineId, task);
+    }
+
+    public void editTask(EditTaskRequest req) {
+        routineRepository.editTask(req);
     }
 
     public void updateRoutine(Routine routine) {

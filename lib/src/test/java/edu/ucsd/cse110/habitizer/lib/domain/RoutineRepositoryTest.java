@@ -3,26 +3,37 @@ package edu.ucsd.cse110.habitizer.lib.domain;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class RoutineRepositoryTest {
+
+    private InMemoryDataSource dataSource;
+    private RoutineRepository repository;
+
+
+    @Before
+    public void setup() {
+        dataSource = new InMemoryDataSource();
+        repository = new RoutineRepository(dataSource);
+    }
+
+
     @Test
     public void testInitialState() {
-        InMemoryDataSource dataSource = new InMemoryDataSource();
-        RoutineRepository repository = new RoutineRepository(dataSource);
-
         assertEquals("initial count should be zero", (Integer) 0, repository.count());
     }
 
     @Test
     public void testSaveAndFind() {
-        InMemoryDataSource dataSource = new InMemoryDataSource();
-        RoutineRepository repository = new RoutineRepository(dataSource);
-
         List<Task> tasks = List.of(
                 new Task(1, "Wake up", 0),
                 new Task(2, "Brush teeth", 1)
@@ -38,9 +49,6 @@ public class RoutineRepositoryTest {
 
     @Test
     public void testFindAll() {
-        InMemoryDataSource dataSource = new InMemoryDataSource();
-        RoutineRepository repository = new RoutineRepository(dataSource);
-
         List<Task> morningTasks = List.of(
                 new Task(1, "Wake up", 0),
                 new Task(2, "Brush teeth", 1)
@@ -66,9 +74,6 @@ public class RoutineRepositoryTest {
 
     @Test
     public void testUpdateExisting() {
-        InMemoryDataSource dataSource = new InMemoryDataSource();
-        RoutineRepository repository = new RoutineRepository(dataSource);
-
         List<Task> originalTasks = List.of(
                 new Task(1, "Wake up", 0)
         );
@@ -90,9 +95,6 @@ public class RoutineRepositoryTest {
 
     @Test
     public void testObserverNotification() {
-        InMemoryDataSource dataSource = new InMemoryDataSource();
-        RoutineRepository repository = new RoutineRepository(dataSource);
-
         List<Task> tasks = List.of(
                 new Task(1, "Wake up", 0)
         );
@@ -111,5 +113,44 @@ public class RoutineRepositoryTest {
         repository.save(updated);
 
         assertTrue("observer should be notified of changes", wasNotified[0]);
+    }
+
+    @Test
+    public void testAddTaskToRoutine() {
+        List<Task> tasks = List.of(
+                new Task(1, "Wake up", 0)
+        );
+        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        repository.save(routine);
+
+        Task newTask = new Task(2, "Wake up", 1);
+
+        repository.addTaskToRoutine(42, newTask);
+
+        Routine updatedRoutine = repository.find(42).getValue();
+        assertNotNull("Updated routine should not be null", updatedRoutine);
+        assertEquals("Updated routine should have 2 tasks", updatedRoutine.tasks().size(), 2);
+
+        Task addedTask = updatedRoutine.tasks().get(1);
+        assertEquals("Second task should have new task's name", addedTask.name(), newTask.name());
+        assertEquals("New task id should be previous task list size", 1, (int) Objects.requireNonNull(addedTask.id()));
+        assertEquals("New task sort order should be previous task list size", 1, addedTask.sortOrder());
+    }
+
+    @Test
+    public void testEditTask() {
+        List<Task> tasks = List.of(
+                new Task(1, "Wake up", 0)
+        );
+        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        repository.save(routine);
+
+        EditTaskRequest req = new EditTaskRequest(42, 1, 0, "Eat Breakfast");
+        repository.editTask(req);
+
+        Routine updatedRoutine = repository.find(42).getValue();
+        assertNotNull("Updated routine should not be null", updatedRoutine);
+        assertEquals("Updated routine should not have additional tasks", updatedRoutine.tasks().size(), 1);
+        assertEquals("Edited task should have new name", req.taskName(), updatedRoutine.tasks().get(0).name());
     }
 }

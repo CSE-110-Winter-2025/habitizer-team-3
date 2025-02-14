@@ -13,8 +13,11 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.List;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
+import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
+import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
@@ -46,7 +49,10 @@ public class MainFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         // Initialize the Adapter (empty for now)
-        this.adapter = new TaskAdapter(requireContext(), List.of());
+        this.adapter = new TaskAdapter(requireContext(), List.of(), 0, editTaskDialogParams -> {
+            var dialogFragment = EditTaskDialogFragment.newInstance(editTaskDialogParams);
+            dialogFragment.show(getParentFragmentManager(), "EditTaskDialogFragment");
+        });
     }
 
     @Override
@@ -72,6 +78,9 @@ public class MainFragment extends Fragment {
             view.stopButton.setVisibility(View.VISIBLE);
             view.endButton.setVisibility(View.VISIBLE);
             view.fastforwardButton.setVisibility(View.VISIBLE);
+            view.addTaskButton.setVisibility(View.GONE);
+
+            adapter.onStartButtonPressed();
         });
 
         view.stopButton.setOnClickListener(v -> {
@@ -81,7 +90,7 @@ public class MainFragment extends Fragment {
         view.endButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
             view.startButton.setVisibility(View.VISIBLE);
-            view.startButton.setText("Routine Ended");
+            view.startButton.setText(R.string.routine_ended);
             view.startButton.setEnabled(false);
             view.stopButton.setVisibility(View.GONE);
             view.endButton.setVisibility(View.GONE);
@@ -110,6 +119,12 @@ public class MainFragment extends Fragment {
             }
         });
 
+        // Open the add task dialog upon clicking the add task button
+        view.addTaskButton.setOnClickListener(w -> {
+            var dialogFragment = AddTaskDialogFragment.newInstance();
+            dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
+        });
+
         return view.getRoot();
     }
 
@@ -120,6 +135,7 @@ public class MainFragment extends Fragment {
         activityModel.getAllRoutines().observe(routines -> {
             if (routines == null) return;
 
+            // TODO: assign the routine id dynamically
             var morningRoutine = routines.get(0);
 
             // Show the routine name in a TextView
