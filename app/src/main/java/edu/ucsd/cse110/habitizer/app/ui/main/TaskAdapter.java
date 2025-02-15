@@ -71,8 +71,9 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         binding.taskEditButton.setOnClickListener(v -> {
             var taskId = Objects.requireNonNull(task.id());
             var sortOrder = task.sortOrder();
+            var taskTime = task.taskTime();
 
-            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder);
+            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder,taskTime);
             onEditClick.accept(params);
         });
 

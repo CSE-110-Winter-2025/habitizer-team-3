@@ -54,7 +54,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var taskName = view.taskNameInput.getText().toString().trim();
-        var task = new Task(null, taskName, -1);
+        var task = new Task(null, taskName, -1, null);
 
         activityModel.addTaskToRoutine(0, task);
 
