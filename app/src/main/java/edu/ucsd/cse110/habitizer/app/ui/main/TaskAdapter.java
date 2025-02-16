@@ -39,17 +39,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         this.taskItemListener = listener;
     }
 
-//    public interface OnTaskCheckedChangeListener {
-//        void onTaskCheckedChanged(int position, boolean isChecked);
-//    }
-//
-//    private OnTaskCheckedChangeListener listener;
-//
-//    // Set the listener from MainFragment
-//    public void setOnTaskCheckedChangeListener(OnTaskCheckedChangeListener listener) {
-//        this.listener = listener;
-//    }
-
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -135,36 +124,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 }
             }
         });
-
-        // listen for checking off a task
-//        binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//
-//            if (isChecked) {
-//                long currentTime = System.currentTimeMillis() / 1000;
-//                Integer taskTimeInSeconds = (int)(currentTime - lastTaskEndTime);
-//                Integer taskTimeInMinutes = (int) Math.ceil(taskTimeInSeconds / 60.0);
-//                Task updatedTask= task.withTime(taskTimeInMinutes);
-//                updatedTask.setCheckedOff(true);
-//                remove(task);
-//                insert(updatedTask, position);
-//                lastTaskCheckedSortOrder = updatedTask.sortOrder();
-//                binding.textTaskTime.setText(String.valueOf(updatedTask.taskTime()) + " m");
-//                for (int i = 0; i < position; i++) {
-//                    Task previousTask = getItem(i);
-//                    if (previousTask != null && !previousTask.isCheckedOff()) {
-//                        Task skippedTask = previousTask.withTime(null);
-//                        skippedTask.setCheckedOff(false);
-//                        remove(previousTask);
-//                        insert(skippedTask, i);
-//
-//                    }
-//                }
-//                lastTaskEndTime = currentTime;
-//                notifyDataSetChanged();
-//            }
-//            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
-//        });
-
 
         return binding.getRoot();
     }
