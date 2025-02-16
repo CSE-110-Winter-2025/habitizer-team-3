@@ -1,6 +1,5 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +56,26 @@ public class MainFragment extends Fragment {
         this.adapter = new TaskAdapter(requireContext(), List.of(), 0, editTaskDialogParams -> {
             var dialogFragment = EditTaskDialogFragment.newInstance(editTaskDialogParams);
             dialogFragment.show(getParentFragmentManager(), "EditTaskDialogFragment");
+        });
+
+
+        adapter.setTaskItemListener(new TaskItemListener() {
+            @Override
+            public void onTaskClicked(Task task) {
+            }
+
+            @Override
+            public void onEditClicked(Task task) {
+            }
+
+            @Override
+            public void onCheckOffClicked(Task task) {
+                int durationInSeconds = timerViewModel.checkOffTask();
+                int durationInMinutes = (int) Math.ceil(durationInSeconds / 60.0);
+                Task updatedTask = task.withTime(durationInMinutes);
+                updatedTask.setCheckedOff(true);
+                adapter.updateTask(task, updatedTask);
+            }
         });
     }
 

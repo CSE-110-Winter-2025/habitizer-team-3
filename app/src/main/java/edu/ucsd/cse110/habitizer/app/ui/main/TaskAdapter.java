@@ -127,6 +127,12 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         return binding.getRoot();
     }
+    public void updateTask(Task prevTask, Task newTask) {
+        int index = getPosition(prevTask);
+        remove(prevTask);
+        insert(newTask, index);
+        notifyDataSetChanged();
+    }
 
     // good practice
     @Override

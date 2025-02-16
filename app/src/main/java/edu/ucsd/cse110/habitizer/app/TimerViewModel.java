@@ -18,7 +18,7 @@ public class TimerViewModel extends ViewModel {
     }
 
     private Timer timer;
-    private long lastTaskEndTime = 0;
+private int lastTaskEndTime = 0;
 
     public void startTimer() {
         if (timer == null) {
@@ -54,12 +54,15 @@ public class TimerViewModel extends ViewModel {
         return elapsedSeconds;
     }
 
-    public void taskCheckedOff() {
-        long currentTime = System.currentTimeMillis();
-        if (lastTaskEndTime > 0) {
-            long taskDuration = currentTime - lastTaskEndTime;
-            taskTime.postValue((int)(taskDuration/1000));
+    public int checkOffTask() {
+        Integer current = elapsedSeconds.getValue();
+        if (current == null) {
+            current = 0;
         }
-        lastTaskEndTime = currentTime;
+        int taskDuration = current - lastTaskEndTime;
+        taskTime.postValue(taskDuration);
+        lastTaskEndTime = current;
+        return taskDuration;
+
     }
 }
