@@ -56,4 +56,8 @@ public class MainViewModel extends ViewModel {
     public void updateRoutine(Routine routine) {
         routineRepository.save(routine);
     }
+    public Routine getCurrentRoutine(List<Routine> routines, boolean isMorning) {
+        if (routines == null || routines.size() < 2) return null;
+        return isMorning ? routines.get(0) : routines.get(1);
+    }
 }

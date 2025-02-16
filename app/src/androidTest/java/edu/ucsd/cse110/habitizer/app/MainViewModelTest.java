@@ -100,7 +100,41 @@ public class MainViewModelTest {
         assertEquals("Repository should receive correct edit request", request, fakeRepo.lastEditTaskRequest);
     }
 
-//    A fake implementation of RoutineRepository.
+    @Test
+    public void testSelectedRoutine() {
+        Routine morningRoutine = new Routine(1, "Morning Routine", Collections.emptyList(), 50);
+        Routine eveningRoutine = new Routine(2, "Evening Routine", Collections.emptyList(), 35);
+        List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
+
+        Routine selected = viewModel.getCurrentRoutine(routines, true);
+        assertEquals(morningRoutine, selected);
+
+        selected = viewModel.getCurrentRoutine(routines, false);
+        assertEquals(eveningRoutine, selected);
+    }
+
+    @Test
+    public void testSelectedRoutineTasks() {
+        List<Task> morningTasks = Arrays.asList(
+                new Task(0, "Shower", 0),
+                new Task(1, "Brush Teeth", 1)
+        );
+        List<Task> eveningTasks = Arrays.asList(
+                new Task(0, "Finish Homework", 0),
+                new Task(1, "Read", 1)
+        );
+
+        Routine morningRoutine = new Routine(0, "Morning Routine", morningTasks, 20);
+        Routine eveningRoutine = new Routine(1, "Evening Routine", eveningTasks, 25);
+        List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
+
+        Routine selectedRoutine = viewModel.getCurrentRoutine(routines, true);
+        assertEquals("Morning routine", morningTasks, selectedRoutine.tasks());
+        selectedRoutine = viewModel.getCurrentRoutine(routines, false);
+        assertEquals("Evening routine", eveningTasks, selectedRoutine.tasks());
+    }
+
+    //    A fake implementation of RoutineRepository.
     private static class FakeRoutineRepository extends RoutineRepository {
         // Expose a Subject so we can simulate routines.
         final Subject<List<Routine>> fakeAllRoutines = new Subject<>();
