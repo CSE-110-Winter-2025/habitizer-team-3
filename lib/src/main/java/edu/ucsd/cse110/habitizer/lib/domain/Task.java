@@ -19,8 +19,7 @@ public class Task implements Serializable {
         this.id = id;
         this.name = name;
         this.sortOrder = sortOrder;
-        //this.taskTime = taskTime != null ? taskTime : -1;
-        this.taskTime = taskTime;
+        this.taskTime = taskTime != null ? taskTime : -1;
     }
 
     public @Nullable Integer id() { return id; }

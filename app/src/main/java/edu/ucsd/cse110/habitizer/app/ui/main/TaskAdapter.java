@@ -9,9 +9,6 @@ import android.widget.ArrayAdapter;
 
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +25,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     private final int routineId;
     private boolean routineInProgress = false;
     public long lastTaskEndTime = 0;
-    //private int lastTaskCheckedSortOrder = -1;
+    private int lastTaskCheckedSortOrder = -1;
 
 
     public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
@@ -69,13 +66,14 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // populate the view with routine's data.
         binding.taskName.setText(task.name());
 
-//        if (task.taskTime() == null) {
-//            binding.textTaskTime.setText("-");
-//        } else if (task.taskTime() == -1) {
-//            binding.textTaskTime.setText(" ");  // Display empty space for tasks that haven't started
-//        } else {
-//            binding.textTaskTime.setText(task.taskTime() + "m");  // Display the time in minutes for completed tasks
-//        }
+        //Check if the task is before or after the checked-off task
+        if (task.sortOrder() < lastTaskCheckedSortOrder && !task.isCheckedOff()) {
+            binding.textTaskTime.setText("-");
+        } else if (task.taskTime() == -1) {
+            binding.textTaskTime.setText(" ");
+        } else {
+            binding.textTaskTime.setText(task.taskTime() + "m");
+        }
 
         if (routineInProgress) {
             binding.taskEditButton.setVisibility(View.GONE);
@@ -88,33 +86,30 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // listen for checking off a task
         binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-//            if (isChecked) {
-//                long currentTime = System.currentTimeMillis() / 1000;
-//                Integer taskTimeInSeconds = (int)(currentTime - lastTaskEndTime);
-//                Integer taskTimeInMinutes = (int) Math.ceil(taskTimeInSeconds / 60.0);
-//                Task updatedTask= task.withTime(taskTimeInMinutes);
-//                updatedTask.setCheckedOff(true);
-//                remove(task);
-//                insert(updatedTask, position);
-//                binding.textTaskTime.setText(String.valueOf(updatedTask.taskTime()) + " m");
-//                for (int i = 0; i < position; i++) {
-//                    Task previousTask = getItem(i);
-//                    if (previousTask != null && !previousTask.isCheckedOff()) {
-//                        Task skippedTask = previousTask.withTime(null);
-//                        skippedTask.setCheckedOff(false);
-//                        remove(previousTask);
-//                        insert(skippedTask, i);
-//
-//                    }
-//                }
-//                lastTaskEndTime = currentTime;
-//                notifyDataSetChanged();
-//            }
-            task.setCheckedOff(isChecked);
-            // strikethrough the task name if it is checked off
-            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
+            if (isChecked) {
+                long currentTime = System.currentTimeMillis() / 1000;
+                Integer taskTimeInSeconds = (int)(currentTime - lastTaskEndTime);
+                Integer taskTimeInMinutes = (int) Math.ceil(taskTimeInSeconds / 60.0);
+                Task updatedTask= task.withTime(taskTimeInMinutes);
+                updatedTask.setCheckedOff(true);
+                remove(task);
+                insert(updatedTask, position);
+                lastTaskCheckedSortOrder = updatedTask.sortOrder();
+                binding.textTaskTime.setText(String.valueOf(updatedTask.taskTime()) + " m");
+                for (int i = 0; i < position; i++) {
+                    Task previousTask = getItem(i);
+                    if (previousTask != null && !previousTask.isCheckedOff()) {
+                        Task skippedTask = previousTask.withTime(null);
+                        skippedTask.setCheckedOff(false);
+                        remove(previousTask);
+                        insert(skippedTask, i);
 
-            notifyDataSetChanged();
+                    }
+                }
+                lastTaskEndTime = currentTime;
+                notifyDataSetChanged();
+            }
+            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
         });
 
 
