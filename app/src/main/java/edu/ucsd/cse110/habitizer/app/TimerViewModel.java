@@ -11,7 +11,14 @@ public class TimerViewModel extends ViewModel {
     // Current elapsed time in seconds
     private final MutableLiveData<Integer> elapsedSeconds = new MutableLiveData<>(0);
 
+    private final MutableLiveData<Integer> taskTime = new MutableLiveData<>(0);
+
+    public LiveData<Integer> getTaskTime() {
+        return taskTime;
+    }
+
     private Timer timer;
+    private long lastTaskEndTime = 0;
 
     public void startTimer() {
         if (timer == null) {
@@ -45,5 +52,14 @@ public class TimerViewModel extends ViewModel {
     // The Fragment/Activity can observe this LiveData
     public LiveData<Integer> getElapsedSeconds() {
         return elapsedSeconds;
+    }
+
+    public void taskCheckedOff() {
+        long currentTime = System.currentTimeMillis();
+        if (lastTaskEndTime > 0) {
+            long taskDuration = currentTime - lastTaskEndTime;
+            taskTime.postValue((int)(taskDuration/1000));
+        }
+        lastTaskEndTime = currentTime;
     }
 }

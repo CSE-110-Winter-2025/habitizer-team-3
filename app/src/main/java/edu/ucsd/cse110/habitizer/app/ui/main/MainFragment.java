@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +16,19 @@ import java.util.List;
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
+import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentMainBinding view;
+    private ListItemTaskBinding binding;
     private TaskAdapter adapter;
     private TimerViewModel timerViewModel;
+    private List<Task> tasks;
 
     public MainFragment() {
 
@@ -101,6 +106,8 @@ public class MainFragment extends Fragment {
 
         view.taskList.setAdapter(adapter);
 
+
+
         // Listen for time field changes (focus lost => update the model)
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
@@ -118,6 +125,7 @@ public class MainFragment extends Fragment {
                 }
             }
         });
+
 
         // Open the add task dialog upon clicking the add task button
         view.addTaskButton.setOnClickListener(w -> {
@@ -152,6 +160,7 @@ public class MainFragment extends Fragment {
             adapter.addAll(tasks);
             adapter.notifyDataSetChanged();
         });
+
     }
     @Override
     public void onDestroy() {

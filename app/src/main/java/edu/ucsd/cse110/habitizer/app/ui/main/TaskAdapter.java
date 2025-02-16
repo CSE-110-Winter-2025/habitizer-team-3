@@ -7,7 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +24,28 @@ import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
     Consumer<EditTaskDialogParams> onEditClick;
+    Consumer<Integer> onTaskTimeUpdate;
     private final int routineId;
     private boolean routineInProgress = false;
+    public long lastTaskEndTime = 0;
+    //private int lastTaskCheckedSortOrder = -1;
+
 
     public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
         super(context, 0, new ArrayList<>(tasks));
         this.onEditClick = onEditClick;
         this.routineId = routineId;
+    }
+
+    public interface OnTaskCheckedChangeListener {
+        void onTaskCheckedChanged(int position, boolean isChecked);
+    }
+
+    private OnTaskCheckedChangeListener listener;
+
+    // Set the listener from MainFragment
+    public void setOnTaskCheckedChangeListener(OnTaskCheckedChangeListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -50,6 +69,14 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // populate the view with routine's data.
         binding.taskName.setText(task.name());
 
+//        if (task.taskTime() == null) {
+//            binding.textTaskTime.setText("-");
+//        } else if (task.taskTime() == -1) {
+//            binding.textTaskTime.setText(" ");  // Display empty space for tasks that haven't started
+//        } else {
+//            binding.textTaskTime.setText(task.taskTime() + "m");  // Display the time in minutes for completed tasks
+//        }
+
         if (routineInProgress) {
             binding.taskEditButton.setVisibility(View.GONE);
             binding.taskCheckbox.setVisibility(View.VISIBLE);
@@ -60,12 +87,36 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         // listen for checking off a task
         binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            task.setCheckedOff(isChecked);
 
+//            if (isChecked) {
+//                long currentTime = System.currentTimeMillis() / 1000;
+//                Integer taskTimeInSeconds = (int)(currentTime - lastTaskEndTime);
+//                Integer taskTimeInMinutes = (int) Math.ceil(taskTimeInSeconds / 60.0);
+//                Task updatedTask= task.withTime(taskTimeInMinutes);
+//                updatedTask.setCheckedOff(true);
+//                remove(task);
+//                insert(updatedTask, position);
+//                binding.textTaskTime.setText(String.valueOf(updatedTask.taskTime()) + " m");
+//                for (int i = 0; i < position; i++) {
+//                    Task previousTask = getItem(i);
+//                    if (previousTask != null && !previousTask.isCheckedOff()) {
+//                        Task skippedTask = previousTask.withTime(null);
+//                        skippedTask.setCheckedOff(false);
+//                        remove(previousTask);
+//                        insert(skippedTask, i);
+//
+//                    }
+//                }
+//                lastTaskEndTime = currentTime;
+//                notifyDataSetChanged();
+//            }
+            task.setCheckedOff(isChecked);
             // strikethrough the task name if it is checked off
             binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
+
             notifyDataSetChanged();
         });
+
 
         // listen for editing a task
         binding.taskEditButton.setOnClickListener(v -> {
@@ -99,6 +150,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
     public void onStartButtonPressed() {
         routineInProgress = true;
+        lastTaskEndTime = System.currentTimeMillis()/1000;
         notifyDataSetChanged();
     }
 }
