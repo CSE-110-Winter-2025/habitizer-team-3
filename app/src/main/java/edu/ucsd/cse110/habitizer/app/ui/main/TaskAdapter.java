@@ -26,6 +26,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     private boolean routineInProgress = false;
     public long lastTaskEndTime = 0;
     private int lastTaskCheckedSortOrder = -1;
+    private TaskItemListener taskItemListener;
 
 
     public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
@@ -34,16 +35,20 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         this.routineId = routineId;
     }
 
-    public interface OnTaskCheckedChangeListener {
-        void onTaskCheckedChanged(int position, boolean isChecked);
+    public void setTaskItemListener(TaskItemListener listener) {
+        this.taskItemListener = listener;
     }
 
-    private OnTaskCheckedChangeListener listener;
-
-    // Set the listener from MainFragment
-    public void setOnTaskCheckedChangeListener(OnTaskCheckedChangeListener listener) {
-        this.listener = listener;
-    }
+//    public interface OnTaskCheckedChangeListener {
+//        void onTaskCheckedChanged(int position, boolean isChecked);
+//    }
+//
+//    private OnTaskCheckedChangeListener listener;
+//
+//    // Set the listener from MainFragment
+//    public void setOnTaskCheckedChangeListener(OnTaskCheckedChangeListener listener) {
+//        this.listener = listener;
+//    }
 
     @NonNull
     @Override
@@ -83,19 +88,37 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             binding.taskCheckbox.setVisibility(View.GONE);
         }
 
-        // listen for checking off a task
-        binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        binding.getRoot().setOnClickListener(v -> {
+            if (taskItemListener != null) {
+                taskItemListener.onTaskClicked(task);
+            }
+        });
 
+        binding.taskEditButton.setOnClickListener(v -> {
+            if (taskItemListener != null) {
+                taskItemListener.onEditClicked(task);
+            }
+            // Also trigger the existing edit callback.
+            var taskId = Objects.requireNonNull(task.id());
+            var sortOrder = task.sortOrder();
+            var taskTime = task.taskTime();
+            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder, taskTime);
+            onEditClick.accept(params);
+        });
+
+        binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
             if (isChecked) {
                 long currentTime = System.currentTimeMillis() / 1000;
-                Integer taskTimeInSeconds = (int)(currentTime - lastTaskEndTime);
-                Integer taskTimeInMinutes = (int) Math.ceil(taskTimeInSeconds / 60.0);
-                Task updatedTask= task.withTime(taskTimeInMinutes);
+                int taskTimeInSeconds = (int)(currentTime - lastTaskEndTime);
+                int taskTimeInMinutes = (int) Math.ceil(taskTimeInSeconds / 60.0);
+                Task updatedTask = task.withTime(taskTimeInMinutes);
                 updatedTask.setCheckedOff(true);
                 remove(task);
                 insert(updatedTask, position);
                 lastTaskCheckedSortOrder = updatedTask.sortOrder();
                 binding.textTaskTime.setText(String.valueOf(updatedTask.taskTime()) + " m");
+
                 for (int i = 0; i < position; i++) {
                     Task previousTask = getItem(i);
                     if (previousTask != null && !previousTask.isCheckedOff()) {
@@ -103,25 +126,45 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                         skippedTask.setCheckedOff(false);
                         remove(previousTask);
                         insert(skippedTask, i);
-
                     }
                 }
                 lastTaskEndTime = currentTime;
                 notifyDataSetChanged();
+                if (taskItemListener != null) {
+                    taskItemListener.onCheckOffClicked(updatedTask);
+                }
             }
-            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
         });
 
+        // listen for checking off a task
+//        binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//
+//            if (isChecked) {
+//                long currentTime = System.currentTimeMillis() / 1000;
+//                Integer taskTimeInSeconds = (int)(currentTime - lastTaskEndTime);
+//                Integer taskTimeInMinutes = (int) Math.ceil(taskTimeInSeconds / 60.0);
+//                Task updatedTask= task.withTime(taskTimeInMinutes);
+//                updatedTask.setCheckedOff(true);
+//                remove(task);
+//                insert(updatedTask, position);
+//                lastTaskCheckedSortOrder = updatedTask.sortOrder();
+//                binding.textTaskTime.setText(String.valueOf(updatedTask.taskTime()) + " m");
+//                for (int i = 0; i < position; i++) {
+//                    Task previousTask = getItem(i);
+//                    if (previousTask != null && !previousTask.isCheckedOff()) {
+//                        Task skippedTask = previousTask.withTime(null);
+//                        skippedTask.setCheckedOff(false);
+//                        remove(previousTask);
+//                        insert(skippedTask, i);
+//
+//                    }
+//                }
+//                lastTaskEndTime = currentTime;
+//                notifyDataSetChanged();
+//            }
+//            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
+//        });
 
-        // listen for editing a task
-        binding.taskEditButton.setOnClickListener(v -> {
-            var taskId = Objects.requireNonNull(task.id());
-            var sortOrder = task.sortOrder();
-            var taskTime = task.taskTime();
-
-            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder,taskTime);
-            onEditClick.accept(params);
-        });
 
         return binding.getRoot();
     }
