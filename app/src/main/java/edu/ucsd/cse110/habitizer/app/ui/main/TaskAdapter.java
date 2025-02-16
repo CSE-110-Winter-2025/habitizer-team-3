@@ -20,7 +20,7 @@ import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
     Consumer<EditTaskDialogParams> onEditClick;
-    private final int routineId;
+    private int routineId;
     private boolean showEditButton = true;
     private boolean showCheckbox = false;
     private boolean enableCheckbox = false;
@@ -115,4 +115,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         enableCheckbox = false;
         notifyDataSetChanged();
     }
+    public void updateRoutineId(int newRoutineId) {
+        this.routineId = newRoutineId;
+    }
+
 }
