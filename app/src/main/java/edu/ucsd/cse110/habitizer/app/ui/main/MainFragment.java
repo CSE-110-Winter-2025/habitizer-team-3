@@ -77,6 +77,11 @@ public class MainFragment extends Fragment {
                 updatedTask.setCheckedOff(true);
                 adapter.updateTask(task, updatedTask);
             }
+
+            @Override
+            public void onAllTaskCheckedOff() {
+                endRoutine();
+            }
         });
     }
 
@@ -117,13 +122,7 @@ public class MainFragment extends Fragment {
         });
 
         view.endButton.setOnClickListener(v -> {
-            timerViewModel.stopTimer();
-            view.startButton.setVisibility(View.VISIBLE);
-            view.startButton.setText(R.string.routine_ended);
-            view.startButton.setEnabled(false);
-            view.stopButton.setVisibility(View.GONE);
-            view.endButton.setVisibility(View.GONE);
-            view.fastforwardButton.setVisibility(View.GONE);
+            endRoutine();
         });
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
@@ -160,6 +159,15 @@ public class MainFragment extends Fragment {
         return view.getRoot();
     }
 
+    private void endRoutine() {
+        timerViewModel.stopTimer();
+        view.startButton.setVisibility(View.VISIBLE);
+        view.startButton.setText(R.string.routine_ended);
+        view.startButton.setEnabled(false);
+        view.stopButton.setVisibility(View.GONE);
+        view.endButton.setVisibility(View.GONE);
+        view.fastforwardButton.setVisibility(View.GONE);
+    }
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view2, savedInstanceState);
 

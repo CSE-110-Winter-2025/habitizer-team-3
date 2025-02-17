@@ -6,4 +6,5 @@ public interface TaskItemListener {
     void onTaskClicked(Task task);
     void onEditClicked(Task task);
     void onCheckOffClicked(Task task);
+    void onAllTaskCheckedOff();
 }

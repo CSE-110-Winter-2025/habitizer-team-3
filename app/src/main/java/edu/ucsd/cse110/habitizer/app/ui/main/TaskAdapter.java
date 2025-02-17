@@ -102,6 +102,20 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 }
                 lastTaskCheckedSortOrder = task.sortOrder();
                 notifyDataSetChanged();
+
+                // Check if all tasks are checked off
+                boolean allChecked = true;
+                for (int i = 0; i < getCount(); i++) {
+                    Task t = getItem(i);
+                    if (t != null && !t.isCheckedOff()) {
+                        allChecked = false;
+                        break;
+                    }
+                }
+
+                if (allChecked && taskItemListener != null) {
+                    taskItemListener.onAllTaskCheckedOff();
+                }
             }
         });
 
