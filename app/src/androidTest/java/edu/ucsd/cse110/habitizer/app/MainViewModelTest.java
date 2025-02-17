@@ -80,7 +80,7 @@ public class MainViewModelTest {
     @Test
     public void testAddTaskToRoutineCallsRepository() {
         int routineId = 1;
-        Task newTask = new Task(null, "New Task", 0);
+        Task newTask = new Task(null, "New Task", 0, null);
 
         viewModel.addTaskToRoutine(routineId, newTask);
 
@@ -92,7 +92,7 @@ public class MainViewModelTest {
 
     @Test
     public void testEditTaskCallsRepository() {
-        EditTaskRequest request = new EditTaskRequest(1, 2, 1, "Updated Task");
+        EditTaskRequest request = new EditTaskRequest(1, 2, 1, "Updated Task", null);
 
         viewModel.editTask(request);
 

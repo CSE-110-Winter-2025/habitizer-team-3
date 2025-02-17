@@ -25,7 +25,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     private final int routineId;
     private boolean routineInProgress = false;
     public long lastTaskEndTime = 0;
-    private int lastTaskCheckedSortOrder = -1;
+    public int lastTaskCheckedSortOrder = -1;
     private TaskItemListener taskItemListener;
 
 
