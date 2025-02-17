@@ -54,13 +54,13 @@ public class InMemoryDataSource {
 
     public final static List<Routine> DEFAULT_ROUTINES = List.of(
             new Routine(0, "Morning", List.of(
-                    new Task(0, "Shower", 0),
-                    new Task(1, "Brush Teeth", 1),
-                    new Task(2, "Dress", 2),
-                    new Task(3, "Make Coffee", 3),
-                    new Task(4, "Make Lunch", 4),
-                    new Task(5, "Dinner Prep", 5),
-                    new Task(6, "Pack Bag", 6)
+                    new Task(0, "Shower", 0, null),
+                    new Task(1, "Brush Teeth", 1, null),
+                    new Task(2, "Dress", 2, null),
+                    new Task(3, "Make Coffee", 3, null),
+                    new Task(4, "Make Lunch", 4, null),
+                    new Task(5, "Dinner Prep", 5, null),
+                    new Task(6, "Pack Bag", 6, null)
             ), 30)
     );
 

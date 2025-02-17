@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -16,19 +17,25 @@ import java.util.function.Consumer;
 
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
     Consumer<EditTaskDialogParams> onEditClick;
     private final int routineId;
-    private boolean showEditButton = true;
-    private boolean showCheckbox = false;
-    private boolean enableCheckbox = false;
+    public long lastTaskEndTime = 0;
+    public int lastTaskCheckedSortOrder = -1;
+    private TaskItemListener taskItemListener;
+    private RoutineState routineState = RoutineState.BEFORE;
 
     public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
         super(context, 0, new ArrayList<>(tasks));
         this.onEditClick = onEditClick;
         this.routineId = routineId;
+    }
+
+    public void setTaskItemListener(TaskItemListener listener) {
+        this.taskItemListener = listener;
     }
 
     @NonNull
@@ -52,39 +59,82 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // populate the view with routine's data.
         binding.taskName.setText(task.name());
 
-        if (showEditButton) {
-            binding.taskEditButton.setVisibility(View.VISIBLE);
-        } else {
-            binding.taskEditButton.setVisibility(View.GONE);
+        //Check if the task is before or after the checked-off task
+        if (task.sortOrder() < lastTaskCheckedSortOrder && !task.isCheckedOff()) {
+            binding.textTaskTime.setText("-");
+        } else if (task.taskTime() == -1) {
+            binding.textTaskTime.setText(" ");
+        } else if (task.isCheckedOff()){
+            binding.textTaskTime.setText(task.taskTime() + "m");
         }
 
-        if (showCheckbox) {
-            binding.taskCheckbox.setVisibility(View.VISIBLE);
-        } else {
-            binding.taskCheckbox.setVisibility(View.GONE);
+        switch(routineState) {
+            case BEFORE:
+                binding.taskCheckbox.setVisibility(View.GONE);
+                break;
+            case DURING:
+                binding.taskCheckbox.setVisibility(View.VISIBLE);
+                binding.taskEditButton.setVisibility(View.GONE);
+                binding.taskCheckbox.setEnabled(!task.isCheckedOff());
+                break;
+            case AFTER:
+                binding.taskCheckbox.setEnabled(false);
+                break;
         }
 
-        binding.taskCheckbox.setEnabled(enableCheckbox);
-
-        // listen for checking off a task
-        binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            task.setCheckedOff(isChecked);
-
-            // strikethrough the task name if it is checked off
-            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
-            notifyDataSetChanged();
+        binding.getRoot().setOnClickListener(v -> {
+            if (taskItemListener != null) {
+                taskItemListener.onTaskClicked(task);
+            }
         });
 
-        // listen for editing a task
         binding.taskEditButton.setOnClickListener(v -> {
+            if (taskItemListener != null) {
+                taskItemListener.onEditClicked(task);
+            }
             var taskId = Objects.requireNonNull(task.id());
             var sortOrder = task.sortOrder();
-
-            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder);
+            var taskTime = task.taskTime();
+            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder, taskTime);
             onEditClick.accept(params);
         });
 
+        binding.taskCheckbox.setOnCheckedChangeListener(null);
+        binding.taskCheckbox.setChecked(task.isCheckedOff());
+        binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
+            if (isChecked) {
+                if (taskItemListener != null) {
+                    taskItemListener.onCheckOffClicked(task);
+                }
+                lastTaskCheckedSortOrder = task.sortOrder();
+                notifyDataSetChanged();
+
+                // Check if all tasks are checked off
+                boolean allChecked = true;
+                for (int i = 0; i < getCount(); i++) {
+                    Task t = getItem(i);
+                    if (t != null && !t.isCheckedOff()) {
+                        allChecked = false;
+                        break;
+                    }
+                }
+
+                if (allChecked && taskItemListener != null) {
+                    taskItemListener.onAllTaskCheckedOff();
+                }
+            } else {
+                buttonView.setChecked(true);
+            }
+        });
+
         return binding.getRoot();
+    }
+    public void updateTask(Task prevTask, Task newTask) {
+        int index = getPosition(prevTask);
+        remove(prevTask);
+        insert(newTask, index);
+        notifyDataSetChanged();
     }
 
     // good practice
@@ -105,14 +155,13 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     }
 
     public void onStartButtonPressed() {
-        showCheckbox = true;
-        showEditButton = false;
-        enableCheckbox = true;
+        routineState = RoutineState.DURING;
+        lastTaskEndTime = System.currentTimeMillis()/1000;
         notifyDataSetChanged();
     }
 
-    public void onEndButtonPressed() {
-        enableCheckbox = false;
+    public void onEndRoutine() {
+        routineState = RoutineState.AFTER;
         notifyDataSetChanged();
     }
 }

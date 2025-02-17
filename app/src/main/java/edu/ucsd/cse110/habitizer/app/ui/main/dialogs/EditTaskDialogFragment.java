@@ -21,9 +21,11 @@ public class EditTaskDialogFragment extends DialogFragment {
     private static final String ARG_ROUTINE_ID = "routine_id";
     private static final String ARG_TASK_ID = "task_id";
     private static final String ARG_TASK_SORT_ORDER = "task_sort_order";
+    private static final String ARG_TASK_TIME = "task_time";
     private int routineId;
     private int taskId;
     private int taskSortOrder;
+    private Integer taskTime;
 
     EditTaskDialogFragment() {
         // Required empty public constructor
@@ -35,6 +37,7 @@ public class EditTaskDialogFragment extends DialogFragment {
         args.putInt(ARG_ROUTINE_ID, params.routineId());
         args.putInt(ARG_TASK_ID, params.taskId());
         args.putInt(ARG_TASK_SORT_ORDER, params.sortOrder());
+        args.putSerializable(ARG_TASK_TIME, params.taskTime());
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,6 +49,7 @@ public class EditTaskDialogFragment extends DialogFragment {
         this.routineId = requireArguments().getInt(ARG_ROUTINE_ID);
         this.taskId = requireArguments().getInt(ARG_TASK_ID);
         this.taskSortOrder = requireArguments().getInt(ARG_TASK_SORT_ORDER);
+        this.taskTime = (Integer) requireArguments().getInt(ARG_TASK_TIME);
 
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -69,7 +73,7 @@ public class EditTaskDialogFragment extends DialogFragment {
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var taskName = view.taskNameInput.getText().toString().trim();
-        EditTaskRequest req = new EditTaskRequest(routineId, taskId, taskSortOrder, taskName);
+        EditTaskRequest req = new EditTaskRequest(routineId, taskId, taskSortOrder, taskName, taskTime);
         activityModel.editTask(req);
 
         dialog.dismiss();

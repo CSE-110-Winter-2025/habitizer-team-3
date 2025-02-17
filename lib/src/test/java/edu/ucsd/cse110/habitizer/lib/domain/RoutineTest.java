@@ -10,8 +10,8 @@ public class RoutineTest {
     @Test
     public void testConstructorAndGetters() {
         List<Task> tasks = List.of(
-                new Task(0, "Wake up", 0),
-                new Task(1, "Brush teeth", 1)
+                new Task(0, "Wake up", 0, null),
+                new Task(1, "Brush teeth", 1, null)
         );
         Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
@@ -24,7 +24,7 @@ public class RoutineTest {
     @Test
     public void testWithId() {
         List<Task> tasks = List.of(
-                new Task(0, "Wake up", 0)
+                new Task(0, "Wake up", 0, null)
         );
         Routine original = new Routine(null, "Unnamed", tasks, 30);
 
@@ -41,11 +41,11 @@ public class RoutineTest {
     @Test
     public void testEqualsAndHashCode() {
         List<Task> tasks1 = List.of(
-                new Task(1, "Wake up", 0),
-                new Task(2, "Brush teeth", 1)
+                new Task(1, "Wake up", 0, null),
+                new Task(2, "Brush teeth", 1, null)
         );
         List<Task> tasks2 = List.of(
-                new Task(3, "Shower", 0)
+                new Task(3, "Shower", 0, null)
         );
 
         Routine r1 = new Routine(10, "Routine A", tasks1, 30);

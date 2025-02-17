@@ -55,7 +55,7 @@ public class RoutineRepository {
         Routine routine = Objects.requireNonNull(find(req.routineId()).getValue());
 
         // Make a new task object with the new name
-        var newTask = new Task(req.taskId(), req.taskName(), req.sortOrder());
+        var newTask = new Task(req.taskId(), req.taskName(), req.sortOrder(), req.taskTime());
 
         // Create a new list with the new task in the correct position
         var taskList = new ArrayList<>(List.copyOf(routine.tasks()));

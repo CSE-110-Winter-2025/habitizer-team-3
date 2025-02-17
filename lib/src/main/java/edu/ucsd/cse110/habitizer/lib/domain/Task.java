@@ -12,10 +12,14 @@ public class Task implements Serializable {
     private final @NonNull Integer sortOrder;
     private boolean checkedOff = false;
 
-    public Task(@Nullable Integer id, @NonNull String name, @NonNull Integer sortOrder) {
+
+    private final @Nullable Integer taskTime;
+
+    public Task(@Nullable Integer id, @NonNull String name, @NonNull Integer sortOrder, @Nullable Integer taskTime) {
         this.id = id;
         this.name = name;
         this.sortOrder = sortOrder;
+        this.taskTime = taskTime != null ? taskTime : -1;
     }
 
     public @Nullable Integer id() { return id; }
@@ -24,6 +28,8 @@ public class Task implements Serializable {
 
     public int sortOrder() { return sortOrder; }
 
+    public @Nullable Integer taskTime() { return taskTime;}
+
     public boolean isCheckedOff() {
         return checkedOff;
     }
@@ -31,6 +37,11 @@ public class Task implements Serializable {
     public void setCheckedOff(boolean checkedOff) {
         this.checkedOff = checkedOff;
     }
+
+    public Task withTime(Integer taskTime) {
+        return new Task(this.id, this.name, this.sortOrder, taskTime);
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -46,6 +57,6 @@ public class Task implements Serializable {
     }
 
     public Task withIdAndSortOrder(int id, int sortOrder) {
-        return new Task(id, this.name, sortOrder);
+        return new Task(id, this.name, sortOrder, taskTime);
     }
 }
