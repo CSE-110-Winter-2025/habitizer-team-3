@@ -72,12 +72,7 @@ public class MainFragment extends Fragment {
             public void onCheckOffClicked(Task task) {
                 int durationInSeconds = timerViewModel.checkOffTask();
                 int durationInMinutes;
-                if (durationInSeconds < 60) {
-                    durationInMinutes = 0;
-                } else {
                     durationInMinutes = (int) Math.ceil(durationInSeconds / 60.0);
-                }
-
                 Task updatedTask = task.withTime(durationInMinutes);
                 updatedTask.setCheckedOff(true);
                 adapter.updateTask(task, updatedTask);

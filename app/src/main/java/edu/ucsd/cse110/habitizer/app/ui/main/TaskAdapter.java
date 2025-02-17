@@ -87,7 +87,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             if (taskItemListener != null) {
                 taskItemListener.onEditClicked(task);
             }
-            // Also trigger the existing edit callback.
             var taskId = Objects.requireNonNull(task.id());
             var sortOrder = task.sortOrder();
             var taskTime = task.taskTime();
@@ -101,6 +100,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 if (taskItemListener != null) {
                     taskItemListener.onCheckOffClicked(task);
                 }
+                lastTaskCheckedSortOrder = task.sortOrder();
+                notifyDataSetChanged();
             }
         });
 
