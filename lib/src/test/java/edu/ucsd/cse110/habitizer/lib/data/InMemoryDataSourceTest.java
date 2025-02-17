@@ -104,13 +104,19 @@ public class InMemoryDataSourceTest {
         InMemoryDataSource dataSource = InMemoryDataSource.fromDefault();
         List<Routine> routines = dataSource.getRoutines();
 
-        assertEquals("should have one default routine", 1, routines.size());
+        assertEquals("should have two default routines", 2, routines.size());
 
-        Routine defaultRoutine = routines.get(0);
-        assertEquals("default routine should have id 0", (Integer) 0, defaultRoutine.id());
-        assertEquals("default routine should be named Morning", "Morning", defaultRoutine.name());
-        assertEquals("default routine should have 6 tasks", 7, defaultRoutine.tasks().size());
+        Routine morningRoutine = routines.get(0);
+        assertEquals("morning routine should have id 0", (Integer) 0, morningRoutine.id());
+        assertEquals("morning routine should be named Morning", "Morning", morningRoutine.name());
+        assertEquals("morning routine should have 7 tasks", 7, morningRoutine.tasks().size());
+
+        Routine eveningRoutine = routines.get(1);
+        assertEquals("evening routine should have id 1", (Integer) 1, eveningRoutine.id());
+        assertEquals("evening routine should be named Evening", "Evening", eveningRoutine.name());
+        assertEquals("evening routine should have 7 tasks", 7, eveningRoutine.tasks().size());
     }
+
 
     @Test
     public void testSubjectNotification() {
