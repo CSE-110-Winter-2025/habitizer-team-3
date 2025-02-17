@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -110,6 +111,16 @@ public class MainFragment extends Fragment {
             view.endButton.setVisibility(View.VISIBLE);
             view.fastforwardButton.setVisibility(View.VISIBLE);
             view.addTaskButton.setVisibility(View.GONE);
+
+            for (int i = 0; i < view.taskList.getChildCount(); i++) {
+                View taskItemView = view.taskList.getChildAt(i);
+                TextView leftBraccket = taskItemView.findViewById(R.id.task_time_left_bracket);
+                TextView rightBracket = taskItemView.findViewById(R.id.task_time_right_bracket);
+
+                // Make the brackets visible
+                leftBraccket.setVisibility(View.VISIBLE);
+                rightBracket.setVisibility(View.VISIBLE);
+            }
 
             adapter.onStartButtonPressed();
         });
