@@ -57,12 +57,12 @@ private int lastTaskEndTime = 0;
     public int checkOffTask() {
         Integer current = elapsedSeconds.getValue();
         if (current == null) {
-            current = 1;
+            current = 0;
         }
         int taskDuration = current - lastTaskEndTime;
         taskTime.postValue(taskDuration);
         lastTaskEndTime = current;
-        return taskDuration;
+        return Math.max(taskDuration, 1);
 
     }
     public void resetPrevTaskTime(int currentElapsed) {
