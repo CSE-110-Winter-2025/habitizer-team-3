@@ -57,7 +57,7 @@ private int lastTaskEndTime = 0;
     public int checkOffTask() {
         Integer current = elapsedSeconds.getValue();
         if (current == null) {
-            current = 0;
+            current = 1;
         }
         int taskDuration = current - lastTaskEndTime;
         taskTime.postValue(taskDuration);
