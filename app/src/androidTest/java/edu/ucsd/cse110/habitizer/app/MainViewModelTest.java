@@ -116,12 +116,12 @@ public class MainViewModelTest {
     @Test
     public void testSelectedRoutineTasks() {
         List<Task> morningTasks = Arrays.asList(
-                new Task(0, "Shower", 0),
-                new Task(1, "Brush Teeth", 1)
+                new Task(0, "Shower", 0, null),
+                new Task(1, "Brush Teeth", 1, null)
         );
         List<Task> eveningTasks = Arrays.asList(
-                new Task(0, "Finish Homework", 0),
-                new Task(1, "Read", 1)
+                new Task(0, "Finish Homework", 0, null),
+                new Task(1, "Read", 1, null)
         );
 
         Routine morningRoutine = new Routine(0, "Morning Routine", morningTasks, 20);
