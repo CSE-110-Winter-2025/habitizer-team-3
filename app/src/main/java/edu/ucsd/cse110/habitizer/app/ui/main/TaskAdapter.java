@@ -12,27 +12,19 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
-import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
-import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
-    Consumer<EditTaskDialogParams> onEditClick;
-    private int routineId;
     public long lastTaskEndTime = 0;
     public int lastTaskCheckedSortOrder = -1;
     private TaskItemListener taskItemListener;
     private RoutineState routineState = RoutineState.BEFORE;
 
-    public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
+    public TaskAdapter(Context context, List<Task> tasks) {
         super(context, 0, new ArrayList<>(tasks));
-        this.onEditClick = onEditClick;
-        this.routineId = routineId;
     }
 
     public void setTaskItemListener(TaskItemListener listener) {
@@ -83,21 +75,10 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 break;
         }
 
-        binding.getRoot().setOnClickListener(v -> {
-            if (taskItemListener != null) {
-                taskItemListener.onTaskClicked(task);
-            }
-        });
-
         binding.taskEditButton.setOnClickListener(v -> {
             if (taskItemListener != null) {
                 taskItemListener.onEditClicked(task);
             }
-            var taskId = Objects.requireNonNull(task.id());
-            var sortOrder = task.sortOrder();
-            var taskTime = task.taskTime();
-            EditTaskDialogParams params = new EditTaskDialogParams(routineId, taskId, sortOrder, taskTime);
-            onEditClick.accept(params);
         });
 
         binding.taskCheckbox.setOnCheckedChangeListener(null);
@@ -112,16 +93,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 notifyDataSetChanged();
 
                 // Check if all tasks are checked off
-                boolean allChecked = true;
-                for (int i = 0; i < getCount(); i++) {
-                    Task t = getItem(i);
-                    if (t != null && !t.isCheckedOff()) {
-                        allChecked = false;
-                        break;
-                    }
-                }
-
-                if (allChecked && taskItemListener != null) {
+                if (allTasksChecked() && taskItemListener != null) {
                     taskItemListener.onAllTaskCheckedOff();
                 }
             } else {
@@ -131,6 +103,17 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         return binding.getRoot();
     }
+
+    private boolean allTasksChecked() {
+        for (int i = 0; i < getCount(); i++) {
+            Task t = getItem(i);
+            if (t != null && !t.isCheckedOff()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void updateTask(Task prevTask, Task newTask) {
         int index = getPosition(prevTask);
         remove(prevTask);
@@ -165,8 +148,4 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         routineState = RoutineState.AFTER;
         notifyDataSetChanged();
     }
-    public void updateRoutineId(int newRoutineId) {
-        this.routineId = newRoutineId;
-    }
-
 }

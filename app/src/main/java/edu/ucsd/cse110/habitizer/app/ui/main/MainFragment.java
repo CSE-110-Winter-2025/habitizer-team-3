@@ -16,11 +16,10 @@ import java.util.List;
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
-import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
-import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
+import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 
@@ -42,21 +41,17 @@ public class MainFragment extends Fragment {
         return fragment;
     }
     private void updateSwappedRoutine() {
-        List<Routine> routines = activityModel.getAllRoutines().getValue();
-        if (routines == null || routines.size() < 2) return;
+        Routine activeRoutine = getActiveRoutine();
 
-        Routine selectedRoutine = showMorningRoutine ? routines.get(0) : routines.get(1);
-
-        view.routineName.setText(selectedRoutine.name());
-        view.time.setText(String.valueOf(selectedRoutine.time()));
+        view.routineName.setText(activeRoutine.name());
+        view.time.setText(String.valueOf(activeRoutine.time()));
 
         adapter.clear();
-        adapter.addAll(selectedRoutine.tasks());
-        Integer routineId = selectedRoutine.id();
+        adapter.addAll(activeRoutine.tasks());
+        Integer routineId = activeRoutine.id();
         if (routineId == null) {
             routineId = 0;
         }
-        adapter.updateRoutineId(routineId);
         adapter.notifyDataSetChanged();
     }
 
@@ -73,19 +68,17 @@ public class MainFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         // Initialize the Adapter (empty for now)
-        this.adapter = new TaskAdapter(requireContext(), List.of(), 0, editTaskDialogParams -> {
-            var dialogFragment = EditTaskDialogFragment.newInstance(editTaskDialogParams);
-            dialogFragment.show(getParentFragmentManager(), "EditTaskDialogFragment");
-        });
-
+        this.adapter = new TaskAdapter(requireContext(), List.of());
 
         adapter.setTaskItemListener(new TaskItemListener() {
             @Override
-            public void onTaskClicked(Task task) {
-            }
-
-            @Override
             public void onEditClicked(Task task) {
+                var activeRoutineId = getActiveRoutine().id();
+                var taskId = task.id();
+
+                assert activeRoutineId != null && taskId != null;
+                var params = new EditTaskDialogParams(activeRoutineId, taskId, task.sortOrder(), task.taskTime());
+                openEditTaskDialog(params);
             }
 
             @Override
@@ -168,7 +161,7 @@ public class MainFragment extends Fragment {
                     int newTime = Integer.parseInt(newTimeStr);
                     var routines = activityModel.getAllRoutines().getValue();
                     if (routines == null) return;
-                    var routine = routines.get(0);
+                    var routine = getActiveRoutine();
 
                     var updateRoutine = routine.withTime(newTime);
 
@@ -180,8 +173,7 @@ public class MainFragment extends Fragment {
 
         // Open the add task dialog upon clicking the add task button
         view.addTaskButton.setOnClickListener(w -> {
-            var dialogFragment = AddTaskDialogFragment.newInstance();
-            dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
+            openAddTaskDialog();
         });
 
         view.swapButton.setOnClickListener(v -> {
@@ -203,6 +195,7 @@ public class MainFragment extends Fragment {
         view.fastforwardButton.setVisibility(View.GONE);
         adapter.onEndRoutine();
     }
+
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view2, savedInstanceState);
 
@@ -217,5 +210,22 @@ public class MainFragment extends Fragment {
         super.onDestroy();
         // If you want to stop the timer when the Fragment is destroyed
         // timerViewModel.stopTimer();
+    }
+
+    private Routine getActiveRoutine() {
+        List<Routine> routines = activityModel.getAllRoutines().getValue();
+        assert routines != null && routines.size() >= 2;
+
+        return showMorningRoutine ? routines.get(0) : routines.get(1);
+    }
+
+    private void openEditTaskDialog(EditTaskDialogParams params) {
+        var dialogFragment = EditTaskDialogFragment.newInstance(params);
+        dialogFragment.show(getParentFragmentManager(), "EditTaskDialogFragment");
+    }
+
+    private void openAddTaskDialog() {
+        var dialogFragment = AddTaskDialogFragment.newInstance();
+        dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
     }
 }

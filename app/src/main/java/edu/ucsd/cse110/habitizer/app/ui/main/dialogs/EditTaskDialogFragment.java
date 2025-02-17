@@ -49,7 +49,7 @@ public class EditTaskDialogFragment extends DialogFragment {
         this.routineId = requireArguments().getInt(ARG_ROUTINE_ID);
         this.taskId = requireArguments().getInt(ARG_TASK_ID);
         this.taskSortOrder = requireArguments().getInt(ARG_TASK_SORT_ORDER);
-        this.taskTime = (Integer) requireArguments().getInt(ARG_TASK_TIME);
+        this.taskTime = requireArguments().getInt(ARG_TASK_TIME);
 
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
