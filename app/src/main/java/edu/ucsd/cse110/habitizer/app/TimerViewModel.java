@@ -15,10 +15,6 @@ public class TimerViewModel extends ViewModel {
 
     private final MutableLiveData<Integer> taskTime = new MutableLiveData<>(0);
 
-    public LiveData<Integer> getTaskTime() {
-        return taskTime;
-    }
-
     private Timer timer;
 private int lastTaskEndTime = 0;
 

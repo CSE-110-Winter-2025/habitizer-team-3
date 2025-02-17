@@ -4,11 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;

@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
-import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
