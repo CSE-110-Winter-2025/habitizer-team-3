@@ -63,9 +63,11 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         //Check if the task is before or after the checked-off task
         if (task.sortOrder() < lastTaskCheckedSortOrder && !task.isCheckedOff()) {
             binding.textTaskTime.setText("-");
+            binding.taskCheckbox.setEnabled(false);
         } else if (task.taskTime() == -1) {
             binding.textTaskTime.setText(" ");
-        } else {
+        } else if (task.isCheckedOff()){
+            binding.taskCheckbox.setEnabled(false);
             binding.textTaskTime.setText(task.taskTime() + "m");
         }
 
@@ -94,9 +96,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             onEditClick.accept(params);
         });
 
-        binding.taskCheckbox.setOnCheckedChangeListener(null);
-        binding.taskCheckbox.setChecked(task.isCheckedOff());
-        binding.taskCheckbox.setEnabled(!task.isCheckedOff());
+
         binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
             if (isChecked) {
@@ -120,7 +120,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                     taskItemListener.onAllTaskCheckedOff();
                 }
             } else {
-                buttonView.setChecked(false);
+                buttonView.setChecked(true);
             }
         });
 
