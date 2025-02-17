@@ -18,11 +18,12 @@ import java.util.function.Consumer;
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
     Consumer<EditTaskDialogParams> onEditClick;
-    private final int routineId;
+    private int routineId;
     public long lastTaskEndTime = 0;
     public int lastTaskCheckedSortOrder = -1;
     private TaskItemListener taskItemListener;
@@ -164,4 +165,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         routineState = RoutineState.AFTER;
         notifyDataSetChanged();
     }
+    public void updateRoutineId(int newRoutineId) {
+        this.routineId = newRoutineId;
+    }
+
 }

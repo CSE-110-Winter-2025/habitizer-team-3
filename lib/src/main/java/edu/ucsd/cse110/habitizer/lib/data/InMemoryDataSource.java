@@ -61,7 +61,16 @@ public class InMemoryDataSource {
                     new Task(4, "Make Lunch", 4, null),
                     new Task(5, "Dinner Prep", 5, null),
                     new Task(6, "Pack Bag", 6, null)
-            ), 30)
+            ), 30),
+            new Routine(1, "Evening", List.of(
+                    new Task(0, "Dinner", 0, null),
+                    new Task(1, "Wash Dishes", 1, null),
+                    new Task(2, "Finish Homework", 2, null),
+                    new Task(3, "Review Lecture Notes", 3, null),
+                    new Task(4, "Plan Next Day", 4, null),
+                    new Task(5, "Watch Show", 5, null),
+                    new Task(6, "Read", 6, null)
+            ), 45)
     );
 
     public static InMemoryDataSource fromDefault() {

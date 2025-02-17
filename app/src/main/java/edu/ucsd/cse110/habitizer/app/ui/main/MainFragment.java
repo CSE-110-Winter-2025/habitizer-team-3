@@ -22,12 +22,14 @@ import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentMainBinding view;
     private TaskAdapter adapter;
     private TimerViewModel timerViewModel;
+    private boolean showMorningRoutine = true;
 
     public MainFragment() {
 
@@ -38,6 +40,24 @@ public class MainFragment extends Fragment {
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
+    }
+    private void updateSwappedRoutine() {
+        List<Routine> routines = activityModel.getAllRoutines().getValue();
+        if (routines == null || routines.size() < 2) return;
+
+        Routine selectedRoutine = showMorningRoutine ? routines.get(0) : routines.get(1);
+
+        view.routineName.setText(selectedRoutine.name());
+        view.time.setText(String.valueOf(selectedRoutine.time()));
+
+        adapter.clear();
+        adapter.addAll(selectedRoutine.tasks());
+        Integer routineId = selectedRoutine.id();
+        if (routineId == null) {
+            routineId = 0;
+        }
+        adapter.updateRoutineId(routineId);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -110,6 +130,7 @@ public class MainFragment extends Fragment {
             view.endButton.setVisibility(View.VISIBLE);
             view.fastforwardButton.setVisibility(View.VISIBLE);
             view.addTaskButton.setVisibility(View.GONE);
+            view.swapButton.setEnabled(false);
 
             for (int i = 0; i < view.taskList.getChildCount(); i++) {
                 View taskItemView = view.taskList.getChildAt(i);
@@ -163,6 +184,12 @@ public class MainFragment extends Fragment {
             dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
         });
 
+        view.swapButton.setOnClickListener(v -> {
+            showMorningRoutine = !showMorningRoutine;
+            updateSwappedRoutine();
+        });
+
+
         return view.getRoot();
     }
 
@@ -179,26 +206,9 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view2, savedInstanceState);
 
-        // 4) Observe routines AFTER the view is ready, so we can safely update UI
         activityModel.getAllRoutines().observe(routines -> {
             if (routines == null) return;
-
-            // TODO: assign the routine id dynamically
-            var morningRoutine = routines.get(0);
-
-            // Show the routine name in a TextView
-            view.routineName.setText(morningRoutine.name());
-            view.time.setText(morningRoutine.time().toString());
-
-            // If you have a time field on the Routine, display it in the EditText
-            // e.g. binding.time.setText(String.valueOf(morningRoutine.time()));
-
-            // Show tasks in the adapter
-            var tasks = morningRoutine.tasks();
-
-            adapter.clear();
-            adapter.addAll(tasks);
-            adapter.notifyDataSetChanged();
+            updateSwappedRoutine();
         });
 
     }
