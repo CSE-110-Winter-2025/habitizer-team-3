@@ -3,6 +3,8 @@ package edu.ucsd.cse110.habitizer.app;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import androidx.annotation.NonNull;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -159,7 +161,7 @@ public class MainViewModelTest {
         }
 
         @Override
-        public void addTaskToRoutine(int routineId, Task task) {
+        public void addTaskToRoutine(int routineId, @NonNull Task task) {
             this.lastAddedTaskRoutineId = routineId;
             this.lastAddedTask = task;
         }
