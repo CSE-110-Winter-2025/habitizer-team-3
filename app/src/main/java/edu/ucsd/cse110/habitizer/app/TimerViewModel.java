@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
+
 public class TimerViewModel extends ViewModel {
     // Current elapsed time in seconds
     private final MutableLiveData<Integer> elapsedSeconds = new MutableLiveData<>(0);
@@ -67,5 +69,15 @@ private int lastTaskEndTime = 0;
     }
     public void resetPrevTaskTime(int currentElapsed) {
         lastTaskEndTime = currentElapsed;
+    }
+
+    public Task checkOffTaskAndReturnUpdated(Task task) {
+        int durationInSeconds = checkOffTask();  // Existing method to get task duration
+        int durationInMinutes = (int) Math.ceil(durationInSeconds / 60.0);
+
+        Task updatedTask = task.withTime(durationInMinutes);
+        updatedTask.setCheckedOff(true);
+
+        return updatedTask;
     }
 }

@@ -70,10 +70,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onCheckOffClicked(Task task) {
-                int durationInSeconds = timerViewModel.checkOffTask();
-                int durationInMinutes;
-                    durationInMinutes = (int) Math.ceil(durationInSeconds / 60.0);
-                Task updatedTask = task.withTime(durationInMinutes);
+                Task updatedTask = timerViewModel.checkOffTaskAndReturnUpdated(task);
                 updatedTask.setCheckedOff(true);
                 adapter.updateTask(task, updatedTask);
             }
