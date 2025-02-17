@@ -65,4 +65,7 @@ private int lastTaskEndTime = 0;
         return taskDuration;
 
     }
+    public void resetPrevTaskTime(int currentElapsed) {
+        lastTaskEndTime = currentElapsed;
+    }
 }

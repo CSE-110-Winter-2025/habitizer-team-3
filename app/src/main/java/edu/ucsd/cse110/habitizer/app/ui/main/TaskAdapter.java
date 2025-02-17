@@ -98,29 +98,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
             if (isChecked) {
-                long currentTime = System.currentTimeMillis() / 1000;
-                int taskTimeInSeconds = (int)(currentTime - lastTaskEndTime);
-                int taskTimeInMinutes = (int) Math.ceil(taskTimeInSeconds / 60.0);
-                Task updatedTask = task.withTime(taskTimeInMinutes);
-                updatedTask.setCheckedOff(true);
-                remove(task);
-                insert(updatedTask, position);
-                lastTaskCheckedSortOrder = updatedTask.sortOrder();
-                binding.textTaskTime.setText(String.valueOf(updatedTask.taskTime()) + " m");
-
-                for (int i = 0; i < position; i++) {
-                    Task previousTask = getItem(i);
-                    if (previousTask != null && !previousTask.isCheckedOff()) {
-                        Task skippedTask = previousTask.withTime(null);
-                        skippedTask.setCheckedOff(false);
-                        remove(previousTask);
-                        insert(skippedTask, i);
-                    }
-                }
-                lastTaskEndTime = currentTime;
-                notifyDataSetChanged();
                 if (taskItemListener != null) {
-                    taskItemListener.onCheckOffClicked(updatedTask);
+                    taskItemListener.onCheckOffClicked(task);
                 }
             }
         });

@@ -71,7 +71,13 @@ public class MainFragment extends Fragment {
             @Override
             public void onCheckOffClicked(Task task) {
                 int durationInSeconds = timerViewModel.checkOffTask();
-                int durationInMinutes = (int) Math.ceil(durationInSeconds / 60.0);
+                int durationInMinutes;
+                if (durationInSeconds < 60) {
+                    durationInMinutes = 0;
+                } else {
+                    durationInMinutes = (int) Math.ceil(durationInSeconds / 60.0);
+                }
+
                 Task updatedTask = task.withTime(durationInMinutes);
                 updatedTask.setCheckedOff(true);
                 adapter.updateTask(task, updatedTask);
@@ -98,6 +104,10 @@ public class MainFragment extends Fragment {
 
         view.startButton.setOnClickListener(v -> {
             timerViewModel.startTimer();
+            int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
+                    timerViewModel.getElapsedSeconds().getValue() : 0;
+            timerViewModel.resetPrevTaskTime(currentElapsed);
+
             view.startButton.setVisibility(View.GONE);
             view.stopButton.setVisibility(View.VISIBLE);
             view.endButton.setVisibility(View.VISIBLE);
