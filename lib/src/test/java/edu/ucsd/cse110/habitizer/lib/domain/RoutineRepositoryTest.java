@@ -35,8 +35,8 @@ public class RoutineRepositoryTest {
     @Test
     public void testSaveAndFind() {
         List<Task> tasks = List.of(
-                new Task(1, "Wake up", 0),
-                new Task(2, "Brush teeth", 1)
+                new Task(1, "Wake up", 0, null),
+                new Task(2, "Brush teeth", 1,null)
         );
         Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
@@ -50,12 +50,12 @@ public class RoutineRepositoryTest {
     @Test
     public void testFindAll() {
         List<Task> morningTasks = List.of(
-                new Task(1, "Wake up", 0),
-                new Task(2, "Brush teeth", 1)
+                new Task(1, "Wake up", 0, null),
+                new Task(2, "Brush teeth", 1, null)
         );
         List<Task> eveningTasks = List.of(
-                new Task(3, "Shower", 0),
-                new Task(4, "Sleep", 1)
+                new Task(3, "Shower", 0, null),
+                new Task(4, "Sleep", 1, null)
         );
 
         Routine routine1 = new Routine(10, "Morning Routine", morningTasks, 30);
@@ -75,11 +75,11 @@ public class RoutineRepositoryTest {
     @Test
     public void testUpdateExisting() {
         List<Task> originalTasks = List.of(
-                new Task(1, "Wake up", 0)
+                new Task(1, "Wake up", 0, null)
         );
         List<Task> updatedTasks = List.of(
-                new Task(1, "Wake up", 0),
-                new Task(2, "Exercise", 1)
+                new Task(1, "Wake up", 0, null),
+                new Task(2, "Exercise", 1, null)
         );
 
         Routine original = new Routine(42, "Morning Routine", originalTasks, 30);
@@ -96,7 +96,7 @@ public class RoutineRepositoryTest {
     @Test
     public void testObserverNotification() {
         List<Task> tasks = List.of(
-                new Task(1, "Wake up", 0)
+                new Task(1, "Wake up", 0, null)
         );
         Routine routine = new Routine(42, "Morning Routine", tasks, 30);
         repository.save(routine);
@@ -106,8 +106,8 @@ public class RoutineRepositoryTest {
         routineSubject.observe(r -> wasNotified[0] = true);
 
         List<Task> newTasks = List.of(
-                new Task(1, "Wake up", 0),
-                new Task(2, "Exercise", 1)
+                new Task(1, "Wake up", 0, null),
+                new Task(2, "Exercise", 1, null)
         );
         Routine updated = new Routine(42, "Updated Routine", newTasks, 30);
         repository.save(updated);
@@ -118,12 +118,12 @@ public class RoutineRepositoryTest {
     @Test
     public void testAddTaskToRoutine() {
         List<Task> tasks = List.of(
-                new Task(1, "Wake up", 0)
+                new Task(1, "Wake up", 0, null)
         );
         Routine routine = new Routine(42, "Morning Routine", tasks, 30);
         repository.save(routine);
 
-        Task newTask = new Task(2, "Wake up", 1);
+        Task newTask = new Task(2, "Wake up", 1, null);
 
         repository.addTaskToRoutine(42, newTask);
 
@@ -140,12 +140,12 @@ public class RoutineRepositoryTest {
     @Test
     public void testEditTask() {
         List<Task> tasks = List.of(
-                new Task(1, "Wake up", 0)
+                new Task(1, "Wake up", 0, null)
         );
         Routine routine = new Routine(42, "Morning Routine", tasks, 30);
         repository.save(routine);
 
-        EditTaskRequest req = new EditTaskRequest(42, 1, 0, "Eat Breakfast");
+        EditTaskRequest req = new EditTaskRequest(42, 1, 0, "Eat Breakfast", null);
         repository.editTask(req);
 
         Routine updatedRoutine = repository.find(42).getValue();

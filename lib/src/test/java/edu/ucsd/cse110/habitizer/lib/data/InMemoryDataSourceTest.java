@@ -23,8 +23,8 @@ public class InMemoryDataSourceTest {
         InMemoryDataSource dataSource = new InMemoryDataSource();
 
         List<Task> tasks = List.of(
-                new Task(1, "Wake Up", 0),
-                new Task(2, "Brush Teeth", 1)
+                new Task(1, "Wake Up", 0,null),
+                new Task(2, "Brush Teeth", 1,null)
         );
         Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
@@ -40,7 +40,7 @@ public class InMemoryDataSourceTest {
         InMemoryDataSource dataSource = new InMemoryDataSource();
 
         List<Task> tasks = List.of(
-                new Task(1, "Wake Up", 0)
+                new Task(1, "Wake Up", 0,null)
         );
         Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
@@ -56,10 +56,10 @@ public class InMemoryDataSourceTest {
         InMemoryDataSource dataSource = new InMemoryDataSource();
 
         List<Task> tasks1 = List.of(
-                new Task(1, "Wake Up", 0)
+                new Task(1, "Wake Up", 0,null)
         );
         List<Task> tasks2 = List.of(
-                new Task(2, "Sleep", 0)
+                new Task(2, "Sleep", 0,null)
         );
 
         Routine routine1 = new Routine(1, "Morning Routine", tasks1, 30);
@@ -81,11 +81,11 @@ public class InMemoryDataSourceTest {
         InMemoryDataSource dataSource = new InMemoryDataSource();
 
         List<Task> originalTasks = List.of(
-                new Task(1, "Wake Up", 0)
+                new Task(1, "Wake Up", 0,null)
         );
         List<Task> updatedTasks = List.of(
-                new Task(1, "Wake Up", 0),
-                new Task(2, "Exercise", 1)
+                new Task(1, "Wake Up", 0,null),
+                new Task(2, "Exercise", 1,null)
         );
 
         Routine original = new Routine(42, "Morning Routine", originalTasks, 30);
@@ -123,7 +123,7 @@ public class InMemoryDataSourceTest {
         InMemoryDataSource dataSource = new InMemoryDataSource();
 
         List<Task> tasks = List.of(
-                new Task(1, "Wake Up", 0)
+                new Task(1, "Wake Up", 0,null)
         );
         Routine routine = new Routine(42, "Morning Routine", tasks, 30);
 
@@ -134,8 +134,8 @@ public class InMemoryDataSourceTest {
         subject.observe(r -> wasNotified[0] = true);
 
         List<Task> newTasks = List.of(
-                new Task(1, "Wake Up", 0),
-                new Task(2, "Exercise", 1)
+                new Task(1, "Wake Up", 0,null),
+                new Task(2, "Exercise", 1,null)
         );
         Routine updated = new Routine(42, "Updated Routine", newTasks, 30);
         dataSource.putRoutine(updated);

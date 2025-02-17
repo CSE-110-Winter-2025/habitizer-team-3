@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,9 +16,12 @@ import java.util.List;
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
+import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 
 public class MainFragment extends Fragment {
@@ -73,6 +77,29 @@ public class MainFragment extends Fragment {
             var dialogFragment = EditTaskDialogFragment.newInstance(editTaskDialogParams);
             dialogFragment.show(getParentFragmentManager(), "EditTaskDialogFragment");
         });
+
+
+        adapter.setTaskItemListener(new TaskItemListener() {
+            @Override
+            public void onTaskClicked(Task task) {
+            }
+
+            @Override
+            public void onEditClicked(Task task) {
+            }
+
+            @Override
+            public void onCheckOffClicked(Task task) {
+                Task updatedTask = timerViewModel.checkOffTaskAndReturnUpdated(task);
+                updatedTask.setCheckedOff(true);
+                adapter.updateTask(task, updatedTask);
+            }
+
+            @Override
+            public void onAllTaskCheckedOff() {
+                endRoutine();
+            }
+        });
     }
 
     @Override
@@ -94,12 +121,26 @@ public class MainFragment extends Fragment {
 
         view.startButton.setOnClickListener(v -> {
             timerViewModel.startTimer();
+            int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
+                    timerViewModel.getElapsedSeconds().getValue() : 0;
+            timerViewModel.resetPrevTaskTime(currentElapsed);
+
             view.startButton.setVisibility(View.GONE);
             view.stopButton.setVisibility(View.VISIBLE);
             view.endButton.setVisibility(View.VISIBLE);
             view.fastforwardButton.setVisibility(View.VISIBLE);
             view.addTaskButton.setVisibility(View.GONE);
             view.swapButton.setEnabled(false);
+
+            for (int i = 0; i < view.taskList.getChildCount(); i++) {
+                View taskItemView = view.taskList.getChildAt(i);
+                TextView leftBracket = taskItemView.findViewById(R.id.task_time_left_bracket);
+                TextView rightBracket = taskItemView.findViewById(R.id.task_time_right_bracket);
+
+                // Make the brackets visible
+                leftBracket.setVisibility(View.VISIBLE);
+                rightBracket.setVisibility(View.VISIBLE);
+            }
 
             adapter.onStartButtonPressed();
         });
@@ -109,20 +150,14 @@ public class MainFragment extends Fragment {
         });
 
         view.endButton.setOnClickListener(v -> {
-            timerViewModel.stopTimer();
-            view.startButton.setVisibility(View.VISIBLE);
-            view.startButton.setText(R.string.routine_ended);
-            view.startButton.setEnabled(false);
-            view.stopButton.setVisibility(View.GONE);
-            view.endButton.setVisibility(View.GONE);
-            view.fastforwardButton.setVisibility(View.GONE);
-
-            adapter.onEndButtonPressed();
+            endRoutine();
         });
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
 
         view.taskList.setAdapter(adapter);
+
+
 
         // Listen for time field changes (focus lost => update the model)
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
@@ -142,6 +177,7 @@ public class MainFragment extends Fragment {
             }
         });
 
+
         // Open the add task dialog upon clicking the add task button
         view.addTaskButton.setOnClickListener(w -> {
             var dialogFragment = AddTaskDialogFragment.newInstance();
@@ -157,6 +193,16 @@ public class MainFragment extends Fragment {
         return view.getRoot();
     }
 
+    private void endRoutine() {
+        timerViewModel.stopTimer();
+        view.startButton.setVisibility(View.VISIBLE);
+        view.startButton.setText(R.string.routine_ended);
+        view.startButton.setEnabled(false);
+        view.stopButton.setVisibility(View.GONE);
+        view.endButton.setVisibility(View.GONE);
+        view.fastforwardButton.setVisibility(View.GONE);
+        adapter.onEndRoutine();
+    }
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view2, savedInstanceState);
 
@@ -164,6 +210,7 @@ public class MainFragment extends Fragment {
             if (routines == null) return;
             updateSwappedRoutine();
         });
+
     }
     @Override
     public void onDestroy() {
