@@ -17,17 +17,16 @@ import java.util.function.Consumer;
 
 import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
     Consumer<EditTaskDialogParams> onEditClick;
-    Consumer<Integer> onTaskTimeUpdate;
     private final int routineId;
-    private boolean routineInProgress = false;
     public long lastTaskEndTime = 0;
     public int lastTaskCheckedSortOrder = -1;
     private TaskItemListener taskItemListener;
-
+    private RoutineState routineState = RoutineState.BEFORE;
 
     public TaskAdapter(Context context, List<Task> tasks, int routineId, Consumer<EditTaskDialogParams> onEditClick) {
         super(context, 0, new ArrayList<>(tasks));
@@ -69,12 +68,18 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             binding.textTaskTime.setText(task.taskTime() + "m");
         }
 
-        if (routineInProgress) {
-            binding.taskEditButton.setVisibility(View.GONE);
-            binding.taskCheckbox.setVisibility(View.VISIBLE);
-        } else {
-            binding.taskEditButton.setVisibility(View.VISIBLE);
-            binding.taskCheckbox.setVisibility(View.GONE);
+        switch(routineState) {
+            case BEFORE:
+                binding.taskCheckbox.setVisibility(View.GONE);
+                break;
+            case DURING:
+                binding.taskCheckbox.setVisibility(View.VISIBLE);
+                binding.taskEditButton.setVisibility(View.GONE);
+                binding.taskCheckbox.setEnabled(!task.isCheckedOff());
+                break;
+            case AFTER:
+                binding.taskCheckbox.setEnabled(false);
+                break;
         }
 
         binding.getRoot().setOnClickListener(v -> {
@@ -96,7 +101,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         binding.taskCheckbox.setOnCheckedChangeListener(null);
         binding.taskCheckbox.setChecked(task.isCheckedOff());
-        binding.taskCheckbox.setEnabled(!task.isCheckedOff());
         binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
             if (isChecked) {
@@ -151,8 +155,13 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     }
 
     public void onStartButtonPressed() {
-        routineInProgress = true;
+        routineState = RoutineState.DURING;
         lastTaskEndTime = System.currentTimeMillis()/1000;
+        notifyDataSetChanged();
+    }
+
+    public void onEndRoutine() {
+        routineState = RoutineState.AFTER;
         notifyDataSetChanged();
     }
 }

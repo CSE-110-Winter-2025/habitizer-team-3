@@ -20,15 +20,14 @@ import edu.ucsd.cse110.habitizer.app.databinding.ListItemTaskBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentMainBinding view;
-    private ListItemTaskBinding binding;
     private TaskAdapter adapter;
     private TimerViewModel timerViewModel;
-    private List<Task> tasks;
 
     public MainFragment() {
 
@@ -114,11 +113,11 @@ public class MainFragment extends Fragment {
 
             for (int i = 0; i < view.taskList.getChildCount(); i++) {
                 View taskItemView = view.taskList.getChildAt(i);
-                TextView leftBraccket = taskItemView.findViewById(R.id.task_time_left_bracket);
+                TextView leftBracket = taskItemView.findViewById(R.id.task_time_left_bracket);
                 TextView rightBracket = taskItemView.findViewById(R.id.task_time_right_bracket);
 
                 // Make the brackets visible
-                leftBraccket.setVisibility(View.VISIBLE);
+                leftBracket.setVisibility(View.VISIBLE);
                 rightBracket.setVisibility(View.VISIBLE);
             }
 
@@ -175,6 +174,7 @@ public class MainFragment extends Fragment {
         view.stopButton.setVisibility(View.GONE);
         view.endButton.setVisibility(View.GONE);
         view.fastforwardButton.setVisibility(View.GONE);
+        adapter.onEndRoutine();
     }
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view2, savedInstanceState);
