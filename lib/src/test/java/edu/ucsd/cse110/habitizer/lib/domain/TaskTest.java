@@ -14,7 +14,7 @@ public class TaskTest {
         assertEquals("task id should be 5", (Integer) 5, task.id());
         assertEquals("task name should be Wake Up", "Wake Up", task.name());
         assertEquals("task sortOrder should be 0", 0, task.sortOrder());
-        assertEquals("task taskTime should be null", (Integer)null, task.taskTime());
+        assertEquals("taskTime should be -1 when passed null", -1, (int)task.taskTime());
     }
 
     @Test
