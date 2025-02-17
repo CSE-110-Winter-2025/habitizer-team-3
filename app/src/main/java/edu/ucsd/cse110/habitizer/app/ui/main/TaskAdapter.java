@@ -94,6 +94,9 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             onEditClick.accept(params);
         });
 
+        binding.taskCheckbox.setOnCheckedChangeListener(null);
+        binding.taskCheckbox.setChecked(task.isCheckedOff());
+        binding.taskCheckbox.setEnabled(!task.isCheckedOff());
         binding.taskCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             binding.taskName.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
             if (isChecked) {
@@ -116,6 +119,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 if (allChecked && taskItemListener != null) {
                     taskItemListener.onAllTaskCheckedOff();
                 }
+            } else {
+                buttonView.setChecked(false);
             }
         });
 
