@@ -17,6 +17,7 @@ import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModelTest {
@@ -40,8 +41,8 @@ public class MainViewModelTest {
     @Test
     public void testAllRoutinesUpdatesWhenRepositoryEmits() {
         // Create a list of routines.
-        Routine routine1 = new Routine(1, "Morning Routine", Collections.emptyList(), 60);
-        Routine routine2 = new Routine(2, "Evening Routine", Collections.emptyList(), 45);
+        Routine routine1 = new Routine(1, "Morning Routine", new TaskList(Collections.emptyList()), 60);
+        Routine routine2 = new Routine(2, "Evening Routine", new TaskList(Collections.emptyList()), 45);
         List<Routine> routines = Arrays.asList(routine1, routine2);
 
         // Simulate the repository containing a list of routines.
@@ -55,15 +56,15 @@ public class MainViewModelTest {
     @Test
     public void testMultipleEmissionsUpdateAllRoutines() {
         // 1st routine.
-        Routine routineA = new Routine(1, "Routine A", Collections.emptyList(), 30);
+        Routine routineA = new Routine(1, "Routine A", new TaskList(Collections.emptyList()), 30);
         List<Routine> routines1 = Collections.singletonList(routineA);
         fakeRepo.fakeAllRoutines.setValue(routines1);
         assertEquals("Expected allRoutines to update with 1st routine",
                 routines1, viewModel.getAllRoutines().getValue());
 
         // 2nd and 3rd routine.
-        Routine routineB = new Routine(2, "Routine B", Collections.emptyList(), 40);
-        Routine routineC = new Routine(3, "Routine C", Collections.emptyList(), 50);
+        Routine routineB = new Routine(2, "Routine B", new TaskList(Collections.emptyList()), 40);
+        Routine routineC = new Routine(3, "Routine C", new TaskList(Collections.emptyList()), 50);
         List<Routine> routines2 = Arrays.asList(routineB, routineC);
         fakeRepo.fakeAllRoutines.setValue(routines2);
         assertEquals("Expected allRoutines to update with 2nd and 3rd",
@@ -72,7 +73,7 @@ public class MainViewModelTest {
 
     @Test
     public void testUpdateRoutineCallsRepositorySave() {
-        Routine testRoutine = new Routine(null, "Test Routine", Collections.emptyList(), 120);
+        Routine testRoutine = new Routine(null, "Test Routine", new TaskList(Collections.emptyList()), 120);
         viewModel.updateRoutine(testRoutine);
         // The fake repository records the last routine passed to save.
         assertEquals("updateRoutine should call repository.save()",
@@ -104,14 +105,14 @@ public class MainViewModelTest {
 
     @Test
     public void testSelectedRoutine() {
-        Routine morningRoutine = new Routine(1, "Morning Routine", Collections.emptyList(), 50);
-        Routine eveningRoutine = new Routine(2, "Evening Routine", Collections.emptyList(), 35);
+        Routine morningRoutine = new Routine(1, "Morning Routine", new TaskList(Collections.emptyList()), 50);
+        Routine eveningRoutine = new Routine(2, "Evening Routine", new TaskList(Collections.emptyList()), 35);
         List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
 
-        Routine selected = viewModel.getCurrentRoutine(routines, true);
+        Routine selected = viewModel.getCurrentRoutine();
         assertEquals(morningRoutine, selected);
-
-        selected = viewModel.getCurrentRoutine(routines, false);
+        viewModel.setCurrentRoutineId(1);
+        selected = viewModel.getCurrentRoutine();
         assertEquals(eveningRoutine, selected);
     }
 
@@ -126,14 +127,15 @@ public class MainViewModelTest {
                 new Task(1, "Read", 1, null)
         );
 
-        Routine morningRoutine = new Routine(0, "Morning Routine", morningTasks, 20);
-        Routine eveningRoutine = new Routine(1, "Evening Routine", eveningTasks, 25);
+        Routine morningRoutine = new Routine(0, "Morning Routine", new TaskList(morningTasks), 20);
+        Routine eveningRoutine = new Routine(1, "Evening Routine", new TaskList(eveningTasks), 25);
         List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
 
-        Routine selectedRoutine = viewModel.getCurrentRoutine(routines, true);
-        assertEquals("Morning routine", morningTasks, selectedRoutine.tasks());
-        selectedRoutine = viewModel.getCurrentRoutine(routines, false);
-        assertEquals("Evening routine", eveningTasks, selectedRoutine.tasks());
+        Routine selectedRoutine = viewModel.getCurrentRoutine();
+        assertEquals("Morning routine", morningTasks, selectedRoutine.taskList().tasks());
+        viewModel.setCurrentRoutineId(1);
+        selectedRoutine = viewModel.getCurrentRoutine();
+        assertEquals("Evening routine", eveningTasks, selectedRoutine.taskList().tasks());
     }
 
     //    A fake implementation of RoutineRepository.

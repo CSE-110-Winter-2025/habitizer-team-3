@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentAddTaskDialogBinding;
+import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public class AddTaskDialogFragment extends DialogFragment {
@@ -53,10 +54,14 @@ public class AddTaskDialogFragment extends DialogFragment {
     }
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
-        var taskName = view.taskNameInput.getText().toString().trim();
-        var task = new Task(-1, taskName, -1, null);
+        String taskName = view.taskNameInput.getText().toString().trim();
+        Integer routineId = activityModel.getCurrentRoutineId();
+        Routine currentRoutine = activityModel.getCurrentRoutine();
+        Integer listSize = currentRoutine.taskList().tasks().size();
+        //TODO: change id to something else
+        Task task = new Task(-1, taskName, listSize, null);
 
-        activityModel.addTaskToRoutine(0, task);
+        activityModel.addTaskToRoutine(routineId, task);
 
         dialog.dismiss();
     }

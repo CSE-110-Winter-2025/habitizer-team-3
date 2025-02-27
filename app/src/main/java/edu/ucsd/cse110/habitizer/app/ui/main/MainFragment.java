@@ -1,34 +1,42 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
-import java.util.List;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
-import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
+import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
+import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentMainBinding view;
-    private TaskAdapter adapter;
+    private RecyclerView recyclerView;
+    private TaskRecyclerViewAdapter adapter;
     private TimerViewModel timerViewModel;
-    private boolean showMorningRoutine = true;
+    private TaskItemListener taskItemListener;
+    private UIRoutineUpdater uiRoutineUpdater;
+    private UITaskUpdater uiTaskUpdater;
+    private Routine currentRoutine;
+    private AppState state;
 
     public MainFragment() {
 
@@ -41,18 +49,12 @@ public class MainFragment extends Fragment {
         return fragment;
     }
     private void updateSwappedRoutine() {
-        Routine activeRoutine = getActiveRoutine();
+        currentRoutine = activityModel.getCurrentRoutine();
+        view.routineName.setText(currentRoutine.name());
+        view.time.setText(String.valueOf(currentRoutine.time()));
 
-        view.routineName.setText(activeRoutine.name());
-        view.time.setText(String.valueOf(activeRoutine.time()));
-
-        adapter.clear();
-        adapter.addAll(activeRoutine.tasks());
-        Integer routineId = activeRoutine.id();
-        if (routineId == null) {
-            routineId = 0;
-        }
-        adapter.notifyDataSetChanged();
+        adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -67,13 +69,30 @@ public class MainFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-        // Initialize the Adapter (empty for now)
-        this.adapter = new TaskAdapter(requireContext(), List.of());
+        currentRoutine = activityModel.getCurrentRoutine();
+        state = new AppState();
 
-        adapter.setTaskItemListener(new TaskItemListener() {
+        state.setValue(RoutineState.BEFORE);
+
+        uiRoutineUpdater = new UIRoutineUpdater();
+        uiTaskUpdater = new UITaskUpdater();
+        state.observe(uiRoutineUpdater);
+        state.observe(uiTaskUpdater);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Initialize the View
+        this.view = FragmentMainBinding.inflate(inflater, container, false);
+
+        recyclerView = view.taskView;
+        adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
+        recyclerView.setAdapter(adapter);
+
+        taskItemListener = new TaskItemListener() {
             @Override
             public void onEditClicked(Task task) {
-                var activeRoutineId = getActiveRoutine().id();
+                var activeRoutineId = currentRoutine.id();
                 var taskId = task.id();
 
                 assert activeRoutineId != null && taskId != null;
@@ -83,29 +102,33 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onCheckOffClicked(Task task) {
-                Task updatedTask = timerViewModel.checkOffTaskAndReturnUpdated(task);
-                updatedTask.setCheckedOff(true);
-                adapter.updateTask(task, updatedTask);
+                task.setCheckedOff(true);
+                int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
+                        timerViewModel.getElapsedSeconds().getValue() : 0;
+                int taskTime = (int) Math.ceil((double) (currentElapsed - currentRoutine.taskList().lastTaskCheckoffTime()) / 60);
+                task.setTaskTime(Math.max(taskTime, 1)); // make sure minimum is 1 second
+
+                currentRoutine.taskList().setLastCheckoffTime(currentElapsed);
+
+                if (currentRoutine.taskList().currentTaskId() < task.sortOrder()) {
+                    currentRoutine.taskList().setCurrentTaskId(task.sortOrder() + 1);
+                }
+                recyclerView.setAdapter(adapter);
+                recyclerView.invalidate();
+
+                Log.d("TaskID", currentRoutine.taskList().currentTaskId().toString());
             }
 
             @Override
             public void onAllTaskCheckedOff() {
                 endRoutine();
             }
-        });
-    }
+        };
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Initialize the View
-        this.view = FragmentMainBinding.inflate(inflater, container, false);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initially hide stop and fast-forward buttons
-        view.stopButton.setVisibility(View.GONE);
-        view.fastforwardButton.setVisibility(View.GONE);
-        view.endButton.setVisibility(View.GONE);
+        updateButtonVisibilities();
 
-        // Observe the timer's LiveData
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
             // Update a TextView to show elapsed minutes
             int minutes = seconds / 60;
@@ -113,29 +136,7 @@ public class MainFragment extends Fragment {
         });
 
         view.startButton.setOnClickListener(v -> {
-            timerViewModel.startTimer();
-            int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
-                    timerViewModel.getElapsedSeconds().getValue() : 0;
-            timerViewModel.resetPrevTaskTime(currentElapsed);
-
-            view.startButton.setVisibility(View.GONE);
-            view.stopButton.setVisibility(View.VISIBLE);
-            view.endButton.setVisibility(View.VISIBLE);
-            view.fastforwardButton.setVisibility(View.VISIBLE);
-            view.addTaskButton.setVisibility(View.GONE);
-            view.swapButton.setEnabled(false);
-
-            for (int i = 0; i < view.taskList.getChildCount(); i++) {
-                View taskItemView = view.taskList.getChildAt(i);
-                TextView leftBracket = taskItemView.findViewById(R.id.task_time_left_bracket);
-                TextView rightBracket = taskItemView.findViewById(R.id.task_time_right_bracket);
-
-                // Make the brackets visible
-                leftBracket.setVisibility(View.VISIBLE);
-                rightBracket.setVisibility(View.VISIBLE);
-            }
-
-            adapter.onStartButtonPressed();
+            startRoutine();
         });
 
         view.stopButton.setOnClickListener(v -> {
@@ -148,52 +149,62 @@ public class MainFragment extends Fragment {
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
 
-        view.taskList.setAdapter(adapter);
-
-
-
-        // Listen for time field changes (focus lost => update the model)
-        view.time.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                // The user finished editing "time" vvv
-                String newTimeStr = view.time.getText().toString();
-                if (!newTimeStr.isEmpty()) {
-                    int newTime = Integer.parseInt(newTimeStr);
-                    var routines = activityModel.getAllRoutines().getValue();
-                    if (routines == null) return;
-                    var routine = getActiveRoutine();
-
-                    var updateRoutine = routine.withTime(newTime);
-
-                    activityModel.updateRoutine(updateRoutine);
-                }
-            }
-        });
-
-
         // Open the add task dialog upon clicking the add task button
         view.addTaskButton.setOnClickListener(w -> {
             openAddTaskDialog();
         });
 
         view.swapButton.setOnClickListener(v -> {
-            showMorningRoutine = !showMorningRoutine;
+            // TODO: update this logic when we have multiple routines
+            Integer currentRoutineId = activityModel.getCurrentRoutineId();
+            if (currentRoutineId == 0) activityModel.setCurrentRoutineId(1);
+            else activityModel.setCurrentRoutineId(0);
             updateSwappedRoutine();
         });
 
+        view.time.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                // The user finished editing "time" vvv
+                String newTimeStr = view.time.getText().toString();
+                if (!newTimeStr.isEmpty()) {
+                    int newTime = Integer.parseInt(newTimeStr);
+
+                    var updateRoutine = currentRoutine.withTime(newTime);
+
+                    activityModel.updateRoutine(updateRoutine);
+                }
+            }
+        });
 
         return view.getRoot();
     }
 
+    private void startRoutine() {
+        timerViewModel.startTimer();
+        state.setValue(RoutineState.DURING);
+        updateButtonVisibilities();
+        adapter.notifyDataSetChanged();
+    }
     private void endRoutine() {
         timerViewModel.stopTimer();
-        view.startButton.setVisibility(View.VISIBLE);
-        view.startButton.setText(R.string.routine_ended);
+        state.setValue(RoutineState.AFTER);
+        updateButtonVisibilities();
+        view.startButton.setText("Routine Ended"); // We should really stop doing this...
         view.startButton.setEnabled(false);
-        view.stopButton.setVisibility(View.GONE);
-        view.endButton.setVisibility(View.GONE);
-        view.fastforwardButton.setVisibility(View.GONE);
-        adapter.onEndRoutine();
+        recyclerView.post(() -> {
+            adapter.notifyDataSetChanged();
+        });
+    }
+
+    private void updateButtonVisibilities() {
+        view.startButton.setVisibility(uiRoutineUpdater.showStart() ? View.VISIBLE : View.GONE);
+        view.stopButton.setVisibility(uiRoutineUpdater.showStop() ? View.VISIBLE : View.GONE);
+        view.endButton.setVisibility(uiRoutineUpdater.showEnd() ? View.VISIBLE : View.GONE);
+        view.fastforwardButton.setVisibility(uiRoutineUpdater.showFastForward() ? View.VISIBLE : View.GONE);
+        view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
+        view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
+        view.time.setEnabled(uiRoutineUpdater.canEditTime());
+
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
@@ -212,12 +223,6 @@ public class MainFragment extends Fragment {
         // timerViewModel.stopTimer();
     }
 
-    private Routine getActiveRoutine() {
-        List<Routine> routines = activityModel.getAllRoutines().getValue();
-        assert routines != null && routines.size() >= 2;
-
-        return showMorningRoutine ? routines.get(0) : routines.get(1);
-    }
 
     private void openEditTaskDialog(EditTaskDialogParams params) {
         var dialogFragment = EditTaskDialogFragment.newInstance(params);

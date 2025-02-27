@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class InMemoryDataSourceTest {
@@ -26,7 +27,7 @@ public class InMemoryDataSourceTest {
                 new Task(1, "Wake Up", 0,null),
                 new Task(2, "Brush Teeth", 1,null)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        Routine routine = new Routine(42, "Morning Routine", new TaskList(tasks), 30);
 
         dataSource.putRoutine(routine);
         Routine retrieved = dataSource.getRoutine(42);
@@ -42,7 +43,7 @@ public class InMemoryDataSourceTest {
         List<Task> tasks = List.of(
                 new Task(1, "Wake Up", 0,null)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        Routine routine = new Routine(42, "Morning Routine", new TaskList(tasks), 30);
 
         dataSource.putRoutine(routine);
         Subject<Routine> subject = dataSource.getRoutineSubject(42);
@@ -62,8 +63,8 @@ public class InMemoryDataSourceTest {
                 new Task(2, "Sleep", 0,null)
         );
 
-        Routine routine1 = new Routine(1, "Morning Routine", tasks1, 30);
-        Routine routine2 = new Routine(2, "Evening Routine", tasks2, 30);
+        Routine routine1 = new Routine(1, "Morning Routine", new TaskList(tasks1), 30);
+        Routine routine2 = new Routine(2, "Evening Routine", new TaskList(tasks2), 30);
 
         dataSource.putRoutine(routine1);
         dataSource.putRoutine(routine2);
@@ -88,10 +89,10 @@ public class InMemoryDataSourceTest {
                 new Task(2, "Exercise", 1,null)
         );
 
-        Routine original = new Routine(42, "Morning Routine", originalTasks, 30);
+        Routine original = new Routine(42, "Morning Routine", new TaskList(originalTasks), 30);
         dataSource.putRoutine(original);
 
-        Routine updated = new Routine(42, "Updated Routine", updatedTasks, 30);
+        Routine updated = new Routine(42, "Updated Routine", new TaskList(updatedTasks), 30);
         dataSource.putRoutine(updated);
 
         Routine retrieved = dataSource.getRoutine(42);
@@ -109,12 +110,12 @@ public class InMemoryDataSourceTest {
         Routine morningRoutine = routines.get(0);
         assertEquals("morning routine should have id 0", (Integer) 0, morningRoutine.id());
         assertEquals("morning routine should be named Morning", "Morning", morningRoutine.name());
-        assertEquals("morning routine should have 7 tasks", 7, morningRoutine.tasks().size());
+        assertEquals("morning routine should have 7 tasks", 7, morningRoutine.taskList().tasks().size());
 
         Routine eveningRoutine = routines.get(1);
         assertEquals("evening routine should have id 1", (Integer) 1, eveningRoutine.id());
         assertEquals("evening routine should be named Evening", "Evening", eveningRoutine.name());
-        assertEquals("evening routine should have 7 tasks", 7, eveningRoutine.tasks().size());
+        assertEquals("evening routine should have 7 tasks", 7, eveningRoutine.taskList().tasks().size());
     }
 
 
@@ -125,7 +126,7 @@ public class InMemoryDataSourceTest {
         List<Task> tasks = List.of(
                 new Task(1, "Wake Up", 0,null)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        Routine routine = new Routine(42, "Morning Routine", new TaskList(tasks), 30);
 
         dataSource.putRoutine(routine);
         Subject<Routine> subject = dataSource.getRoutineSubject(42);
@@ -137,7 +138,7 @@ public class InMemoryDataSourceTest {
                 new Task(1, "Wake Up", 0,null),
                 new Task(2, "Exercise", 1,null)
         );
-        Routine updated = new Routine(42, "Updated Routine", newTasks, 30);
+        Routine updated = new Routine(42, "Updated Routine", new TaskList(tasks), 30);
         dataSource.putRoutine(updated);
 
         assertTrue("observer should be notified of changes", wasNotified[0]);
