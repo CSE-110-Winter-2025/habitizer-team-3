@@ -18,7 +18,9 @@ import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
@@ -34,6 +36,7 @@ public class MainFragment extends Fragment {
     private UIRoutineUpdater uiRoutineUpdater;
     private UITaskUpdater uiTaskUpdater;
     private Routine currentRoutine;
+    private AppState state;
 
     public MainFragment() {
 
@@ -67,10 +70,14 @@ public class MainFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         currentRoutine = activityModel.getCurrentRoutine();
+        state = new AppState();
+
+        state.setValue(RoutineState.BEFORE);
+
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
-        currentRoutine.observe(uiRoutineUpdater);
-        currentRoutine.observe(uiTaskUpdater);
+        state.observe(uiRoutineUpdater);
+        state.observe(uiTaskUpdater);
     }
 
     @Override
@@ -120,7 +127,6 @@ public class MainFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        Log.d("MainFragment", "Routine State: " + currentRoutine.getValue());
         updateButtonVisibilities();
 
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
@@ -175,13 +181,13 @@ public class MainFragment extends Fragment {
 
     private void startRoutine() {
         timerViewModel.startTimer();
-        currentRoutine.startRoutine();
+        state.setValue(RoutineState.DURING);
         updateButtonVisibilities();
         adapter.notifyDataSetChanged();
     }
     private void endRoutine() {
         timerViewModel.stopTimer();
-        currentRoutine.endRoutine();
+        state.setValue(RoutineState.AFTER);
         updateButtonVisibilities();
         view.startButton.setText("Routine Ended"); // We should really stop doing this...
         view.startButton.setEnabled(false);

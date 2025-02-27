@@ -1,11 +1,7 @@
 package edu.ucsd.cse110.habitizer.lib.domain;
 
-import androidx.annotation.Nullable;
-
 import java.io.Serializable;
 import java.util.List;
-
-import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
 public class TaskList implements Serializable {
     private final List<Task> tasks;

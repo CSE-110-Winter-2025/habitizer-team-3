@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.habitizer.lib.domain;
+package edu.ucsd.cse110.habitizer.app.ui.main.state;
 
 public enum RoutineState {
     BEFORE,

@@ -2,10 +2,10 @@ package edu.ucsd.cse110.habitizer.app.ui.main.updaters;
 
 import androidx.annotation.Nullable;
 
-import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
-import edu.ucsd.cse110.habitizer.lib.util.UIUpdater;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
+import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
-public class UIRoutineUpdater implements UIUpdater {
+public class UIRoutineUpdater implements Observer<RoutineState> {
     private boolean showStop;
     private boolean showStart;
     private boolean showEnd;

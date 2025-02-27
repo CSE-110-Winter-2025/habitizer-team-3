@@ -2,10 +2,10 @@ package edu.ucsd.cse110.habitizer.app.ui.main.updaters;
 
 import androidx.annotation.Nullable;
 
-import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
-import edu.ucsd.cse110.habitizer.lib.util.UIUpdater;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
+import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
-public class UITaskUpdater implements UIUpdater {
+public class UITaskUpdater implements Observer<RoutineState> {
     private boolean canEdit = true;
     private boolean canCheckoff = false;
     private boolean showBrackets = true;

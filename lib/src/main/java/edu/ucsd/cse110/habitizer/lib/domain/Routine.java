@@ -6,9 +6,8 @@ import androidx.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Objects;
 
-import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
-public class Routine extends Subject<RoutineState> implements Serializable {
+public class Routine implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String name;
     private final @NonNull TaskList taskList;
@@ -19,7 +18,6 @@ public class Routine extends Subject<RoutineState> implements Serializable {
         this.name = name;
         this.taskList = taskList;
         this.time = time;
-        this.setValue(RoutineState.BEFORE);
     }
 
 
@@ -41,14 +39,6 @@ public class Routine extends Subject<RoutineState> implements Serializable {
 
     public Routine withTasks(TaskList tasks) {
         return new Routine(this.id, this.name, tasks, this.time);
-    }
-
-    public void startRoutine() {
-        setValue(RoutineState.DURING);
-    }
-
-    public void endRoutine() {
-        setValue(RoutineState.AFTER);
     }
 
     @Override
