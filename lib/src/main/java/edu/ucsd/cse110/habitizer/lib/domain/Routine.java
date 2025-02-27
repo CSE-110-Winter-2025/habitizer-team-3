@@ -11,9 +11,9 @@ public class Routine implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String name;
     private final @NonNull TaskList taskList;
-    private final @Nullable Integer time;
+    private final @NonNull Integer time;
 
-    public Routine(@Nullable Integer id, @NonNull String name, @NonNull TaskList taskList, @Nullable Integer time) {
+    public Routine(@Nullable Integer id, @NonNull String name, @NonNull TaskList taskList, @NonNull Integer time) {
         this.id = id;
         this.name = name;
         this.taskList = taskList;
@@ -27,7 +27,7 @@ public class Routine implements Serializable {
 
     public @NonNull TaskList taskList() { return taskList; }
 
-    public @Nullable Integer time() { return time; }
+    public @NonNull Integer time() { return time; }
 
     public Routine withId(int id) {
         return new Routine(id, this.name, this.taskList, this.time);

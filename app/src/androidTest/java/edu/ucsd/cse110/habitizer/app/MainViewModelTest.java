@@ -15,7 +15,7 @@ import java.util.List;
 import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
-import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
+import edu.ucsd.cse110.habitizer.lib.domain.SimpleRoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
@@ -139,7 +139,7 @@ public class MainViewModelTest {
     }
 
     //    A fake implementation of RoutineRepository.
-    private static class FakeRoutineRepository extends RoutineRepository {
+    private static class FakeRoutineRepository extends SimpleRoutineRepository {
         // Expose a Subject so we can simulate routines.
         final Subject<List<Routine>> fakeAllRoutines = new Subject<>();
         Routine savedRoutine = null;
