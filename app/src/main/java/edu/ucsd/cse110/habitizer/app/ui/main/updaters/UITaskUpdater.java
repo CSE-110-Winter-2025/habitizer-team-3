@@ -1,8 +1,9 @@
-package edu.ucsd.cse110.habitizer.lib.util;
+package edu.ucsd.cse110.habitizer.app.ui.main.updaters;
 
 import androidx.annotation.Nullable;
 
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
+import edu.ucsd.cse110.habitizer.lib.util.UIUpdater;
 
 public class UITaskUpdater implements UIUpdater {
     private boolean canEdit = true;

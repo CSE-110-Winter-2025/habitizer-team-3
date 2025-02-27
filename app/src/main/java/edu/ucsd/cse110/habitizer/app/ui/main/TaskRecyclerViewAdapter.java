@@ -1,9 +1,6 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
-import android.content.Context;
 import android.graphics.Paint;
-import android.media.Image;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import edu.ucsd.cse110.habitizer.app.R;
-import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
-import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
-import edu.ucsd.cse110.habitizer.lib.util.UITaskUpdater;
+import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
 
 public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerViewAdapter.TaskViewHolder> {
     private final TaskList taskList;
@@ -96,7 +89,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         String timeText = " "; // default to nothing
 
         if (task.isCheckedOff() && task.taskTime() != null) { // task is checked off, show the time
-            timeText = task.taskTime() + "m";
+            timeText = task.taskTime() + " m";
         } else if (task.sortOrder() < taskList.currentTaskId()) { // task is skipped
             timeText = "-";
         }

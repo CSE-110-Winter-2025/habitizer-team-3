@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,11 +13,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
-import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
@@ -26,8 +23,8 @@ import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
-import edu.ucsd.cse110.habitizer.lib.util.UIRoutineUpdater;
-import edu.ucsd.cse110.habitizer.lib.util.UITaskUpdater;
+import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
+import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
@@ -113,21 +110,15 @@ public class MainFragment extends Fragment {
                 int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
                         timerViewModel.getElapsedSeconds().getValue() : 0;
                 int taskTime = (int) Math.ceil((double) (currentElapsed - currentRoutine.taskList().lastTaskCheckoffTime()) / 60);
-                task.setTaskTime(taskTime);
+                task.setTaskTime(Math.max(taskTime, 1)); // make sure minimum is 1 second
 
                 currentRoutine.taskList().setLastCheckoffTime(currentElapsed);
 
                 if (currentRoutine.taskList().currentTaskId() < task.sortOrder()) {
                     currentRoutine.taskList().setCurrentTaskId(task.sortOrder() + 1);
-
-                    recyclerView.post(() -> {
-                        adapter.notifyItemRangeChanged(0, currentRoutine.taskList().currentTaskId() + 1);
-                    });
-                } else {
-                    recyclerView.post(() -> {
-                        adapter.notifyItemChanged(task.sortOrder());
-                    });
                 }
+                recyclerView.setAdapter(adapter);
+                recyclerView.invalidate();
 
                 Log.d("TaskID", currentRoutine.taskList().currentTaskId().toString());
             }

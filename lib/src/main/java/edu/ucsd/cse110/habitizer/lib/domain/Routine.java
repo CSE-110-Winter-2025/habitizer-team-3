@@ -4,14 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
-import edu.ucsd.cse110.habitizer.lib.util.UIRoutineUpdater;
-import edu.ucsd.cse110.habitizer.lib.util.UITaskUpdater;
-import edu.ucsd.cse110.habitizer.lib.util.UIUpdater;
 
 public class Routine extends Subject<RoutineState> implements Serializable {
     private final @Nullable Integer id;
