@@ -109,12 +109,12 @@ public class InMemoryDataSourceTest {
         Routine morningRoutine = routines.get(0);
         assertEquals("morning routine should have id 0", (Integer) 0, morningRoutine.id());
         assertEquals("morning routine should be named Morning", "Morning", morningRoutine.name());
-        assertEquals("morning routine should have 7 tasks", 7, morningRoutine.tasks().size());
+        assertEquals("morning routine should have 7 tasks", 7, morningRoutine.taskList().tasks().size());
 
         Routine eveningRoutine = routines.get(1);
         assertEquals("evening routine should have id 1", (Integer) 1, eveningRoutine.id());
         assertEquals("evening routine should be named Evening", "Evening", eveningRoutine.name());
-        assertEquals("evening routine should have 7 tasks", 7, eveningRoutine.tasks().size());
+        assertEquals("evening routine should have 7 tasks", 7, eveningRoutine.taskList().tasks().size());
     }
 
 

@@ -17,6 +17,7 @@ import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModelTest {
@@ -40,8 +41,8 @@ public class MainViewModelTest {
     @Test
     public void testAllRoutinesUpdatesWhenRepositoryEmits() {
         // Create a list of routines.
-        Routine routine1 = new Routine(1, "Morning Routine", Collections.emptyList(), 60);
-        Routine routine2 = new Routine(2, "Evening Routine", Collections.emptyList(), 45);
+        Routine routine1 = new Routine(1, "Morning Routine", new TaskList(Collections.emptyList()), 60);
+        Routine routine2 = new Routine(2, "Evening Routine", new TaskList(Collections.emptyList()), 45);
         List<Routine> routines = Arrays.asList(routine1, routine2);
 
         // Simulate the repository containing a list of routines.
@@ -126,14 +127,14 @@ public class MainViewModelTest {
                 new Task(1, "Read", 1, null)
         );
 
-        Routine morningRoutine = new Routine(0, "Morning Routine", morningTasks, 20);
-        Routine eveningRoutine = new Routine(1, "Evening Routine", eveningTasks, 25);
+        Routine morningRoutine = new Routine(0, "Morning Routine", new TaskList(morningTasks), 20);
+        Routine eveningRoutine = new Routine(1, "Evening Routine", new TaskList(eveningTasks), 25);
         List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
 
         Routine selectedRoutine = viewModel.getCurrentRoutine(routines, true);
-        assertEquals("Morning routine", morningTasks, selectedRoutine.tasks());
+        assertEquals("Morning routine", morningTasks, selectedRoutine.taskList().tasks());
         selectedRoutine = viewModel.getCurrentRoutine(routines, false);
-        assertEquals("Evening routine", eveningTasks, selectedRoutine.tasks());
+        assertEquals("Evening routine", eveningTasks, selectedRoutine.taskList().tasks());
     }
 
     //    A fake implementation of RoutineRepository.

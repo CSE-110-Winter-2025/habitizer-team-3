@@ -35,7 +35,7 @@ public class RoutineRepositoryTest {
                 new Task(1, "Wake up", 0, null),
                 new Task(2, "Brush teeth", 1,null)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        Routine routine = new Routine(42, "Morning Routine", new TaskList(tasks), 30);
 
         repository.save(routine);
         Subject<Routine> found = repository.find(42);
@@ -55,8 +55,8 @@ public class RoutineRepositoryTest {
                 new Task(4, "Sleep", 1, null)
         );
 
-        Routine routine1 = new Routine(10, "Morning Routine", morningTasks, 30);
-        Routine routine2 = new Routine(20, "Evening Routine", eveningTasks, 30);
+        Routine routine1 = new Routine(10, "Morning Routine", new TaskList(morningTasks), 30);
+        Routine routine2 = new Routine(20, "Evening Routine", new TaskList(eveningTasks), 30);
 
         repository.save(routine1);
         repository.save(routine2);
@@ -79,10 +79,10 @@ public class RoutineRepositoryTest {
                 new Task(2, "Exercise", 1, null)
         );
 
-        Routine original = new Routine(42, "Morning Routine", originalTasks, 30);
+        Routine original = new Routine(42, "Morning Routine", new TaskList(originalTasks), 30);
         repository.save(original);
 
-        Routine updated = new Routine(42, "Updated Routine", updatedTasks, 30);
+        Routine updated = new Routine(42, "Updated Routine", new TaskList(updatedTasks), 30);
         repository.save(updated);
 
         Subject<Routine> found = repository.find(42);
@@ -95,7 +95,7 @@ public class RoutineRepositoryTest {
         List<Task> tasks = List.of(
                 new Task(1, "Wake up", 0, null)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        Routine routine = new Routine(42, "Morning Routine", new TaskList(tasks), 30);
         repository.save(routine);
 
         Subject<Routine> routineSubject = repository.find(42);
@@ -106,7 +106,7 @@ public class RoutineRepositoryTest {
                 new Task(1, "Wake up", 0, null),
                 new Task(2, "Exercise", 1, null)
         );
-        Routine updated = new Routine(42, "Updated Routine", newTasks, 30);
+        Routine updated = new Routine(42, "Updated Routine", new TaskList(newTasks), 30);
         repository.save(updated);
 
         assertTrue("observer should be notified of changes", wasNotified[0]);
@@ -117,7 +117,7 @@ public class RoutineRepositoryTest {
         List<Task> tasks = List.of(
                 new Task(1, "Wake up", 0, null)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        Routine routine = new Routine(42, "Morning Routine", new TaskList(tasks), 30);
         repository.save(routine);
 
         Task newTask = new Task(2, "Wake up", 1, null);
@@ -126,9 +126,9 @@ public class RoutineRepositoryTest {
 
         Routine updatedRoutine = repository.find(42).getValue();
         assertNotNull("Updated routine should not be null", updatedRoutine);
-        assertEquals("Updated routine should have 2 tasks", updatedRoutine.tasks().size(), 2);
+        assertEquals("Updated routine should have 2 tasks", updatedRoutine.taskList().tasks().size(), 2);
 
-        Task addedTask = updatedRoutine.tasks().get(1);
+        Task addedTask = updatedRoutine.taskList().tasks().get(1);
         assertEquals("Second task should have new task's name", addedTask.name(), newTask.name());
         assertEquals("New task id should be previous task list size", 1, (int) Objects.requireNonNull(addedTask.id()));
         assertEquals("New task sort order should be previous task list size", 1, addedTask.sortOrder());
@@ -139,7 +139,7 @@ public class RoutineRepositoryTest {
         List<Task> tasks = List.of(
                 new Task(1, "Wake up", 0, null)
         );
-        Routine routine = new Routine(42, "Morning Routine", tasks, 30);
+        Routine routine = new Routine(42, "Morning Routine", new TaskList(tasks), 30);
         repository.save(routine);
 
         EditTaskRequest req = new EditTaskRequest(42, 1, 0, "Eat Breakfast", null);
@@ -147,7 +147,7 @@ public class RoutineRepositoryTest {
 
         Routine updatedRoutine = repository.find(42).getValue();
         assertNotNull("Updated routine should not be null", updatedRoutine);
-        assertEquals("Updated routine should not have additional tasks", updatedRoutine.tasks().size(), 1);
-        assertEquals("Edited task should have new name", req.taskName(), updatedRoutine.tasks().get(0).name());
+        assertEquals("Updated routine should not have additional tasks", updatedRoutine.taskList().tasks().size(), 1);
+        assertEquals("Edited task should have new name", req.taskName(), updatedRoutine.taskList().tasks().get(0).name());
     }
 }

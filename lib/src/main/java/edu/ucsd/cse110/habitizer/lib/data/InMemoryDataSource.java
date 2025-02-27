@@ -6,6 +6,7 @@ import java.util.Map;
 
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 /**
  * Class used as a sort of "database" of decks and flashcards that exist. This
@@ -50,25 +51,32 @@ public class InMemoryDataSource {
         allRoutinesSubject.setValue(getRoutines());
     }
 
+    public final static TaskList morningTasks = new TaskList(List.of(
+            new Task(0, "Shower", 0, null),
+            new Task(1, "Brush Teeth", 1, null),
+            new Task(2, "Dress", 2, null),
+            new Task(3, "Make Coffee", 3, null),
+            new Task(4, "Make Lunch", 4, null),
+            new Task(5, "Dinner Prep", 5, null),
+            new Task(6, "Pack Bag", 6, null)
+        )
+    );
+
+    public final static TaskList eveningTasks = new TaskList(List.of(
+            new Task(0, "Dinner", 0, null),
+            new Task(1, "Wash Dishes", 1, null),
+            new Task(2, "Finish Homework", 2, null),
+            new Task(3, "Review Lecture Notes", 3, null),
+            new Task(4, "Plan Next Day", 4, null),
+            new Task(5, "Watch Show", 5, null),
+            new Task(6, "Read", 6, null)
+        )
+    );
+
+
     public final static List<Routine> DEFAULT_ROUTINES = List.of(
-            new Routine(0, "Morning", List.of(
-                    new Task(0, "Shower", 0, null),
-                    new Task(1, "Brush Teeth", 1, null),
-                    new Task(2, "Dress", 2, null),
-                    new Task(3, "Make Coffee", 3, null),
-                    new Task(4, "Make Lunch", 4, null),
-                    new Task(5, "Dinner Prep", 5, null),
-                    new Task(6, "Pack Bag", 6, null)
-            ), 30),
-            new Routine(1, "Evening", List.of(
-                    new Task(0, "Dinner", 0, null),
-                    new Task(1, "Wash Dishes", 1, null),
-                    new Task(2, "Finish Homework", 2, null),
-                    new Task(3, "Review Lecture Notes", 3, null),
-                    new Task(4, "Plan Next Day", 4, null),
-                    new Task(5, "Watch Show", 5, null),
-                    new Task(6, "Read", 6, null)
-            ), 45)
+            new Routine(0, "Morning", morningTasks, 30),
+            new Routine(1, "Evening", eveningTasks, 45)
     );
 
     public static InMemoryDataSource fromDefault() {

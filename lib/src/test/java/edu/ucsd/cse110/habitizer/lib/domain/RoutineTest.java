@@ -17,7 +17,7 @@ public class RoutineTest {
 
         assertEquals("routine id should match", (Integer) 42, routine.id());
         assertEquals("routine name should match", "Morning Routine", routine.name());
-        assertEquals("routine tasks should match", tasks, routine.tasks());
+        assertEquals("routine tasks should match", tasks, routine.taskList().tasks());
         assertEquals("routine time should match", (Integer) 30, routine.time());
     }
 
@@ -32,7 +32,7 @@ public class RoutineTest {
         assertNotEquals("updated and original should not be the same object", original, updated);
         assertEquals("new id should be 99", (Integer) 99, updated.id());
         assertEquals("name should remain unchanged", "Unnamed", updated.name());
-        assertEquals("tasks should remain unchanged", tasks, updated.tasks());
+        assertEquals("tasks should remain unchanged", tasks, updated.taskList().tasks());
 
         // Original should still have null ID
         assertNull("original routine id should still be null", original.id());

@@ -13,13 +13,13 @@ public class Task implements Serializable {
     private boolean checkedOff = false;
 
 
-    private final @Nullable Integer taskTime;
+    private @Nullable Integer taskTime;
 
     public Task(@Nullable Integer id, @NonNull String name, @NonNull Integer sortOrder, @Nullable Integer taskTime) {
         this.id = id;
         this.name = name;
         this.sortOrder = sortOrder;
-        this.taskTime = taskTime != null ? taskTime : -1;
+        this.taskTime = taskTime;
     }
 
     public @Nullable Integer id() { return id; }
@@ -37,6 +37,8 @@ public class Task implements Serializable {
     public void setCheckedOff(boolean checkedOff) {
         this.checkedOff = checkedOff;
     }
+    
+    public void setTaskTime(@Nullable Integer taskTime) {this.taskTime = taskTime; }
 
     public Task withTime(Integer taskTime) {
         return new Task(this.id, this.name, this.sortOrder, taskTime);

@@ -52,14 +52,14 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // populate the view with routine's data.
         binding.taskName.setText(task.name());
 
-        //Check if the task is before or after the checked-off task
-        if (task.sortOrder() < lastTaskCheckedSortOrder && !task.isCheckedOff()) {
-            binding.textTaskTime.setText("-");
-        } else if (task.taskTime() == -1) {
-            binding.textTaskTime.setText(" ");
-        } else if (task.isCheckedOff()){
-            binding.textTaskTime.setText(task.taskTime() + "m");
-        }
+//        //Check if the task is before or after the checked-off task
+//        if (task.sortOrder() < lastTaskCheckedSortOrder && !task.isCheckedOff()) {
+//            binding.textTaskTime.setText("-");
+//        } else if (task.taskTime() == -1) {
+//            binding.textTaskTime.setText(" ");
+//        } else if (task.isCheckedOff()){
+//            binding.textTaskTime.setText(task.taskTime() + "m");
+//        }
 
         switch(routineState) {
             case BEFORE:
