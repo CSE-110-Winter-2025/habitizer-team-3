@@ -48,8 +48,10 @@ public class RoutineTest {
                 new Task(3, "Shower", 0, null)
         );
 
-        Routine r1 = new Routine(10, "Routine A", new TaskList(tasks1), 30);
-        Routine r2 = new Routine(10, "Routine A", new TaskList(tasks1), 30);
+        TaskList tasks1List = new TaskList(tasks1);
+
+        Routine r1 = new Routine(10, "Routine A", tasks1List, 30);
+        Routine r2 = new Routine(10, "Routine A", tasks1List, 30);
         Routine r3 = new Routine(11, "Routine B", new TaskList(tasks2), 30);
 
         // r1 and r2 have same fields => should be equal
