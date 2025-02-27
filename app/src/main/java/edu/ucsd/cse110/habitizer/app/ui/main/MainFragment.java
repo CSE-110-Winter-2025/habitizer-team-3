@@ -13,8 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
@@ -29,15 +27,13 @@ import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentMainBinding view;
-//    private TaskAdapter adapter;
     private RecyclerView recyclerView;
     private TaskRecyclerViewAdapter adapter;
-    private Routine currentRoutine;
     private TimerViewModel timerViewModel;
     private TaskItemListener taskItemListener;
     private UIRoutineUpdater uiRoutineUpdater;
     private UITaskUpdater uiTaskUpdater;
-    private boolean showMorningRoutine = true;
+    private Routine currentRoutine;
 
     public MainFragment() {
 
@@ -50,17 +46,11 @@ public class MainFragment extends Fragment {
         return fragment;
     }
     private void updateSwappedRoutine() {
-        Routine activeRoutine = getCurrentRoutine();
+        currentRoutine = activityModel.getCurrentRoutine();
+        view.routineName.setText(currentRoutine.name());
+        view.time.setText(String.valueOf(currentRoutine.time()));
 
-        view.routineName.setText(activeRoutine.name());
-        view.time.setText(String.valueOf(activeRoutine.time()));
-
-        Integer routineId = activeRoutine.id();
-        if (routineId == null) {
-            routineId = 0;
-        }
-
-        adapter = new TaskRecyclerViewAdapter(activeRoutine.taskList(), taskItemListener, uiTaskUpdater);
+        adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
     }
 
@@ -76,8 +66,7 @@ public class MainFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-        currentRoutine = getCurrentRoutine();
-
+        currentRoutine = activityModel.getCurrentRoutine();
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
         currentRoutine.observe(uiRoutineUpdater);
@@ -96,7 +85,7 @@ public class MainFragment extends Fragment {
         taskItemListener = new TaskItemListener() {
             @Override
             public void onEditClicked(Task task) {
-                var activeRoutineId = getCurrentRoutine().id();
+                var activeRoutineId = currentRoutine.id();
                 var taskId = task.id();
 
                 assert activeRoutineId != null && taskId != null;
@@ -160,7 +149,10 @@ public class MainFragment extends Fragment {
         });
 
         view.swapButton.setOnClickListener(v -> {
-            showMorningRoutine = !showMorningRoutine;
+            // TODO: update this logic when we have multiple routines
+            Integer currentRoutineId = activityModel.getCurrentRoutineId();
+            if (currentRoutineId == 0) activityModel.setCurrentRoutineId(1);
+            else activityModel.setCurrentRoutineId(0);
             updateSwappedRoutine();
         });
 
@@ -170,14 +162,10 @@ public class MainFragment extends Fragment {
                 String newTimeStr = view.time.getText().toString();
                 if (!newTimeStr.isEmpty()) {
                     int newTime = Integer.parseInt(newTimeStr);
-                    var routines = activityModel.getAllRoutines().getValue();
-                    if (routines == null) return;
-                    var routine = getCurrentRoutine();
 
-                    var updateRoutine = routine.withTime(newTime);
+                    var updateRoutine = currentRoutine.withTime(newTime);
 
                     activityModel.updateRoutine(updateRoutine);
-                    currentRoutine = getCurrentRoutine();
                 }
             }
         });
@@ -229,12 +217,6 @@ public class MainFragment extends Fragment {
         // timerViewModel.stopTimer();
     }
 
-    private Routine getCurrentRoutine() {
-        List<Routine> routines = activityModel.getAllRoutines().getValue();
-        assert routines != null && routines.size() >= 2;
-
-        return showMorningRoutine ? routines.get(0) : routines.get(1);
-    }
 
     private void openEditTaskDialog(EditTaskDialogParams params) {
         var dialogFragment = EditTaskDialogFragment.newInstance(params);

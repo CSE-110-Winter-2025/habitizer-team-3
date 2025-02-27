@@ -16,6 +16,7 @@ import edu.ucsd.cse110.habitizer.lib.util.Subject;
 public class MainViewModel extends ViewModel {
     private final RoutineRepository routineRepository;
     private final Subject<List<Routine>> allRoutines;
+    private Integer currentRoutineId = 0;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
@@ -56,8 +57,13 @@ public class MainViewModel extends ViewModel {
     public void updateRoutine(Routine routine) {
         routineRepository.save(routine);
     }
-    public Routine getCurrentRoutine(List<Routine> routines, boolean isMorning) {
-        if (routines == null || routines.size() < 2) return null;
-        return isMorning ? routines.get(0) : routines.get(1);
+    public Routine getCurrentRoutine() {
+        List<Routine> routines = allRoutines.getValue();
+        assert routines != null && routines.size() >= 2;
+
+        return routines.get(currentRoutineId);
     }
+
+    public void setCurrentRoutineId(Integer id) { currentRoutineId = id; }
+    public Integer getCurrentRoutineId() { return currentRoutineId; }
 }
