@@ -56,15 +56,15 @@ public class MainViewModelTest {
     @Test
     public void testMultipleEmissionsUpdateAllRoutines() {
         // 1st routine.
-        Routine routineA = new Routine(1, "Routine A", Collections.emptyList(), 30);
+        Routine routineA = new Routine(1, "Routine A", new TaskList(Collections.emptyList()), 30);
         List<Routine> routines1 = Collections.singletonList(routineA);
         fakeRepo.fakeAllRoutines.setValue(routines1);
         assertEquals("Expected allRoutines to update with 1st routine",
                 routines1, viewModel.getAllRoutines().getValue());
 
         // 2nd and 3rd routine.
-        Routine routineB = new Routine(2, "Routine B", Collections.emptyList(), 40);
-        Routine routineC = new Routine(3, "Routine C", Collections.emptyList(), 50);
+        Routine routineB = new Routine(2, "Routine B", new TaskList(Collections.emptyList()), 40);
+        Routine routineC = new Routine(3, "Routine C", new TaskList(Collections.emptyList()), 50);
         List<Routine> routines2 = Arrays.asList(routineB, routineC);
         fakeRepo.fakeAllRoutines.setValue(routines2);
         assertEquals("Expected allRoutines to update with 2nd and 3rd",
@@ -73,7 +73,7 @@ public class MainViewModelTest {
 
     @Test
     public void testUpdateRoutineCallsRepositorySave() {
-        Routine testRoutine = new Routine(null, "Test Routine", Collections.emptyList(), 120);
+        Routine testRoutine = new Routine(null, "Test Routine", new TaskList(Collections.emptyList()), 120);
         viewModel.updateRoutine(testRoutine);
         // The fake repository records the last routine passed to save.
         assertEquals("updateRoutine should call repository.save()",
@@ -105,8 +105,8 @@ public class MainViewModelTest {
 
     @Test
     public void testSelectedRoutine() {
-        Routine morningRoutine = new Routine(1, "Morning Routine", Collections.emptyList(), 50);
-        Routine eveningRoutine = new Routine(2, "Evening Routine", Collections.emptyList(), 35);
+        Routine morningRoutine = new Routine(1, "Morning Routine", new TaskList(Collections.emptyList()), 50);
+        Routine eveningRoutine = new Routine(2, "Evening Routine", new TaskList(Collections.emptyList()), 35);
         List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
 
         Routine selected = viewModel.getCurrentRoutine(routines, true);
