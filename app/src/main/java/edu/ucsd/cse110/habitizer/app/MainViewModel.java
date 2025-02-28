@@ -2,6 +2,8 @@ package edu.ucsd.cse110.habitizer.app;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
+import android.util.Log;
+
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
@@ -60,6 +62,13 @@ public class MainViewModel extends ViewModel {
     public Routine getCurrentRoutine() {
         List<Routine> routines = allRoutines.getValue();
         assert routines != null && routines.size() >= 2;
+
+        if (routines == null || routines.isEmpty()) {
+            Log.e("MainViewModel", "routineList is NULL or EMPTY!");
+            return null;
+        }
+
+        Log.d("MainViewModel", "Routine List Size: " + routines.size());
 
         return routines.get(currentRoutineId);
     }

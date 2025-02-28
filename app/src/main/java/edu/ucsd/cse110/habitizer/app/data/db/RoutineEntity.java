@@ -5,7 +5,12 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
+import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 
 @Entity(tableName = "routines")
 public class RoutineEntity {
@@ -28,5 +33,21 @@ public class RoutineEntity {
         var routineEntity = new RoutineEntity(routine.name(), routine.time());
         routineEntity.id = routine.id();
         return routineEntity;
+    }
+
+    public @NonNull Routine toRoutine() {
+        return new Routine(
+                this.id,
+                this.name,
+                new TaskList(List.of()),
+                this.time
+        );
+    }
+    public @NonNull Routine toRoutine(@NonNull List<TaskEntity> taskEntities) {
+        var tasks = taskEntities.stream()
+                .map(TaskEntity::toTask)
+                .collect(Collectors.toList());
+        var taskList = new TaskList(tasks);
+        return new Routine(this.id, this.name, taskList, this.time);
     }
 }

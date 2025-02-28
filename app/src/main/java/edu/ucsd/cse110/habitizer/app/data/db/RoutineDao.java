@@ -51,5 +51,8 @@ public interface RoutineDao {
     @Query("SELECT COUNT(*) FROM routines")
     int count();
 
+    @Transaction
+    @Query("SELECT * FROM routines WHERE id = :routineId")
+    LiveData<RoutineWithTasksEntity> getRoutineWithTasksAsLiveData(long routineId);
 }
 
