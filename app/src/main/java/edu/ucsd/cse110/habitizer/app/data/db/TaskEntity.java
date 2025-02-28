@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
-@Entity(tableName = "routines")
+@Entity(tableName = "tasks")
 public class TaskEntity {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
