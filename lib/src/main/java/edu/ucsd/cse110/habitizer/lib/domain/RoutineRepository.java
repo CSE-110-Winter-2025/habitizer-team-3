@@ -67,4 +67,11 @@ public class RoutineRepository {
 
         dataSource.putRoutine(newRoutine);
     }
+
+    public void editRoutineName(EditRoutineRequest req) {
+        Routine routine = Objects.requireNonNull(find(req.routineId()).getValue());
+        Routine newRoutine = routine.withName(req.routineName());
+
+        dataSource.putRoutine(newRoutine);
+    }
 }

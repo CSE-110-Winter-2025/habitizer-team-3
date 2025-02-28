@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,12 +15,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditRoutineDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
+import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
@@ -47,14 +55,6 @@ public class MainFragment extends Fragment {
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
-    }
-    private void updateSwappedRoutine() {
-        currentRoutine = activityModel.getCurrentRoutine();
-        view.routineName.setText(currentRoutine.name());
-        view.time.setText(String.valueOf(currentRoutine.time()));
-
-        adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
-        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -135,6 +135,14 @@ public class MainFragment extends Fragment {
             view.timerText.setText(String.valueOf(minutes));
         });
 
+        view.routineEditButton.setOnClickListener(v -> {
+            var activeRoutineId = currentRoutine.id();
+
+            assert activeRoutineId != null;
+            var params = new EditRoutineDialogParams(activeRoutineId);
+            openEditRoutineDialog(params);
+        });
+
         view.startButton.setOnClickListener(v -> {
             startRoutine();
         });
@@ -152,14 +160,6 @@ public class MainFragment extends Fragment {
         // Open the add task dialog upon clicking the add task button
         view.addTaskButton.setOnClickListener(w -> {
             openAddTaskDialog();
-        });
-
-        view.swapButton.setOnClickListener(v -> {
-            // TODO: update this logic when we have multiple routines
-            Integer currentRoutineId = activityModel.getCurrentRoutineId();
-            if (currentRoutineId == 0) activityModel.setCurrentRoutineId(1);
-            else activityModel.setCurrentRoutineId(0);
-            updateSwappedRoutine();
         });
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
@@ -202,7 +202,6 @@ public class MainFragment extends Fragment {
         view.endButton.setVisibility(uiRoutineUpdater.showEnd() ? View.VISIBLE : View.GONE);
         view.fastforwardButton.setVisibility(uiRoutineUpdater.showFastForward() ? View.VISIBLE : View.GONE);
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
-        view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
 
     }
@@ -212,7 +211,7 @@ public class MainFragment extends Fragment {
 
         activityModel.getAllRoutines().observe(routines -> {
             if (routines == null) return;
-            updateSwappedRoutine();
+            updateRoutineDropdown();
         });
 
     }
@@ -232,5 +231,55 @@ public class MainFragment extends Fragment {
     private void openAddTaskDialog() {
         var dialogFragment = AddTaskDialogFragment.newInstance();
         dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
+    }
+
+    private void openEditRoutineDialog(EditRoutineDialogParams params) {
+        var dialogFragment = EditRoutineDialogFragment.newInstance(params);
+        dialogFragment.show(getParentFragmentManager(), "EditRoutineDialogFragment");
+    }
+
+    private void updateRoutineDropdown() {
+        List<Routine> routines = activityModel.getAllRoutines().getValue();
+        if (routines == null || routines.isEmpty()) return;
+
+        List<String> routineNames = new ArrayList<>();
+        for (Routine routine : routines) {
+            routineNames.add(routine.name());
+        }
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_dropdown_item, routineNames);
+        view.routineSpinner.setAdapter(spinnerAdapter);
+
+        // Find the index of the current routine safely
+        int currentRoutineIndex = 0;
+        for (int i = 0; i < routines.size(); i++) {
+            if (Objects.equals(routines.get(i).id(), activityModel.getCurrentRoutine().id())) {
+                currentRoutineIndex = i;
+                break;
+            }
+        }
+        view.routineSpinner.setSelection(currentRoutineIndex);
+
+        view.routineSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
+                Routine selectedRoutine = routines.get(position);
+                activityModel.setCurrentRoutineId(selectedRoutine.id());
+                updateCurrentRoutine();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing.
+            }
+        });
+    }
+
+    private void updateCurrentRoutine() {
+        currentRoutine = activityModel.getCurrentRoutine();
+        view.time.setText(currentRoutine.time() != null ? String.valueOf(currentRoutine.time()) : "");
+        adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
+        recyclerView.setAdapter(adapter);
     }
 }

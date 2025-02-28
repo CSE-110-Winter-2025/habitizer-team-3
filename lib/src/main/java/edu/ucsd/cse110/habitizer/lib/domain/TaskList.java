@@ -2,11 +2,15 @@ package edu.ucsd.cse110.habitizer.lib.domain;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.ArrayList;
 
 public class TaskList implements Serializable {
     private final List<Task> tasks;
     private Integer lastTaskCheckoffTime = 0;
     private Integer currentTaskId = 0;
+
+    public TaskList() { this.tasks = new ArrayList<>(); }
+
     public TaskList(List<Task> tasks) {
         this.tasks = tasks;
     }
