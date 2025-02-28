@@ -7,7 +7,7 @@ public class RoutineBuilder {
     private @Nullable Integer id = null;
     private @NonNull String name = "New Routine";
     private @NonNull TaskList taskList = new TaskList();
-    private @Nullable Integer time = null;
+    private @Nullable Integer time = 30;
 
     public RoutineBuilder setId(@Nullable Integer id) {
         this.id = id;

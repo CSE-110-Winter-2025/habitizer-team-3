@@ -29,6 +29,7 @@ import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineBuilder;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
@@ -154,6 +155,24 @@ public class MainFragment extends Fragment {
         view.endButton.setOnClickListener(v -> {
             endRoutine();
         });
+
+        view.createRoutineButton.setOnClickListener(v -> {
+            Routine newRoutine = new RoutineBuilder().build();
+
+            activityModel.updateRoutine(newRoutine);
+
+            updateRoutineDropdown();
+
+//            // On create template routine, spinner should switch to that new routine
+//            List<Routine> routines = activityModel.getAllRoutines().getValue();
+//            if (routines != null && !routines.isEmpty()) {
+//                int newIndex = routines.size() - 1;
+//                activityModel.setCurrentRoutineId(newIndex);
+//                view.routineSpinner.setSelection(newIndex);
+//                updateCurrentRoutine();
+//            }
+        });
+
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
 
