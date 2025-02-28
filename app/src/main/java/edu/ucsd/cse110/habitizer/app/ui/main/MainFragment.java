@@ -163,14 +163,14 @@ public class MainFragment extends Fragment {
 
             updateRoutineDropdown();
 
-//            // On create template routine, spinner should switch to that new routine
-//            List<Routine> routines = activityModel.getAllRoutines().getValue();
-//            if (routines != null && !routines.isEmpty()) {
-//                int newIndex = routines.size() - 1;
-//                activityModel.setCurrentRoutineId(newIndex);
-//                view.routineSpinner.setSelection(newIndex);
-//                updateCurrentRoutine();
-//            }
+            // On create template routine, spinner should switch to that new routine
+            List<Routine> routines = activityModel.getAllRoutines().getValue();
+            if (routines != null && !routines.isEmpty()) {
+                int newIndex = routines.size() - 1;
+                activityModel.setCurrentRoutineId(newIndex);
+                view.routineSpinner.setSelection(newIndex);
+                updateCurrentRoutine();
+            }
         });
 
 
@@ -222,7 +222,8 @@ public class MainFragment extends Fragment {
         view.fastforwardButton.setVisibility(uiRoutineUpdater.showFastForward() ? View.VISIBLE : View.GONE);
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
-
+        view.createRoutineButton.setVisibility(uiRoutineUpdater.showCreateRoutine() ? View.VISIBLE : View.GONE);
+        view.routineEditButton.setVisibility(uiRoutineUpdater.canEditRoutine() ? View.VISIBLE : View.GONE);
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
