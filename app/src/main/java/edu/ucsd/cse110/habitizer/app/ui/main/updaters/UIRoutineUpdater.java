@@ -13,6 +13,7 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
     private boolean showAdd;
     private boolean canSwap;
     private boolean canEditTime;
+    private boolean showPauseResume;
 
     public boolean showStop() {
         return showStop;
@@ -41,6 +42,7 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
     public boolean canEditTime() {
         return canEditTime;
     }
+    public boolean showPauseResume() { return showPauseResume; }
 
     @Override
     public void onChanged(@Nullable RoutineState value) {
@@ -54,6 +56,7 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showAdd = true;
                 canSwap = true;
                 canEditTime = true;
+                showPauseResume = false;
                 break;
 
             case DURING:
@@ -64,6 +67,7 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showAdd = false;
                 canSwap = false;
                 canEditTime = false;
+                showPauseResume = true;
                 break;
 
             case AFTER:
@@ -74,6 +78,7 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showAdd = false;
                 canSwap = false;
                 canEditTime = false;
+                showPauseResume = false;
                 break;
             default:
                 break;

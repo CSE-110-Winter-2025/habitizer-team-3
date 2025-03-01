@@ -8,15 +8,14 @@
     <!-- Routine Name -->
     <TextView
         android:id="@+id/routine_name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="38dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:text="Routine"
         android:textSize="28sp"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
-        app:layout_constraintEnd_toStartOf="@+id/timer_text"
+        app:layout_constraintEnd_toStartOf="@+id/swap_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,9 +31,9 @@
         android:minHeight="48dp"
         android:text="Swap"
         android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.43"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/routine_name"
+        app:layout_constraintEnd_toStartOf="@id/timer_text"
+        app:layout_constraintBottom_toTopOf="@id/task_view"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
@@ -46,19 +45,22 @@
         android:inputType="number"
         android:minHeight="48dp"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
-        app:layout_constraintEnd_toStartOf="@+id/m"
+        app:layout_constraintStart_toEndOf="@id/of"
+        app:layout_constraintEnd_toStartOf="@id/m"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Task List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/task_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="410dp"
+        android:layout_height="597dp"
         android:layout_marginTop="16dp"
         app:layout_constraintBottom_toTopOf="@id/add_task_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/routine_name"
         tools:layout="@layout/list_item_task"
-        tools:layout_editor_absoluteX="16dp" />
+        tools:layout_editor_absoluteX="-1dp" />
 
     <!-- Timer Text -->
     <TextView
@@ -68,6 +70,7 @@
         android:layout_marginEnd="8dp"
         android:text="Time"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
+        app:layout_constraintStart_toEndOf="@id/swap_button"
         app:layout_constraintEnd_toStartOf="@+id/of"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -80,6 +83,7 @@
         android:layout_marginEnd="8dp"
         android:text="of"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
+        app:layout_constraintStart_toEndOf="@id/timer_text"
         app:layout_constraintEnd_toStartOf="@+id/time"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -90,6 +94,7 @@
         android:layout_marginEnd="16dp"
         android:text="m"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
+        app:layout_constraintStart_toEndOf="@id/time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,7 +123,7 @@
 
     <Button
         android:id="@+id/end_button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
@@ -126,26 +131,40 @@
         android:text="End"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/stop_button"
-        app:layout_constraintStart_toEndOf="@id/start_button" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/stop_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="16dp"
         android:text="Stop"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fastforward_button" />
+        app:layout_constraintEnd_toStartOf="@+id/fastforward_button"
+        app:layout_constraintStart_toEndOf="@id/end_button" />
 
     <Button
         android:id="@+id/fastforward_button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:text="Forward"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/pause_resume_button"
+        app:layout_constraintStart_toEndOf="@id/stop_button" />
+
+    <Button
+        android:id="@+id/pause_resume_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        android:text="Pause"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/fastforward_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

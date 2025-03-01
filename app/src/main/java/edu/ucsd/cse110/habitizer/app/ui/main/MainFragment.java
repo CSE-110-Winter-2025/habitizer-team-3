@@ -204,7 +204,7 @@ public class MainFragment extends Fragment {
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
         view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
-
+        view.pauseResumeButton.setVisibility(uiRoutineUpdater.showPauseResume() ? View.VISIBLE : View.GONE);
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
