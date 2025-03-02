@@ -14,11 +14,15 @@ public class TimerViewModel extends ViewModel {
     private final MutableLiveData<Integer> elapsedSeconds = new MutableLiveData<>(0);
 
     private Timer timer;
+    private boolean isPaused = false;
 
     public void startTimer() {
         if (timer == null) {
             timer = new Timer();
-            elapsedSeconds.postValue(0);
+            if (!isPaused) {
+                elapsedSeconds.postValue(0);
+            }
+            isPaused = false;
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -28,6 +32,14 @@ public class TimerViewModel extends ViewModel {
                     elapsedSeconds.postValue(currentValue + 1);
                 }
             }, 1000, 1000); // 1 second delay, repeat every 1 second
+        }
+    }
+
+    public void pauseTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+            isPaused = true;
         }
     }
 

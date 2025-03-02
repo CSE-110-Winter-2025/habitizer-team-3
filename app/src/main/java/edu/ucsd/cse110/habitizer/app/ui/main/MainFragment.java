@@ -162,6 +162,10 @@ public class MainFragment extends Fragment {
             updateSwappedRoutine();
         });
 
+        view.pauseResumeButton.setOnClickListener(v -> {
+            timerViewModel.pauseTimer();
+        });
+
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 // The user finished editing "time" vvv

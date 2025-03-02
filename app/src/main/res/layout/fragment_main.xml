@@ -27,13 +27,13 @@
         android:id="@+id/swap_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:minHeight="48dp"
         android:text="Swap"
         android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@+id/routine_name"
-        app:layout_constraintEnd_toStartOf="@id/timer_text"
         app:layout_constraintBottom_toTopOf="@id/task_view"
+        app:layout_constraintEnd_toStartOf="@id/timer_text"
+        app:layout_constraintStart_toEndOf="@+id/routine_name"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
@@ -137,7 +137,7 @@
     <Button
         android:id="@+id/stop_button"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="16dp"
         android:text="Stop"
