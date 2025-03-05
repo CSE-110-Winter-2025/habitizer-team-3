@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -84,7 +86,10 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Initialize the View
         this.view = FragmentMainBinding.inflate(inflater, container, false);
-
+        View rootView = view.getRoot();
+        ConstraintLayout constraintLayout = (ConstraintLayout) rootView;
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(constraintLayout);
         recyclerView = view.taskView;
         adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
@@ -162,8 +167,21 @@ public class MainFragment extends Fragment {
             updateSwappedRoutine();
         });
 
-        view.pauseResumeButton.setOnClickListener(v -> {
+        //view.pauseButton.setVisibility(View.VISIBLE);
+        view.resumeButton.setVisibility(View.GONE);
+
+        view.pauseButton.setOnClickListener(v -> {
             timerViewModel.pauseTimer();
+            view.pauseButton.setVisibility(View.GONE);
+            view.resumeButton.setVisibility(View.VISIBLE);
+            updateFastForwardConstraint(view.resumeButton.getId());
+        });
+
+        view.resumeButton.setOnClickListener(v -> {
+            timerViewModel.resumeTimer();
+            view.pauseButton.setVisibility(View.VISIBLE);
+            view.resumeButton.setVisibility(View.GONE);
+            updateFastForwardConstraint(view.pauseButton.getId());
         });
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
@@ -182,7 +200,15 @@ public class MainFragment extends Fragment {
 
         return view.getRoot();
     }
+    private void updateFastForwardConstraint(int targetViewId) {
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(view.getRoot());
 
+        constraintSet.clear(view.fastforwardButton.getId(), ConstraintSet.END);
+        constraintSet.connect(view.fastforwardButton.getId(), ConstraintSet.END, targetViewId, ConstraintSet.START);
+
+        constraintSet.applyTo(view.getRoot());
+    }
     private void startRoutine() {
         timerViewModel.startTimer();
         state.setValue(RoutineState.DURING);
@@ -208,7 +234,7 @@ public class MainFragment extends Fragment {
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
         view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
-        view.pauseResumeButton.setVisibility(uiRoutineUpdater.showPauseResume() ? View.VISIBLE : View.GONE);
+        view.pauseButton.setVisibility(uiRoutineUpdater.showPauseResume() ? View.VISIBLE : View.GONE);
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {

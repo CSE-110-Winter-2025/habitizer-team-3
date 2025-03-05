@@ -43,6 +43,11 @@ public class TimerViewModel extends ViewModel {
         }
     }
 
+    public void resumeTimer() {
+        if (isPaused && timer == null) {
+            startTimer();
+        }
+    }
     public void stopTimer() {
         if (timer != null) {
             timer.cancel();

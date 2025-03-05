@@ -153,16 +153,27 @@
         android:layout_marginBottom="16dp"
         android:text="Forward"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/pause_resume_button"
+        app:layout_constraintEnd_toStartOf="@+id/pause_button"
         app:layout_constraintStart_toEndOf="@id/stop_button" />
 
     <Button
-        android:id="@+id/pause_resume_button"
+        android:id="@+id/pause_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="16dp"
         android:text="Pause"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/fastforward_button" />
+
+    <Button
+        android:id="@+id/resume_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        android:text="Resume"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/fastforward_button" />
