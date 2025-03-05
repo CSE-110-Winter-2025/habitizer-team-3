@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 public class RoutineBuilderTest {
 
     @Test
@@ -25,7 +27,7 @@ public class RoutineBuilderTest {
     @Test
     public void setTaskList() {
         // Create a new, empty TaskList (or one with specific tasks if desired)
-        TaskList expectedTaskList = new TaskList();
+        TaskList expectedTaskList = new TaskList(new ArrayList<>());
         Routine routine = new RoutineBuilder().setTaskList(expectedTaskList).build();
         assertEquals("TaskList should be set", expectedTaskList, routine.taskList());
     }
