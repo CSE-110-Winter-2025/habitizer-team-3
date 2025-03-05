@@ -69,4 +69,13 @@ public class AddTaskDialogFragment extends DialogFragment {
     private void onNegativeButtonClick(DialogInterface dialog, int which) {
         dialog.cancel();
     }
+
+    @Override
+    public void onDismiss(@Nullable DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        Bundle result = new Bundle();
+        result.putBoolean("dialog_dismissed", true);
+        getParentFragmentManager().setFragmentResult("ADD_TASK_DIALOG_DISMISSED", result);
+    }
 }

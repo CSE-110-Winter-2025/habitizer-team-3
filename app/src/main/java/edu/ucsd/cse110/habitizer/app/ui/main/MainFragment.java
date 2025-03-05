@@ -171,6 +171,7 @@ public class MainFragment extends Fragment {
                 view.routineSpinner.setSelection(newIndex);
                 updateCurrentRoutine();
             }
+            updateButtonVisibilities();
         });
 
 
@@ -217,13 +218,15 @@ public class MainFragment extends Fragment {
 
     private void updateButtonVisibilities() {
         view.startButton.setVisibility(uiRoutineUpdater.showStart() ? View.VISIBLE : View.GONE);
+        view.startButton.setEnabled(!currentRoutine.taskList().isEmpty());
         view.stopButton.setVisibility(uiRoutineUpdater.showStop() ? View.VISIBLE : View.GONE);
         view.endButton.setVisibility(uiRoutineUpdater.showEnd() ? View.VISIBLE : View.GONE);
         view.fastforwardButton.setVisibility(uiRoutineUpdater.showFastForward() ? View.VISIBLE : View.GONE);
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
-        view.time.setEnabled(uiRoutineUpdater.canEditTime());
+        view.time.setEnabled(uiRoutineUpdater.canEditRoutine());
         view.createRoutineButton.setVisibility(uiRoutineUpdater.showCreateRoutine() ? View.VISIBLE : View.GONE);
         view.routineEditButton.setVisibility(uiRoutineUpdater.canEditRoutine() ? View.VISIBLE : View.GONE);
+        view.routineSpinner.setEnabled(uiRoutineUpdater.canEditRoutine());
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
@@ -251,6 +254,13 @@ public class MainFragment extends Fragment {
     private void openAddTaskDialog() {
         var dialogFragment = AddTaskDialogFragment.newInstance();
         dialogFragment.show(getParentFragmentManager(), "AddTaskDialogFragment");
+
+        // listen for when the dialog is closed
+        getParentFragmentManager().setFragmentResultListener("ADD_TASK_DIALOG_DISMISSED", this, (requestKey, result) -> {
+            if (result.getBoolean("dialog_dismissed", false)) {
+                recyclerView.post(() -> updateButtonVisibilities()); // Ensure UI updates after task addition
+            }
+        });
     }
 
     private void openEditRoutineDialog(EditRoutineDialogParams params) {

@@ -19,6 +19,14 @@ public class TaskList implements Serializable {
         return tasks;
     }
 
+    public int count() {
+        return tasks.size();
+    }
+
+    public boolean isEmpty() {
+        return tasks.isEmpty();
+    }
+
     public Integer lastTaskCheckoffTime() {
         return lastTaskCheckoffTime;
     }

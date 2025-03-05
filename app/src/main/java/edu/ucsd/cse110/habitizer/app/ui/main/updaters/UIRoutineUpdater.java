@@ -11,40 +11,26 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
     private boolean showEnd;
     private boolean showFastForward;
     private boolean showAdd;
-    private boolean canEditTime;
-
     private boolean showCreateRoutine;
-
     private boolean canEditRoutine;
-
     public boolean showStop() {
         return showStop;
     }
-
     public boolean showStart() {
         return showStart;
     }
-
     public boolean showEnd() {
         return showEnd;
     }
-
     public boolean showFastForward() {
         return showFastForward;
     }
-
     public boolean showCreateRoutine() {
         return showCreateRoutine;
     }
-
     public boolean showAdd() {
         return showAdd;
     }
-
-    public boolean canEditTime() {
-        return canEditTime;
-    }
-
     public boolean canEditRoutine() {
         return canEditRoutine;
     }
@@ -60,7 +46,6 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showFastForward = false;
                 showAdd = true;
                 showCreateRoutine = true;
-                canEditTime = true;
                 canEditRoutine = true;
                 break;
 
@@ -71,7 +56,6 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showFastForward = true;
                 showAdd = false;
                 showCreateRoutine = false;
-                canEditTime = false;
                 canEditRoutine = false;
                 break;
 
@@ -82,7 +66,6 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showFastForward = false;
                 showAdd = false;
                 showCreateRoutine = false;
-                canEditTime = false;
                 canEditRoutine = false;
                 break;
             default:
