@@ -1,7 +1,10 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
+import android.annotation.SuppressLint;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -9,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import edu.ucsd.cse110.habitizer.app.R;
@@ -20,11 +24,19 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
     private final TaskList taskList;
     private final TaskItemListener listener;
     private final UITaskUpdater taskUpdater;
+
+    boolean flagDragButtonTouch = false;
+
     public TaskRecyclerViewAdapter(TaskList taskList, TaskItemListener listener, UITaskUpdater taskUpdater) {
         this.taskList = taskList;
         this.listener = listener;
         this.taskUpdater = taskUpdater;
     }
+
+    public TaskList getTaskList() {
+        return taskList;
+    }
+
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView name;
         TextView time;
@@ -32,6 +44,8 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         ImageButton editButton;
         TextView leftBracket;
         TextView rightBracket;
+
+        ImageButton reorderButton;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -41,6 +55,8 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             editButton = itemView.findViewById(R.id.task_edit_button);
             leftBracket = itemView.findViewById(R.id.task_time_left_bracket);
             rightBracket = itemView.findViewById(R.id.task_time_right_bracket);
+
+            reorderButton = itemView.findViewById(R.id.task_sort_button);
         }
 
         public TextView name() {
@@ -64,7 +80,16 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         public TextView rightBracket() {
             return rightBracket;
         }
+
+        public ImageButton reorderButton() { return reorderButton; }
     }
+
+    public void exchangeOrder(int from, int to) {
+        Log.wtf("#", "exchangeOrder: " + taskList.tasks().get(from).name() + " & " + taskList.tasks().get(to).name());
+        taskList.exchangeOrder(from, to);
+    }
+
+
 
     @NonNull
     @Override
@@ -74,6 +99,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         return new TaskViewHolder(view);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = taskList.tasks().get(position);
@@ -83,6 +109,30 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         ImageButton editButton = holder.editButton();
         TextView leftBracket = holder.leftBracket();
         TextView rightBracket = holder.rightBracket();
+
+        ImageButton reorderButton = holder.reorderButton();
+
+
+        reorderButton.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        Log.wtf("#", "MotionEvent.ACTION_DOWN");
+                        flagDragButtonTouch = true;
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL: {
+                        Log.wtf("#", "MotionEvent.ACTION_UP/ACTION_CANCEL");
+                        flagDragButtonTouch = false;
+                        break;
+                    }
+                }
+                return true;
+            }
+        });
 
         name.setText(task.name());
 

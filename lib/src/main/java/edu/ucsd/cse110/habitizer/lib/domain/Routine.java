@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Routine implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String name;
-    private final @NonNull TaskList taskList;
+    private @NonNull TaskList taskList;
     private final @Nullable Integer time;
 
     public Routine(@Nullable Integer id, @NonNull String name, @NonNull TaskList taskList, @Nullable Integer time) {
@@ -20,6 +20,9 @@ public class Routine implements Serializable {
         this.time = time;
     }
 
+    public void commitTaskList(TaskList taskList) {
+        this.taskList = taskList;
+    }
 
     public @Nullable Integer id() { return id; }
 

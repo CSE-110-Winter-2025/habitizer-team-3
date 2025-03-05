@@ -9,7 +9,7 @@ import java.util.Objects;
 public class Task implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String name;
-    private final @NonNull Integer sortOrder;
+    private @NonNull Integer sortOrder;
     private boolean checkedOff = false;
 
 
@@ -39,6 +39,8 @@ public class Task implements Serializable {
     }
     
     public void setTaskTime(@Nullable Integer taskTime) {this.taskTime = taskTime; }
+
+    public void setSortOrder(int newSortOrder) { this.sortOrder = newSortOrder; }
 
     public Task withTime(Integer taskTime) {
         return new Task(this.id, this.name, this.sortOrder, taskTime);
