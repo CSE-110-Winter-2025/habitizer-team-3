@@ -175,6 +175,7 @@ public class MainFragment extends Fragment {
             view.pauseButton.setVisibility(View.GONE);
             view.resumeButton.setVisibility(View.VISIBLE);
             updateFastForwardConstraint(view.resumeButton.getId());
+            view.fastforwardButton.setEnabled(false);
         });
 
         view.resumeButton.setOnClickListener(v -> {
@@ -182,6 +183,7 @@ public class MainFragment extends Fragment {
             view.pauseButton.setVisibility(View.VISIBLE);
             view.resumeButton.setVisibility(View.GONE);
             updateFastForwardConstraint(view.pauseButton.getId());
+            view.fastforwardButton.setEnabled(true);
         });
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
@@ -234,7 +236,7 @@ public class MainFragment extends Fragment {
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
         view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
-        view.pauseButton.setVisibility(uiRoutineUpdater.showPauseResume() ? View.VISIBLE : View.GONE);
+        view.pauseButton.setVisibility(uiRoutineUpdater.showPause() ? View.VISIBLE : View.GONE);
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {

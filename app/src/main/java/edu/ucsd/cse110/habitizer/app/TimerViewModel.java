@@ -56,9 +56,12 @@ public class TimerViewModel extends ViewModel {
     }
 
     public void forwardTimer() {
-        Integer currentValue = elapsedSeconds.getValue();
-        if (currentValue == null) currentValue = 0;
-        elapsedSeconds.postValue(currentValue + 30);
+        if (!isPaused) {
+            Integer currentValue = elapsedSeconds.getValue();
+            if (currentValue == null) currentValue = 0;
+            elapsedSeconds.postValue(currentValue + 30);
+        }
+
     }
 
     // The Fragment/Activity can observe this LiveData
