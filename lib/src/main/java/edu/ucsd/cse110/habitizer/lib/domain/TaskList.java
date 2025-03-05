@@ -9,8 +9,6 @@ public class TaskList implements Serializable {
     private Integer lastTaskCheckoffTime = 0;
     private Integer currentTaskId = 0;
 
-    public TaskList() { this.tasks = new ArrayList<>(); }
-
     public TaskList(List<Task> tasks) {
         this.tasks = tasks;
     }

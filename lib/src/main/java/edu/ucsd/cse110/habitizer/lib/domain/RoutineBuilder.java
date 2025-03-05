@@ -3,10 +3,12 @@ package edu.ucsd.cse110.habitizer.lib.domain;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 public class RoutineBuilder {
     private @Nullable Integer id = null;
     private @NonNull String name = "New Routine";
-    private @NonNull TaskList taskList = new TaskList();
+    private @NonNull TaskList taskList = new TaskList(new ArrayList<>());
     private @Nullable Integer time = 30;
 
     public RoutineBuilder setId(@Nullable Integer id) {
