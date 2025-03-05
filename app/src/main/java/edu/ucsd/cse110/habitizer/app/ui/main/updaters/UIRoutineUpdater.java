@@ -63,7 +63,7 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showStart = false;
                 showStop = true;
                 showEnd = true;
-                showFastForward = true;
+                showFastForward = false;
                 showAdd = false;
                 canSwap = false;
                 canEditTime = false;

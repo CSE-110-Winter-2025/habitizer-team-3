@@ -19,34 +19,37 @@ public class TimerViewModel extends ViewModel {
     public void startTimer() {
         if (timer == null) {
             timer = new Timer();
-            if (!isPaused) {
-                elapsedSeconds.postValue(0);
-            }
-            isPaused = false;
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    // Safely update LiveData from a background thread
-                    Integer currentValue = elapsedSeconds.getValue();
-                    if (currentValue == null) currentValue = 0;
-                    elapsedSeconds.postValue(currentValue + 1);
-                }
-            }, 1000, 1000); // 1 second delay, repeat every 1 second
+            scheduleTimerTask();
         }
     }
 
     public void pauseTimer() {
         if (timer != null) {
             timer.cancel();
+            timer.purge();
             timer = null;
             isPaused = true;
         }
     }
 
     public void resumeTimer() {
-        if (isPaused && timer == null) {
-            startTimer();
+        if (isPaused && timer != null) {
+            isPaused = false;
+            timer = new Timer();
+            scheduleTimerTask();
         }
+    }
+
+    private void scheduleTimerTask() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // Safely update LiveData from a background thread
+                Integer currentValue = elapsedSeconds.getValue();
+                if (currentValue == null) currentValue = 0;
+                elapsedSeconds.postValue(currentValue + 1);
+            }
+        }, 1000, 1000);
     }
     public void stopTimer() {
         if (timer != null) {
@@ -59,7 +62,7 @@ public class TimerViewModel extends ViewModel {
         if (!isPaused) {
             Integer currentValue = elapsedSeconds.getValue();
             if (currentValue == null) currentValue = 0;
-            elapsedSeconds.postValue(currentValue + 30);
+            elapsedSeconds.postValue(currentValue + 15);
         }
 
     }
