@@ -146,6 +146,8 @@ public class MainFragment extends Fragment {
 
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
+            view.fastforwardButton.setVisibility(View.VISIBLE);
+            view.stopButton.setVisibility(View.GONE);
         });
 
         view.endButton.setOnClickListener(v -> {
