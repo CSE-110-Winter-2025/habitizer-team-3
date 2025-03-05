@@ -109,9 +109,9 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         ImageButton editButton = holder.editButton();
         TextView leftBracket = holder.leftBracket();
         TextView rightBracket = holder.rightBracket();
-
         ImageButton reorderButton = holder.reorderButton();
 
+        reorderButton.setVisibility(taskUpdater.canReorder() ? View.VISIBLE : View.GONE);
 
         reorderButton.setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("ClickableViewAccessibility")
