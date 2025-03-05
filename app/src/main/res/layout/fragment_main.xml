@@ -121,37 +121,41 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/end_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="#FEF7FF"
+        android:src="@drawable/baseline_playlist_add_check_24"
         android:text="End"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/stop_button"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/stop_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="16dp"
-        android:text="⏹"
+        android:backgroundTint="#FEF7FF"
+        android:src="@drawable/stop_solid"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/fastforward_button"
         app:layout_constraintStart_toEndOf="@id/end_button" />
 
-    <Button
+    <ImageButton
         android:id="@+id/fastforward_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        android:text="Forward"
+        android:backgroundTint="#FEF7FF"
+        android:src="@drawable/baseline_fast_forward_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/pause_button"
         app:layout_constraintStart_toEndOf="@id/stop_button" />
@@ -162,6 +166,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="#FEF7FF"
         android:src="@drawable/baseline_pause_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -173,6 +178,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="#FEF7FF"
         android:src="@drawable/baseline_play_arrow_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
