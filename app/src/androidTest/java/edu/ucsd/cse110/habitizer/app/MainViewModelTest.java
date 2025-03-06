@@ -15,9 +15,11 @@ import java.util.List;
 import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
-import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
+import edu.ucsd.cse110.habitizer.lib.domain.SimpleRoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
+import edu.ucsd.cse110.habitizer.lib.util.MutableSubject;
+import edu.ucsd.cse110.habitizer.lib.util.SimpleSubject;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModelTest {
@@ -139,9 +141,9 @@ public class MainViewModelTest {
     }
 
     //    A fake implementation of RoutineRepository.
-    private static class FakeRoutineRepository extends RoutineRepository {
+    private static class FakeRoutineRepository extends SimpleRoutineRepository {
         // Expose a Subject so we can simulate routines.
-        final Subject<List<Routine>> fakeAllRoutines = new Subject<>();
+        final MutableSubject<List<Routine>> fakeAllRoutines = new SimpleSubject<>();
         Routine savedRoutine = null;
         Task lastAddedTask;
         int lastAddedTaskRoutineId;
@@ -183,12 +185,12 @@ public class MainViewModelTest {
 
         @Override
         public Subject<Routine> getRoutineSubject(int id) {
-            return new Subject<>();
+            return new SimpleSubject<>();
         }
 
         @Override
         public Subject<List<Routine>> getAllRoutinesSubject() {
-            return new Subject<>();
+            return new SimpleSubject<>();
         }
 
         @Override

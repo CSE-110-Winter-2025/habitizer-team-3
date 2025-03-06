@@ -7,6 +7,8 @@ import java.util.Map;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
+import edu.ucsd.cse110.habitizer.lib.util.MutableSubject;
+import edu.ucsd.cse110.habitizer.lib.util.SimpleSubject;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 /**
  * Class used as a sort of "database" of decks and flashcards that exist. This
@@ -15,8 +17,8 @@ import edu.ucsd.cse110.habitizer.lib.util.Subject;
  */
 public class InMemoryDataSource {
     private final Map<Integer, Routine> routines = new HashMap<>();
-    private final Map<Integer, Subject<Routine>> routineSubjects = new HashMap<>();
-    private final Subject<List<Routine>> allRoutinesSubject = new Subject<>();
+    private final Map<Integer, MutableSubject<Routine>> routineSubjects = new HashMap<>();
+    private final MutableSubject<List<Routine>> allRoutinesSubject = new SimpleSubject<>();
 
     public InMemoryDataSource() {
 
@@ -32,7 +34,7 @@ public class InMemoryDataSource {
 
     public Subject<Routine> getRoutineSubject(int id) {
         if (!routineSubjects.containsKey(id)) {
-            var subject = new Subject<Routine>();
+            var subject = new SimpleSubject<Routine>();
             subject.setValue(getRoutine(id));
             routineSubjects.put(id, subject);
         }

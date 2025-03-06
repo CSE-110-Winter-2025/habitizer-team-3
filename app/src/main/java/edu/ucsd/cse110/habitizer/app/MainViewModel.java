@@ -5,17 +5,21 @@ import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLI
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
+import edu.ucsd.cse110.habitizer.lib.util.MutableSubject;
+import edu.ucsd.cse110.habitizer.lib.util.SimpleSubject;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
     private final RoutineRepository routineRepository;
-    private final Subject<List<Routine>> allRoutines;
+    private final MutableSubject<List<Routine>> allRoutines;
     private Integer currentRoutineId = 0;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
@@ -32,7 +36,7 @@ public class MainViewModel extends ViewModel {
         this.routineRepository = routineRepository;
 
         // Create the observable subjects.
-        this.allRoutines = new Subject<>();
+        this.allRoutines = new SimpleSubject<>();
 
         // Observe all routines from the repo
         routineRepository.findAll().observe(routines -> {
@@ -57,11 +61,29 @@ public class MainViewModel extends ViewModel {
     public void updateRoutine(Routine routine) {
         routineRepository.save(routine);
     }
+
     public Routine getCurrentRoutine() {
         List<Routine> routines = allRoutines.getValue();
-        assert routines != null && routines.size() >= 2;
+        if (routines == null || routines.isEmpty()) {
+            return null; // Return null if no routines are available yet
+        }
 
-        return routines.get(currentRoutineId);
+        // Ensure currentRoutineId is valid
+        if (currentRoutineId >= routines.size()) {
+            currentRoutineId = 0; // Reset to first routine if the ID is out of bounds
+        }
+
+        // Get the routine
+        Routine routine = routines.get(currentRoutineId);
+
+        // Validate the routine has a taskList
+        if (routine != null && routine.taskList() == null) {
+            // This shouldn't happen if RoomRoutineRepository is properly loading tasks,
+            // but just in case, create an empty TaskList
+            return routine.withTasks(new TaskList(new ArrayList<>()));
+        }
+
+        return routine;
     }
 
     public void setCurrentRoutineId(Integer id) { currentRoutineId = id; }

@@ -1,6 +1,7 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +21,13 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
     private final TaskList taskList;
     private final TaskItemListener listener;
     private final UITaskUpdater taskUpdater;
+
     public TaskRecyclerViewAdapter(TaskList taskList, TaskItemListener listener, UITaskUpdater taskUpdater) {
         this.taskList = taskList;
         this.listener = listener;
         this.taskUpdater = taskUpdater;
     }
+
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView name;
         TextView time;
@@ -50,9 +53,11 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         public TextView time() {
             return time;
         }
+
         public CheckBox checkBox() {
             return checkBox;
         }
+
         public ImageButton editButton() {
             return editButton;
         }
@@ -76,6 +81,11 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+        // Safety check - if taskList or tasks are null, don't proceed
+        if (taskList == null || taskList.tasks() == null) {
+            return;
+        }
+
         Task task = taskList.tasks().get(position);
         TextView name = holder.name();
         TextView time = holder.time();
@@ -102,24 +112,36 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         checkBox.setVisibility(taskUpdater.canCheckoff() ? View.VISIBLE : View.GONE);
         checkBox.setEnabled(!task.isCheckedOff() && taskUpdater.isCheckoffEnabled());
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) listener.onCheckOffClicked(task);
+            if (isChecked && listener != null) listener.onCheckOffClicked(task);
         });
 
         editButton.setOnClickListener(v -> {
-            listener.onEditClicked(task);
+            if (listener != null) listener.onEditClicked(task);
         });
 
-        if (taskList.allTasksChecked()) listener.onAllTaskCheckedOff();
+        // Only call onAllTaskCheckedOff if the listener is not null and all tasks are checked
+        if (listener != null && taskList.allTasksChecked()) {
+            listener.onAllTaskCheckedOff();
+        }
 
         editButton.setVisibility(taskUpdater.canEdit() ? View.VISIBLE : View.GONE);
 
         leftBracket.setVisibility(taskUpdater.showBrackets() ? View.VISIBLE : View.GONE);
         rightBracket.setVisibility(taskUpdater.showBrackets() ? View.VISIBLE : View.GONE);
-
     }
 
     @Override
     public int getItemCount() {
+        // Add debug logging
+        if (taskList == null) {
+            Log.d("TaskAdapter", "TaskList is null");
+            return 0;
+        }
+        if (taskList.tasks() == null) {
+            Log.d("TaskAdapter", "TaskList.tasks() is null");
+            return 0;
+        }
+        Log.d("TaskAdapter", "Task count: " + taskList.tasks().size());
         return taskList.tasks().size();
     }
 }
