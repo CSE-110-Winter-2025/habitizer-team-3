@@ -33,6 +33,10 @@ public class Routine implements Serializable {
         return new Routine(id, this.name, this.taskList, this.time);
     }
 
+    public Routine withName(String name) {
+        return new Routine(this.id, name, this.taskList, this.time);
+    }
+
     public Routine withTime(int time) {
         return new Routine(this.id, this.name, this.taskList, time);
     }

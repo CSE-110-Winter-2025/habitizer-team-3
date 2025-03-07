@@ -150,4 +150,26 @@ public class RoutineRepositoryTest {
         assertEquals("Updated routine should not have additional tasks", updatedRoutine.taskList().tasks().size(), 1);
         assertEquals("Edited task should have new name", req.taskName(), updatedRoutine.taskList().tasks().get(0).name());
     }
+
+    @Test
+    public void testAutoAssignId() {
+        List<Task> tasks = List.of(
+                new Task(1, "Wake up", 0, null)
+        );
+        // Create a routine with a null id.
+        Routine routine = new Routine(null, "Auto Assigned Routine", new TaskList(tasks), 30);
+        repository.save(routine);
+
+        // Retrieve all routines and verify that one routine exists and its id is non-null.
+        Subject<List<Routine>> allRoutines = repository.findAll();
+        List<Routine> routines = allRoutines.getValue();
+        assertNotNull("Routines list should not be null", routines);
+        assertEquals("Should have 1 routine", 1, routines.size());
+        Routine saved = routines.get(0);
+        assertNotNull("Auto-assigned routine id should not be null", saved.id());
+
+        // Also verify that you can find the routine by its new id.
+        Subject<Routine> found = repository.find(saved.id());
+        assertEquals("Saved routine should be retrievable by its new id", saved, found.getValue());
+    }
 }

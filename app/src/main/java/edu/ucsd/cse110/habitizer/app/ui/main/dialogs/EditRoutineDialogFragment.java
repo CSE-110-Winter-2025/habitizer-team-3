@@ -4,27 +4,31 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
-import edu.ucsd.cse110.habitizer.app.databinding.FragmentAddTaskDialogBinding;
-import edu.ucsd.cse110.habitizer.lib.domain.Routine;
-import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.app.databinding.FragmentEditRoutineDialogBinding;
+import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
+import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineRequest;
 
-public class AddTaskDialogFragment extends DialogFragment {
+public class EditRoutineDialogFragment extends DialogFragment {
     private MainViewModel activityModel;
-    private FragmentAddTaskDialogBinding view;
+    private @NonNull FragmentEditRoutineDialogBinding view;
+    private static final String ARG_ROUTINE_ID = "routine_id";
+    private int routineId;
 
-    AddTaskDialogFragment() {
+    EditRoutineDialogFragment() {
         // Required empty public constructor
     }
 
-    public static AddTaskDialogFragment newInstance() {
-        var fragment = new AddTaskDialogFragment();
+    public static EditRoutineDialogFragment newInstance(EditRoutineDialogParams params) {
+        var fragment = new EditRoutineDialogFragment();
         Bundle args = new Bundle();
+        args.putInt(ARG_ROUTINE_ID, params.routineId());
         fragment.setArguments(args);
         return fragment;
     }
@@ -32,6 +36,8 @@ public class AddTaskDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
+
+        this.routineId = requireArguments().getInt(ARG_ROUTINE_ID);
 
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -42,40 +48,27 @@ public class AddTaskDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceBundle) {
-        this.view = FragmentAddTaskDialogBinding.inflate(getLayoutInflater());
+        // change if we implement custom fragment for this
+        this.view = FragmentEditRoutineDialogBinding.inflate(getLayoutInflater());
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle("New Task")
-                .setMessage("Please provide the new task name.")
+                .setTitle("Edit Routine Name")
+                .setMessage("Please provide the new routine name.")
                 .setView(view.getRoot())
-                .setPositiveButton("Create", this::onPositiveButtonClick)
+                .setPositiveButton("Update", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::onNegativeButtonClick)
                 .create();
     }
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
-        String taskName = view.taskNameInput.getText().toString().trim();
-        Integer routineId = activityModel.getCurrentRoutineId();
-        Routine currentRoutine = activityModel.getCurrentRoutine();
-        Integer listSize = currentRoutine.taskList().tasks().size();
-        //TODO: change id to something else
-        Task task = new Task(-1, taskName, listSize, null);
-
-        activityModel.addTaskToRoutine(routineId, task);
+        var routineName = view.routineNameInput.getText().toString().trim();
+        EditRoutineRequest req = new EditRoutineRequest(routineId, routineName);
+        activityModel.editRoutine(req);
 
         dialog.dismiss();
     }
 
     private void onNegativeButtonClick(DialogInterface dialog, int which) {
         dialog.cancel();
-    }
-
-    @Override
-    public void onDismiss(@Nullable DialogInterface dialog) {
-        super.onDismiss(dialog);
-
-        Bundle result = new Bundle();
-        result.putBoolean("dialog_dismissed", true);
-        getParentFragmentManager().setFragmentResult("ADD_TASK_DIALOG_DISMISSED", result);
     }
 }
