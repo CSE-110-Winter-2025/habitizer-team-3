@@ -7,11 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,8 +47,32 @@ public class MainFragment extends Fragment {
     private Routine currentRoutine;
     private AppState state;
 
-    public MainFragment() {
+    ItemTouchHelper itemTouchHelper;
 
+
+    public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
+        @Override
+        public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+            return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            int from = viewHolder.getAdapterPosition();
+            int to = target.getAdapterPosition();
+            Log.wtf("#", "onMove");
+            adapter.exchangeOrder(from, to);
+            adapter.notifyItemMoved(from, to);
+
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) { }
+    }
+
+    public MainFragment() {
+        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback());
     }
 
     public static MainFragment newInstance() {
@@ -87,6 +111,8 @@ public class MainFragment extends Fragment {
         this.view = FragmentMainBinding.inflate(inflater, container, false);
 
         recyclerView = view.taskView;
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
         adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
 

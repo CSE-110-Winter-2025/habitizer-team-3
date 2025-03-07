@@ -10,6 +10,7 @@ public class UITaskUpdater implements Observer<RoutineState> {
     private boolean canCheckoff = false;
     private boolean showBrackets = true;
     private boolean isCheckoffEnabled = false;
+    private boolean canReorder = true;
 
     public boolean canEdit() {
         return canEdit;
@@ -26,6 +27,7 @@ public class UITaskUpdater implements Observer<RoutineState> {
     public boolean showBrackets() {
         return showBrackets;
     }
+    public boolean canReorder() { return canReorder; }
     @Override
     public void onChanged(@Nullable RoutineState value) {
         if (value == null) return;
@@ -35,6 +37,7 @@ public class UITaskUpdater implements Observer<RoutineState> {
                 canCheckoff = false;
                 isCheckoffEnabled = false;
                 showBrackets = true;
+                canReorder = true;
                 break;
 
             case DURING:
@@ -42,6 +45,7 @@ public class UITaskUpdater implements Observer<RoutineState> {
                 canCheckoff = true;
                 isCheckoffEnabled = true;
                 showBrackets = false;
+                canReorder = false;
                 break;
 
             case AFTER:
@@ -49,6 +53,7 @@ public class UITaskUpdater implements Observer<RoutineState> {
                 canCheckoff = true;
                 isCheckoffEnabled = false;
                 showBrackets = false;
+                canReorder = false;
                 break;
         }
     }
