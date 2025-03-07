@@ -7,6 +7,7 @@ import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
 public class UITaskUpdater implements Observer<RoutineState> {
     private boolean canEdit = true;
+    private boolean canDelete = true;
     private boolean canCheckoff = false;
     private boolean showBrackets = true;
     private boolean isCheckoffEnabled = false;
@@ -15,6 +16,8 @@ public class UITaskUpdater implements Observer<RoutineState> {
     public boolean canEdit() {
         return canEdit;
     }
+
+    public boolean canDelete() { return canDelete; }
 
     public boolean canCheckoff() {
         return canCheckoff;
@@ -34,6 +37,7 @@ public class UITaskUpdater implements Observer<RoutineState> {
         switch (value) {
             case BEFORE:
                 canEdit = true;
+                canDelete = true;
                 canCheckoff = false;
                 isCheckoffEnabled = false;
                 showBrackets = true;
@@ -42,6 +46,7 @@ public class UITaskUpdater implements Observer<RoutineState> {
 
             case DURING:
                 canEdit = false;
+                canDelete = false;
                 canCheckoff = true;
                 isCheckoffEnabled = true;
                 showBrackets = false;
@@ -50,6 +55,7 @@ public class UITaskUpdater implements Observer<RoutineState> {
 
             case AFTER:
                 canEdit = false;
+                canDelete = false;
                 canCheckoff = true;
                 isCheckoffEnabled = false;
                 showBrackets = false;

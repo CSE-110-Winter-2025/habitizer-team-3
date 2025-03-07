@@ -77,6 +77,10 @@ public class RoutineRepository {
         dataSource.putRoutine(newRoutine);
     }
 
+    public void deleteTask(DeleteTaskRequest req) {
+        dataSource.removeTask(req.routineId(), req.taskId());
+    }
+
     public void editRoutineName(EditRoutineRequest req) {
         Routine routine = Objects.requireNonNull(find(req.routineId()).getValue());
         Routine newRoutine = routine.withName(req.routineName());
