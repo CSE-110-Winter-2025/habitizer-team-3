@@ -1,12 +1,8 @@
 package edu.ucsd.cse110.habitizer.app.ui.main.updaters;
 
 
-import static edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState.MOCK;
-import static edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState.REAL;
 
 import androidx.annotation.Nullable;
-
-import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
 import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
@@ -35,15 +31,13 @@ public class UITimerUpdater implements Observer<TimerState> {
         if (value == null) return;
         switch (value) {
             case REAL:
-
-                showStop = false;
-                showEnd = false;
+                showStop = true;
+                showEnd = true;
                 showFastForward = false;
-                showPauseResume = false;
+                showPauseResume = true;
                 break;
 
             case MOCK:
-
                 showStop = false;
                 showEnd = true;
                 showFastForward = true;

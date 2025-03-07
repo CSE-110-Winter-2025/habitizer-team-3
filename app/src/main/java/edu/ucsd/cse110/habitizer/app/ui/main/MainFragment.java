@@ -84,6 +84,7 @@ public class MainFragment extends Fragment {
 
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
+        uiTimerUpdater = new UITimerUpdater();
         state.observe(uiRoutineUpdater);
         state.observe(uiTaskUpdater);
     }
@@ -153,8 +154,6 @@ public class MainFragment extends Fragment {
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
             timerState = TimerState.MOCK;
-            //view.fastforwardButton.setVisibility(View.VISIBLE);
-            //view.stopButton.setVisibility(View.GONE);
         });
 
         view.endButton.setOnClickListener(v -> {
@@ -177,10 +176,6 @@ public class MainFragment extends Fragment {
         });
 
 
-
-        //view.pauseButton.setVisibility(View.VISIBLE);
-        //view.pauseResumeButton.setVisibility(View.GONE);
-
         view.pauseResumeButton.setOnClickListener(v -> {
             if (isPaused) {
                 timerViewModel.resumeTimer();
@@ -193,14 +188,6 @@ public class MainFragment extends Fragment {
             }
             isPaused = !isPaused;
         });
-
-        /*view.resumeButton.setOnClickListener(v -> {
-            timerViewModel.resumeTimer();
-            view.pauseButton.setVisibility(View.VISIBLE);
-            view.resumeButton.setVisibility(View.GONE);
-            updateFastForwardConstraint(view.pauseButton.getId());
-            view.fastforwardButton.setEnabled(true);
-        });*/
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
@@ -218,15 +205,7 @@ public class MainFragment extends Fragment {
 
         return view.getRoot();
     }
-    /*private void updateFastForwardConstraint(int targetViewId) {
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(view.getRoot());
 
-        constraintSet.clear(view.fastforwardButton.getId(), ConstraintSet.END);
-        constraintSet.connect(view.fastforwardButton.getId(), ConstraintSet.END, targetViewId, ConstraintSet.START);
-
-        constraintSet.applyTo(view.getRoot());
-    }*/
     private void startRoutine() {
         timerViewModel.startTimer();
         state.setValue(RoutineState.DURING);
@@ -248,12 +227,12 @@ public class MainFragment extends Fragment {
     private void updateButtonVisibilities() {
         view.startButton.setVisibility(uiRoutineUpdater.showStart() ? View.VISIBLE : View.GONE);
         view.stopButton.setVisibility((uiRoutineUpdater.showStop() && uiTimerUpdater.showStop()) ? View.VISIBLE : View.GONE);
-        view.endButton.setVisibility(uiRoutineUpdater.showEnd() ? View.VISIBLE : View.GONE);
+        view.endButton.setVisibility((uiRoutineUpdater.showEnd() && uiTimerUpdater.showEnd()) ? View.VISIBLE : View.GONE);
         view.fastforwardButton.setVisibility((uiRoutineUpdater.showFastForward() && uiTimerUpdater.showFastForward()) ? View.VISIBLE : View.GONE);
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
         view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
-        view.pauseResumeButton.setVisibility(uiRoutineUpdater.showPause() ? View.VISIBLE : View.GONE);
+        view.pauseResumeButton.setVisibility((uiRoutineUpdater.showPause() && uiTimerUpdater.showPauseResume()) ? View.VISIBLE : View.GONE);
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
