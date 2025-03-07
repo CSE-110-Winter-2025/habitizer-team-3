@@ -22,6 +22,7 @@ import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.ObserveTimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
@@ -45,6 +46,7 @@ public class MainFragment extends Fragment {
     private AppState state;
     private boolean isPaused = false;
     private TimerState timerState;
+    private ObserveTimerState observeTimerState;
 
     public MainFragment() {
 
@@ -79,6 +81,7 @@ public class MainFragment extends Fragment {
 
         currentRoutine = activityModel.getCurrentRoutine();
         state = new AppState();
+        observeTimerState = new ObserveTimerState();
 
         state.setValue(RoutineState.BEFORE);
 
@@ -86,6 +89,7 @@ public class MainFragment extends Fragment {
         uiTaskUpdater = new UITaskUpdater();
         uiTimerUpdater = new UITimerUpdater();
         state.observe(uiRoutineUpdater);
+        observeTimerState.observe(uiTimerUpdater);
         state.observe(uiTaskUpdater);
     }
 
@@ -153,7 +157,7 @@ public class MainFragment extends Fragment {
 
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
-            timerState = TimerState.MOCK;
+            observeTimerState.setValue(TimerState.MOCK);
         });
 
         view.endButton.setOnClickListener(v -> {
@@ -209,7 +213,7 @@ public class MainFragment extends Fragment {
     private void startRoutine() {
         timerViewModel.startTimer();
         state.setValue(RoutineState.DURING);
-        timerState = TimerState.REAL;
+        observeTimerState.setValue(TimerState.REAL);
         updateButtonVisibilities();
         adapter.notifyDataSetChanged();
     }
