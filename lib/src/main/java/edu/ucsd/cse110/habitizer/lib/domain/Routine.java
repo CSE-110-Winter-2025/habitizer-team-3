@@ -20,10 +20,6 @@ public class Routine implements Serializable {
         this.time = time;
     }
 
-    public void commitTaskList(TaskList taskList) {
-        this.taskList = taskList;
-    }
-
     public @Nullable Integer id() { return id; }
 
     public @NonNull String name() { return name; }
