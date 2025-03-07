@@ -12,7 +12,7 @@ public class TaskList implements Serializable {
     private Integer currentTaskId = 0;
 
     public TaskList(List<Task> tasks) {
-        this.tasks = new LinkedList<>(tasks);
+        this.tasks = new ArrayList<>(tasks);
     }
 
     public List<Task> tasks() {
