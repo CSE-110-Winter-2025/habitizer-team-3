@@ -61,9 +61,9 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
 
             case DURING:
                 showStart = false;
-                showStop = true;
+                //showStop = true;
                 showEnd = true;
-                showFastForward = false;
+                //showFastForward = false;
                 showAdd = false;
                 canSwap = false;
                 canEditTime = false;

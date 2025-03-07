@@ -24,6 +24,7 @@ import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
@@ -41,6 +42,7 @@ public class MainFragment extends Fragment {
     private Routine currentRoutine;
     private AppState state;
     private boolean isPaused = false;
+    private TimerState timerState;
 
     public MainFragment() {
 
@@ -148,8 +150,9 @@ public class MainFragment extends Fragment {
 
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
-            view.fastforwardButton.setVisibility(View.VISIBLE);
-            view.stopButton.setVisibility(View.GONE);
+            timerState = TimerState.MOCK;
+            //view.fastforwardButton.setVisibility(View.VISIBLE);
+            //view.stopButton.setVisibility(View.GONE);
         });
 
         view.endButton.setOnClickListener(v -> {
@@ -172,6 +175,10 @@ public class MainFragment extends Fragment {
         });
 
 
+
+        //view.pauseButton.setVisibility(View.VISIBLE);
+        //view.pauseResumeButton.setVisibility(View.GONE);
+
         view.pauseResumeButton.setOnClickListener(v -> {
             if (isPaused) {
                 timerViewModel.resumeTimer();
@@ -184,6 +191,14 @@ public class MainFragment extends Fragment {
             }
             isPaused = !isPaused;
         });
+
+        /*view.resumeButton.setOnClickListener(v -> {
+            timerViewModel.resumeTimer();
+            view.pauseButton.setVisibility(View.VISIBLE);
+            view.resumeButton.setVisibility(View.GONE);
+            updateFastForwardConstraint(view.pauseButton.getId());
+            view.fastforwardButton.setEnabled(true);
+        });*/
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
@@ -201,7 +216,7 @@ public class MainFragment extends Fragment {
 
         return view.getRoot();
     }
-    private void updateFastForwardConstraint(int targetViewId) {
+    /*private void updateFastForwardConstraint(int targetViewId) {
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(view.getRoot());
 
@@ -209,10 +224,11 @@ public class MainFragment extends Fragment {
         constraintSet.connect(view.fastforwardButton.getId(), ConstraintSet.END, targetViewId, ConstraintSet.START);
 
         constraintSet.applyTo(view.getRoot());
-    }
+    }*/
     private void startRoutine() {
         timerViewModel.startTimer();
         state.setValue(RoutineState.DURING);
+        timerState = TimerState.REAL;
         updateButtonVisibilities();
         adapter.notifyDataSetChanged();
     }
@@ -236,6 +252,13 @@ public class MainFragment extends Fragment {
         view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
         view.pauseResumeButton.setVisibility(uiRoutineUpdater.showPause() ? View.VISIBLE : View.GONE);
+        if (timerState == TimerState.REAL) {
+            view.stopButton.setVisibility(View.VISIBLE);
+            view.fastforwardButton.setVisibility(View.GONE);
+        } else if (timerState == TimerState.MOCK) {
+            view.stopButton.setVisibility(View.GONE);
+            view.fastforwardButton.setVisibility(View.VISIBLE);
+        }
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
