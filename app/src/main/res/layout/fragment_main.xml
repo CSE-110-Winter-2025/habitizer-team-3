@@ -157,11 +157,11 @@
         android:backgroundTint="#FEF7FF"
         android:src="@drawable/baseline_fast_forward_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/pause_button"
+        app:layout_constraintEnd_toStartOf="@+id/pause_resume_button"
         app:layout_constraintStart_toEndOf="@id/stop_button" />
 
     <ImageButton
-        android:id="@+id/pause_button"
+        android:id="@+id/pause_resume_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
@@ -172,16 +172,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/fastforward_button" />
 
-    <ImageButton
-        android:id="@+id/resume_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="#FEF7FF"
-        android:src="@drawable/baseline_play_arrow_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/fastforward_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

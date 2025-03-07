@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
+import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
@@ -39,6 +40,7 @@ public class MainFragment extends Fragment {
     private UITaskUpdater uiTaskUpdater;
     private Routine currentRoutine;
     private AppState state;
+    private boolean isPaused = false;
 
     public MainFragment() {
 
@@ -169,23 +171,18 @@ public class MainFragment extends Fragment {
             updateSwappedRoutine();
         });
 
-        //view.pauseButton.setVisibility(View.VISIBLE);
-        view.resumeButton.setVisibility(View.GONE);
 
-        view.pauseButton.setOnClickListener(v -> {
-            timerViewModel.pauseTimer();
-            view.pauseButton.setVisibility(View.GONE);
-            view.resumeButton.setVisibility(View.VISIBLE);
-            updateFastForwardConstraint(view.resumeButton.getId());
-            view.fastforwardButton.setEnabled(false);
-        });
-
-        view.resumeButton.setOnClickListener(v -> {
-            timerViewModel.resumeTimer();
-            view.pauseButton.setVisibility(View.VISIBLE);
-            view.resumeButton.setVisibility(View.GONE);
-            updateFastForwardConstraint(view.pauseButton.getId());
-            view.fastforwardButton.setEnabled(true);
+        view.pauseResumeButton.setOnClickListener(v -> {
+            if (isPaused) {
+                timerViewModel.resumeTimer();
+                view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
+                view.fastforwardButton.setEnabled(true);
+            } else {
+                timerViewModel.pauseTimer();
+                view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
+                view.fastforwardButton.setEnabled(false);
+            }
+            isPaused = !isPaused;
         });
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
@@ -238,7 +235,7 @@ public class MainFragment extends Fragment {
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
         view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
-        view.pauseButton.setVisibility(uiRoutineUpdater.showPause() ? View.VISIBLE : View.GONE);
+        view.pauseResumeButton.setVisibility(uiRoutineUpdater.showPause() ? View.VISIBLE : View.GONE);
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
