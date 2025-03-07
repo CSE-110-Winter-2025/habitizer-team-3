@@ -4,17 +4,27 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 public class TaskList implements Serializable {
     private final List<Task> tasks;
     private Integer lastTaskCheckoffTime = 0;
     private Integer currentTaskId = 0;
+
     public TaskList(List<Task> tasks) {
         this.tasks = new LinkedList<>(tasks);
     }
 
     public List<Task> tasks() {
         return tasks;
+    }
+
+    public int count() {
+        return tasks.size();
+    }
+
+    public boolean isEmpty() {
+        return tasks.isEmpty();
     }
 
     public Integer lastTaskCheckoffTime() {
