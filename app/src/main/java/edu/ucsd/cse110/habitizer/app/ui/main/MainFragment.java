@@ -137,6 +137,9 @@ public class MainFragment extends Fragment {
 
                 currentRoutine.taskList().setLastCheckoffTime(currentElapsed);
 
+                // reset task timer to 0 after checkoff
+                view.taskTimerText.setText(String.valueOf(0));
+
                 if (currentRoutine.taskList().currentTaskId() < task.sortOrder()) {
                     currentRoutine.taskList().setCurrentTaskId(task.sortOrder() + 1);
                 }
@@ -158,8 +161,10 @@ public class MainFragment extends Fragment {
 
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
             // Update a TextView to show elapsed minutes
-            int minutes = seconds / 60;
-            view.timerText.setText(String.valueOf(minutes));
+            int timerMinutes = seconds / 60;
+            int taskMinutes = (seconds - currentRoutine.taskList().lastTaskCheckoffTime()) / 60;
+            view.timerText.setText(String.valueOf(timerMinutes));
+            view.taskTimerText.setText(String.valueOf(taskMinutes));
         });
 
         view.routineEditButton.setOnClickListener(v -> {

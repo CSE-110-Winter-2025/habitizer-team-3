@@ -71,6 +71,16 @@
     <!-- Buttons (Spread across the bottom) -->
 
     <TextView
+        android:id="@+id/task_timer_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="8dp"
+        android:text="Time"
+        app:layout_constraintEnd_toStartOf="@+id/of"
+        app:layout_constraintTop_toBottomOf="@+id/timer_text" />
+
+    <TextView
         android:id="@+id/of"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -79,6 +89,15 @@
         app:layout_constraintBottom_toTopOf="@+id/task_view"
         app:layout_constraintEnd_toStartOf="@+id/time"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/task_minutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="m"
+        app:layout_constraintBottom_toTopOf="@+id/task_view"
+        app:layout_constraintEnd_toStartOf="@+id/time" />
 
     <TextView
         android:id="@+id/m"
