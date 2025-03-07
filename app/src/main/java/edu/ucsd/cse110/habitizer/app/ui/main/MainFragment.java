@@ -28,6 +28,7 @@ import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
+import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITimerUpdater;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
 
 public class MainFragment extends Fragment {
@@ -38,6 +39,7 @@ public class MainFragment extends Fragment {
     private TimerViewModel timerViewModel;
     private TaskItemListener taskItemListener;
     private UIRoutineUpdater uiRoutineUpdater;
+    private UITimerUpdater uiTimerUpdater;
     private UITaskUpdater uiTaskUpdater;
     private Routine currentRoutine;
     private AppState state;
@@ -245,20 +247,13 @@ public class MainFragment extends Fragment {
 
     private void updateButtonVisibilities() {
         view.startButton.setVisibility(uiRoutineUpdater.showStart() ? View.VISIBLE : View.GONE);
-        view.stopButton.setVisibility(uiRoutineUpdater.showStop() ? View.VISIBLE : View.GONE);
+        view.stopButton.setVisibility((uiRoutineUpdater.showStop() && uiTimerUpdater.showStop()) ? View.VISIBLE : View.GONE);
         view.endButton.setVisibility(uiRoutineUpdater.showEnd() ? View.VISIBLE : View.GONE);
-        view.fastforwardButton.setVisibility(uiRoutineUpdater.showFastForward() ? View.VISIBLE : View.GONE);
+        view.fastforwardButton.setVisibility((uiRoutineUpdater.showFastForward() && uiTimerUpdater.showFastForward()) ? View.VISIBLE : View.GONE);
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
         view.swapButton.setEnabled(uiRoutineUpdater.canSwap());
         view.time.setEnabled(uiRoutineUpdater.canEditTime());
         view.pauseResumeButton.setVisibility(uiRoutineUpdater.showPause() ? View.VISIBLE : View.GONE);
-        if (timerState == TimerState.REAL) {
-            view.stopButton.setVisibility(View.VISIBLE);
-            view.fastforwardButton.setVisibility(View.GONE);
-        } else if (timerState == TimerState.MOCK) {
-            view.stopButton.setVisibility(View.GONE);
-            view.fastforwardButton.setVisibility(View.VISIBLE);
-        }
     }
 
     public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
