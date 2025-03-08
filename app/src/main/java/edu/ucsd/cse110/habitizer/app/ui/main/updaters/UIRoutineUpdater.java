@@ -2,10 +2,11 @@ package edu.ucsd.cse110.habitizer.app.ui.main.updaters;
 
 import androidx.annotation.Nullable;
 
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
-public class UIRoutineUpdater implements Observer<RoutineState> {
+public class UIRoutineUpdater implements Observer<AppState> {
     private boolean showStop;
     private boolean showStart;
     private boolean showEnd;
@@ -45,9 +46,9 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
     public boolean showPause() { return showPauseResume; }
 
     @Override
-    public void onChanged(@Nullable RoutineState value) {
+    public void onChanged(@Nullable AppState value) {
         if (value == null) return;
-        switch (value) {
+        switch (value.routineState()) {
             case BEFORE:
                 showStart = true;
                 showStop = false;

@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Timer;
+
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
@@ -22,6 +24,7 @@ import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppSubject;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.ObserveTimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
@@ -43,10 +46,8 @@ public class MainFragment extends Fragment {
     private UITimerUpdater uiTimerUpdater;
     private UITaskUpdater uiTaskUpdater;
     private Routine currentRoutine;
-    private AppState state;
+    private AppSubject appSubject;
     private boolean isPaused = false;
-    private TimerState timerState;
-    private ObserveTimerState observeTimerState;
 
     public MainFragment() {
 
@@ -80,17 +81,15 @@ public class MainFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         currentRoutine = activityModel.getCurrentRoutine();
-        state = new AppState();
-        observeTimerState = new ObserveTimerState();
-
-        state.setValue(RoutineState.BEFORE);
+        appSubject = new AppSubject(RoutineState.BEFORE, TimerState.REAL);
 
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
         uiTimerUpdater = new UITimerUpdater();
-        state.observe(uiRoutineUpdater);
-        observeTimerState.observe(uiTimerUpdater);
-        state.observe(uiTaskUpdater);
+
+        appSubject.observe(uiRoutineUpdater);
+        appSubject.observe(uiTaskUpdater);
+        appSubject.observe(uiTimerUpdater);
     }
 
     @Override
@@ -157,7 +156,7 @@ public class MainFragment extends Fragment {
 
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
-            observeTimerState.setValue(TimerState.MOCK);
+            appSubject.updateTimerState(TimerState.MOCK);
             updateButtonVisibilities();
         });
 
@@ -213,14 +212,13 @@ public class MainFragment extends Fragment {
 
     private void startRoutine() {
         timerViewModel.startTimer();
-        state.setValue(RoutineState.DURING);
-        observeTimerState.setValue(TimerState.REAL);
+        appSubject.updateRoutineState(RoutineState.DURING);
         updateButtonVisibilities();
         adapter.notifyDataSetChanged();
     }
     private void endRoutine() {
         timerViewModel.stopTimer();
-        state.setValue(RoutineState.AFTER);
+        appSubject.updateRoutineState(RoutineState.AFTER);
         updateButtonVisibilities();
         view.startButton.setText("Routine Ended"); // We should really stop doing this...
         view.startButton.setEnabled(false);
