@@ -158,6 +158,7 @@ public class MainFragment extends Fragment {
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
             observeTimerState.setValue(TimerState.MOCK);
+            updateButtonVisibilities();
         });
 
         view.endButton.setOnClickListener(v -> {

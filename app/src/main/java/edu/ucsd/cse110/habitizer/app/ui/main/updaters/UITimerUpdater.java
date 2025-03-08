@@ -2,6 +2,8 @@ package edu.ucsd.cse110.habitizer.app.ui.main.updaters;
 
 
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
 import edu.ucsd.cse110.habitizer.lib.util.Observer;
