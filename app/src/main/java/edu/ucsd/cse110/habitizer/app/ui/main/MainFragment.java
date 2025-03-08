@@ -229,7 +229,8 @@ public class MainFragment extends Fragment {
         timerViewModel.startTimer();
         state.setValue(RoutineState.DURING);
         updateButtonVisibilities();
-        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
+        recyclerView.invalidate();
     }
     private void endRoutine() {
         timerViewModel.stopTimer();
@@ -237,9 +238,8 @@ public class MainFragment extends Fragment {
         updateButtonVisibilities();
         view.startButton.setText("Routine Ended"); // We should really stop doing this...
         view.startButton.setEnabled(false);
-        recyclerView.post(() -> {
-            adapter.notifyDataSetChanged();
-        });
+        recyclerView.setAdapter(adapter);
+        recyclerView.invalidate();
     }
 
     private void updateButtonVisibilities() {
