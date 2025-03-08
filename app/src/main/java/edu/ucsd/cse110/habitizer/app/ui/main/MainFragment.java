@@ -8,14 +8,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.Timer;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.R;
@@ -23,9 +19,7 @@ import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
-import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppSubject;
-import edu.ucsd.cse110.habitizer.app.ui.main.state.ObserveTimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
@@ -47,7 +41,6 @@ public class MainFragment extends Fragment {
     private UITaskUpdater uiTaskUpdater;
     private Routine currentRoutine;
     private AppSubject appSubject;
-    private boolean isPaused = false;
 
     public MainFragment() {
 
@@ -96,10 +89,6 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Initialize the View
         this.view = FragmentMainBinding.inflate(inflater, container, false);
-        View rootView = view.getRoot();
-        ConstraintLayout constraintLayout = (ConstraintLayout) rootView;
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(constraintLayout);
         recyclerView = view.taskView;
         adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
@@ -181,7 +170,7 @@ public class MainFragment extends Fragment {
 
 
         view.pauseResumeButton.setOnClickListener(v -> {
-            if (isPaused) {
+            if (timerViewModel.isPaused()) {
                 timerViewModel.resumeTimer();
                 view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
                 view.fastforwardButton.setEnabled(true);
@@ -190,7 +179,6 @@ public class MainFragment extends Fragment {
                 view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
                 view.fastforwardButton.setEnabled(false);
             }
-            isPaused = !isPaused;
         });
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {

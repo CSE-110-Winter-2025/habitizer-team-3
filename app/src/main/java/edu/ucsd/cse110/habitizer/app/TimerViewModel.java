@@ -7,14 +7,13 @@ import androidx.lifecycle.ViewModel;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import edu.ucsd.cse110.habitizer.lib.domain.Task;
-
 public class TimerViewModel extends ViewModel {
     // Current elapsed time in seconds
     private final MutableLiveData<Integer> elapsedSeconds = new MutableLiveData<>(0);
 
     private Timer timer;
     private boolean isPaused = false;
+    private boolean isMocking = false;
 
     public void startTimer() {
         if (timer == null) {
@@ -40,14 +39,14 @@ public class TimerViewModel extends ViewModel {
         }
     }
 
+    // Safely update LiveData from a background thread
     private void scheduleTimerTask() {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                // Safely update LiveData from a background thread
-                Integer currentValue = elapsedSeconds.getValue();
-                if (currentValue == null) currentValue = 0;
-                elapsedSeconds.postValue(currentValue + 1);
+            Integer currentValue = elapsedSeconds.getValue();
+            if (currentValue == null) currentValue = 0;
+            elapsedSeconds.postValue(currentValue + 1);
             }
         }, 1000, 1000);
     }
@@ -55,11 +54,12 @@ public class TimerViewModel extends ViewModel {
         if (timer != null) {
             timer.cancel();
             timer = null;
+            isMocking = true;
         }
     }
 
     public void forwardTimer() {
-        if (!isPaused) {
+        if (!isPaused && isMocking) {
             Integer currentValue = elapsedSeconds.getValue();
             if (currentValue == null) currentValue = 0;
             elapsedSeconds.postValue(currentValue + 15);
@@ -71,4 +71,5 @@ public class TimerViewModel extends ViewModel {
     public LiveData<Integer> getElapsedSeconds() {
         return elapsedSeconds;
     }
+    public boolean isPaused() { return isPaused; }
 }
