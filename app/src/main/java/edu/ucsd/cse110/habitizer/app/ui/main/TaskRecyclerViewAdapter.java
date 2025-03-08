@@ -139,7 +139,14 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         String timeText = " "; // default to nothing
 
         if (task.isCheckedOff() && task.taskTime() != null) { // task is checked off, show the time
-            timeText = task.taskTime() + " m";
+            if(task.taskTime() < 60){
+                timeText = (task.taskTime()+5) + " s";
+            }
+            else if(task.taskTime() == 60){
+                timeText = "1 m";
+            }
+            else{
+                timeText = (task.taskTime()/60 + 1) + " m";}
         } else if (task.sortOrder() < taskList.currentTaskId()) { // task is skipped
             timeText = "-";
         }
