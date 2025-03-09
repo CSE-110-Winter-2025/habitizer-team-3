@@ -31,6 +31,15 @@ public class RoutineRepository {
     }
 
     public void save(Routine routine) {
+        // If the routine doesn't have an id, assign one
+        if (routine.id() == null) {
+            // assign one greater than the current max id
+            int newId = dataSource.getRoutines().stream()
+                    .map(r -> r.id() == null ? 0 : r.id())
+                    .max(Integer::compareTo)
+                    .orElse(0) + 1;
+            routine = routine.withId(newId);
+        }
         dataSource.putRoutine(routine);
     }
 
@@ -64,6 +73,13 @@ public class RoutineRepository {
 
         // Make a new routine with the updated task list
         Routine newRoutine = routine.withTasks(new TaskList(taskList));
+
+        dataSource.putRoutine(newRoutine);
+    }
+
+    public void editRoutineName(EditRoutineRequest req) {
+        Routine routine = Objects.requireNonNull(find(req.routineId()).getValue());
+        Routine newRoutine = routine.withName(req.routineName());
 
         dataSource.putRoutine(newRoutine);
     }

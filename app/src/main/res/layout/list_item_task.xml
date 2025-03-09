@@ -6,6 +6,17 @@
     android:paddingHorizontal="8dp"
     android:layout_height="48dp">
 
+    <ImageButton
+        android:id="@+id/task_sort_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@null"
+        app:srcCompat="@drawable/ic_draggable"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/task_checkbox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <CheckBox
         android:id="@+id/task_checkbox"
         android:layout_width="wrap_content"

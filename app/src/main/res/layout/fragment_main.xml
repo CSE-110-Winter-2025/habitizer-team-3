@@ -6,16 +6,17 @@
     android:layout_height="match_parent">
 
     <!-- Routine Name -->
-    <TextView
-        android:id="@+id/routine_name"
-        android:layout_width="wrap_content"
+    <Spinner
+        android:id="@+id/routine_spinner"
+        android:layout_width="0dp"
         android:layout_height="38dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:text="Routine"
         android:textSize="28sp"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
-        app:layout_constraintEnd_toStartOf="@+id/swap_button"
+        app:layout_constraintEnd_toStartOf="@+id/routine_edit_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,17 +24,14 @@
 
     <!-- Time EditText -->
 
-    <Button
-        android:id="@+id/swap_button"
+    <ImageButton
+        android:id="@+id/routine_edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:minHeight="48dp"
-        android:text="Swap"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@id/task_view"
-        app:layout_constraintEnd_toStartOf="@id/timer_text"
-        app:layout_constraintStart_toEndOf="@+id/routine_name"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/edit_icon"
+        app:layout_constraintBottom_toTopOf="@+id/task_view"
+        app:layout_constraintEnd_toStartOf="@+id/timer_text"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
@@ -56,9 +54,7 @@
         android:layout_height="597dp"
         android:layout_marginTop="16dp"
         app:layout_constraintBottom_toTopOf="@id/add_task_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/routine_name"
+        app:layout_constraintTop_toBottomOf="@id/routine_spinner"
         tools:layout="@layout/list_item_task"
         tools:layout_editor_absoluteX="-1dp" />
 
@@ -172,5 +168,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/fastforward_button" />
 
+
+    <Button
+        android:id="@+id/create_routine_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+"
+        app:layout_constraintBottom_toBottomOf="@+id/task_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
