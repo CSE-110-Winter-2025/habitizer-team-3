@@ -183,6 +183,7 @@ public class MainFragment extends Fragment {
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
             appSubject.updateTimerState(TimerState.MOCK);
+            updatePauseResumeButton();
             updateButtonVisibilities();
         });
 
@@ -217,15 +218,7 @@ public class MainFragment extends Fragment {
         });
 
         view.pauseResumeButton.setOnClickListener(v -> {
-            if (timerViewModel.isPaused()) {
-                timerViewModel.resumeTimer();
-                view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
-                view.fastforwardButton.setEnabled(true);
-            } else {
-                timerViewModel.pauseTimer();
-                view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
-                view.fastforwardButton.setEnabled(false);
-            }
+           updatePauseResumeButton();
         });
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
@@ -358,5 +351,17 @@ public class MainFragment extends Fragment {
         view.time.setText(currentRoutine.time() != null ? String.valueOf(currentRoutine.time()) : "");
         adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void updatePauseResumeButton() {
+        if (timerViewModel.isPaused()) {
+            timerViewModel.resumeTimer();
+            view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
+            view.fastforwardButton.setEnabled(true);
+        } else {
+            timerViewModel.pauseTimer();
+            view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
+            view.fastforwardButton.setEnabled(false);
+        }
     }
 }

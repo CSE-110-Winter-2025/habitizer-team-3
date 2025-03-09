@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.habitizer.app;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -32,7 +34,7 @@ public class TimerViewModel extends ViewModel {
     }
 
     public void resumeTimer() {
-        if (isPaused && timer != null) {
+        if (isPaused && timer == null) {
             isPaused = false;
             timer = new Timer();
             scheduleTimerTask();
@@ -54,8 +56,9 @@ public class TimerViewModel extends ViewModel {
         if (timer != null) {
             timer.cancel();
             timer = null;
-            isMocking = true;
         }
+        isMocking = true;
+        isPaused = true;
     }
 
     public void forwardTimer() {
