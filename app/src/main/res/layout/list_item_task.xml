@@ -29,9 +29,9 @@
 
     <TextView
         android:id="@+id/task_name"
-        android:layout_width="200dp"
+        android:layout_width="0dp"
         android:layout_height="19dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
         android:text="@string/task_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/task_time_left_bracket"
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/edit_icon"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/delete_button"
         app:layout_constraintStart_toEndOf="@+id/task_time_right_bracket"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +53,6 @@
         android:id="@+id/task_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
         android:text="task_time"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/task_time_right_bracket"
@@ -82,4 +81,13 @@
         app:layout_constraintEnd_toStartOf="@+id/task_edit_button"
         app:layout_constraintStart_toEndOf="@+id/task_time"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_close_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>
