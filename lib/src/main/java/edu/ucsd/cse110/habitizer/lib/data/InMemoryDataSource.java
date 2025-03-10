@@ -1,8 +1,10 @@
 package edu.ucsd.cse110.habitizer.lib.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
@@ -87,6 +89,91 @@ public class InMemoryDataSource {
             data.putRoutine(r);
         }
         return data;
+    }
+
+    public void removeTask(int routineId, int taskId) {
+        Routine routine = routines.get(routineId);
+        if (routine == null) return;
+
+        // Find the task to remove
+        Task taskToRemove = null;
+        for (Task task : routine.taskList().tasks()) {
+            if (task.id() == taskId) {
+                taskToRemove = task;
+                break;
+            }
+        }
+
+        if (taskToRemove == null) return;
+
+        int sortOrder = taskToRemove.sortOrder();
+
+        // Get current max sort order for this routine's tasks
+        int maxSortOrder = routine.taskList().tasks().stream()
+                .mapToInt(Task::sortOrder)
+                .max()
+                .orElse(-1);
+
+        // Create a new task list without the removed task
+        List<Task> updatedTasks = routine.taskList().tasks().stream()
+                .filter(task -> task.id() != taskId)
+                .collect(Collectors.toList());
+
+        // Update the routine
+        TaskList updatedTaskList = new TaskList(updatedTasks);
+        updatedTaskList.setLastCheckoffTime(routine.taskList().lastTaskCheckoffTime());
+        updatedTaskList.setCurrentTaskId(routine.taskList().currentTaskId());
+        putRoutine(routine.withTasks(updatedTaskList));
+
+        // Shift sort orders for tasks that came after the removed task
+        shiftTaskSortOrders(routineId, sortOrder + 1, maxSortOrder, -1);
+    }
+
+    public void shiftTaskSortOrders(int routineId, int from, int to, int by) {
+        Routine routine = routines.get(routineId);
+        if (routine == null) return;
+
+        // Get tasks that need sort order updates and create copies with updated sort orders
+        List<Task> tasksToUpdate = new ArrayList<>();
+
+        for (Task task : routine.taskList().tasks()) {
+            if (task.sortOrder() >= from && task.sortOrder() <= to) {
+                // Create a copy with new sort order (assuming Task is immutable)
+                Task updatedTask = new Task(
+                        task.id(),
+                        task.name(),
+                        task.sortOrder() + by,
+                        task.taskTime()
+                );
+                tasksToUpdate.add(updatedTask);
+            }
+        }
+
+        if (tasksToUpdate.isEmpty()) return;
+
+        // Create updated task list
+        List<Task> allTasks = new ArrayList<>(routine.taskList().tasks());
+
+        // Replace old tasks with updated ones
+        for (int i = 0; i < allTasks.size(); i++) {
+            Task task = allTasks.get(i);
+            if (task.sortOrder() >= from && task.sortOrder() <= to) {
+                // Find the updated version of this task
+                for (Task updatedTask : tasksToUpdate) {
+                    if (updatedTask.id() == task.id()) {
+                        allTasks.set(i, updatedTask);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Create new TaskList and update routine
+        TaskList updatedTaskList = new TaskList(allTasks);
+        updatedTaskList.setLastCheckoffTime(routine.taskList().lastTaskCheckoffTime());
+        updatedTaskList.setCurrentTaskId(routine.taskList().currentTaskId());
+
+        putRoutine(routine.withTasks(updatedTaskList));
     }
 }
 

@@ -2,58 +2,56 @@ package edu.ucsd.cse110.habitizer.app.ui.main.updaters;
 
 import androidx.annotation.Nullable;
 
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
-public class UIRoutineUpdater implements Observer<RoutineState> {
+public class UIRoutineUpdater implements Observer<AppState> {
     private boolean showStop;
     private boolean showStart;
     private boolean showEnd;
     private boolean showFastForward;
     private boolean showAdd;
-    private boolean canSwap;
-    private boolean canEditTime;
+    private boolean showPauseResume;
+    private boolean showCreateRoutine;
+    private boolean canEditRoutine;
 
     public boolean showStop() {
         return showStop;
     }
-
     public boolean showStart() {
         return showStart;
     }
-
     public boolean showEnd() {
         return showEnd;
     }
-
     public boolean showFastForward() {
         return showFastForward;
     }
-
+    public boolean showCreateRoutine() {
+        return showCreateRoutine;
+    }
     public boolean showAdd() {
         return showAdd;
     }
-
-    public boolean canSwap() {
-        return canSwap;
+    public boolean canEditRoutine() {
+        return canEditRoutine;
     }
-
-    public boolean canEditTime() {
-        return canEditTime;
-    }
+    public boolean showPause() { return showPauseResume; }
 
     @Override
-    public void onChanged(@Nullable RoutineState value) {
+    public void onChanged(@Nullable AppState value) {
         if (value == null) return;
-        switch (value) {
+        switch (value.routineState()) {
             case BEFORE:
                 showStart = true;
                 showStop = false;
                 showEnd = false;
                 showFastForward = false;
                 showAdd = true;
-                canSwap = true;
-                canEditTime = true;
+                showPauseResume = false;
+                showCreateRoutine = true;
+                canEditRoutine = true;
                 break;
 
             case DURING:
@@ -62,8 +60,9 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showEnd = true;
                 showFastForward = true;
                 showAdd = false;
-                canSwap = false;
-                canEditTime = false;
+                showPauseResume = true;
+                showCreateRoutine = false;
+                canEditRoutine = false;
                 break;
 
             case AFTER:
@@ -72,8 +71,10 @@ public class UIRoutineUpdater implements Observer<RoutineState> {
                 showEnd = false;
                 showFastForward = false;
                 showAdd = false;
-                canSwap = false;
-                canEditTime = false;
+                showPauseResume = false;
+                showCreateRoutine = false;
+                canEditRoutine = false;
+
                 break;
             default:
                 break;

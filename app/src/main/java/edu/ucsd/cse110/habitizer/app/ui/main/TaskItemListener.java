@@ -4,6 +4,7 @@ import edu.ucsd.cse110.habitizer.lib.domain.Task;
 
 public interface TaskItemListener {
     void onEditClicked(Task task);
+    void onDeleteClicked(Task task);
     void onCheckOffClicked(Task task);
     void onAllTaskCheckedOff();
 }
