@@ -6,39 +6,42 @@
     android:layout_height="match_parent">
 
     <!-- Routine Name -->
-    <Spinner
-        android:id="@+id/routine_spinner"
-        android:layout_width="0dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="Routine"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/task_view"
-        app:layout_constraintEnd_toStartOf="@+id/routine_edit_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Swap Routines -->
 
     <!-- Time EditText -->
 
+    <!-- Task List -->
+
+    <!-- Timer Text -->
+
+    <Spinner
+        android:id="@+id/routine_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:layout_marginStart="16dp"
+        android:text="Routine"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toTopOf="@+id/task_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageButton
         android:id="@+id/routine_edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:src="@drawable/edit_icon"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
-        app:layout_constraintEnd_toStartOf="@+id/timer_text"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/routine_spinner"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.508" />
 
     <EditText
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
+        android:layout_marginEnd="8dp"
         android:hint="TIME"
         android:inputType="number"
         android:minHeight="48dp"
@@ -46,18 +49,18 @@
         app:layout_constraintEnd_toStartOf="@+id/m"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Task List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/task_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@id/add_task_button"
-        app:layout_constraintTop_toBottomOf="@id/routine_spinner"
-        tools:layout="@layout/list_item_task"
-        tools:layout_editor_absoluteX="16dp" />
+        android:layout_width="411dp"
+        android:layout_height="715dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/list_item_task" />
 
-    <!-- Timer Text -->
+    <!-- Buttons (Spread across the bottom) -->
+
     <TextView
         android:id="@+id/timer_text"
         android:layout_width="wrap_content"
@@ -67,8 +70,6 @@
         app:layout_constraintBottom_toTopOf="@+id/task_view"
         app:layout_constraintEnd_toStartOf="@+id/of"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Buttons (Spread across the bottom) -->
 
     <TextView
         android:id="@+id/of"
@@ -82,8 +83,8 @@
 
     <TextView
         android:id="@+id/m"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="13dp"
+        android:layout_height="22dp"
         android:layout_marginEnd="16dp"
         android:text="m"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
@@ -95,55 +96,79 @@
         android:id="@+id/add_task_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/add_task"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/add_task"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/start_button" />
+        app:layout_constraintEnd_toStartOf="@id/start_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/task_view" />
 
     <Button
         android:id="@+id/start_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:text="Start"
-        app:layout_constraintStart_toEndOf="@id/add_task_button"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toEndOf="@id/add_task_button"
+        app:layout_constraintTop_toBottomOf="@+id/task_view" />
 
-    <Button
+    <ImageButton
         android:id="@+id/end_button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="#FEF7FF"
+        android:src="@drawable/baseline_playlist_add_check_24"
         android:text="End"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/stop_button"
-        app:layout_constraintStart_toEndOf="@id/start_button" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/stop_button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="16dp"
-        android:text="Stop"
+        android:backgroundTint="#FEF7FF"
+        android:src="@drawable/stop_solid"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fastforward_button" />
+        app:layout_constraintEnd_toStartOf="@+id/fastforward_button"
+        app:layout_constraintStart_toEndOf="@id/end_button" />
 
-    <Button
+    <ImageButton
         android:id="@+id/fastforward_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_width="51dp"
+        android:layout_height="46dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        android:text="Forward"
+        android:backgroundTint="#FEF7FF"
+        android:src="@drawable/baseline_fast_forward_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/pause_resume_button"
+        app:layout_constraintStart_toEndOf="@id/stop_button" />
+
+    <ImageButton
+        android:id="@+id/pause_resume_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#FEF7FF"
+        android:src="@drawable/baseline_pause_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/fastforward_button" />
+
 
     <Button
         android:id="@+id/create_routine_button"
