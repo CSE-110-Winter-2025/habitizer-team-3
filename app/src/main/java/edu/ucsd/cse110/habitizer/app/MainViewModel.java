@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
 import java.util.List;
 
+import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
@@ -54,6 +55,7 @@ public class MainViewModel extends ViewModel {
     public void editTask(EditTaskRequest req) {
         routineRepository.editTask(req);
     }
+    public void deleteTask(DeleteTaskRequest req) { routineRepository.deleteTask(req); }
 
     public void editRoutine(EditRoutineRequest req) { routineRepository.editRoutineName(req); }
 

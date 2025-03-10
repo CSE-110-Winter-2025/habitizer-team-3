@@ -20,19 +20,27 @@ import java.util.List;
 import java.util.Objects;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
+import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.DeleteTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditRoutineDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppSubject;
+import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
+import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineBuilder;
+
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
+import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITimerUpdater;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
 
 public class MainFragment extends Fragment {
@@ -43,9 +51,10 @@ public class MainFragment extends Fragment {
     private TimerViewModel timerViewModel;
     private TaskItemListener taskItemListener;
     private UIRoutineUpdater uiRoutineUpdater;
+    private UITimerUpdater uiTimerUpdater;
     private UITaskUpdater uiTaskUpdater;
     private Routine currentRoutine;
-    private AppState state;
+    private AppSubject appSubject;
 
     ItemTouchHelper itemTouchHelper;
 
@@ -95,21 +104,21 @@ public class MainFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         currentRoutine = activityModel.getCurrentRoutine();
-        state = new AppState();
-
-        state.setValue(RoutineState.BEFORE);
+        appSubject = new AppSubject(RoutineState.BEFORE, TimerState.REAL);
 
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
-        state.observe(uiRoutineUpdater);
-        state.observe(uiTaskUpdater);
+        uiTimerUpdater = new UITimerUpdater();
+
+        appSubject.observe(uiRoutineUpdater);
+        appSubject.observe(uiTaskUpdater);
+        appSubject.observe(uiTimerUpdater);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Initialize the View
         this.view = FragmentMainBinding.inflate(inflater, container, false);
-
         recyclerView = view.taskView;
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
@@ -128,6 +137,16 @@ public class MainFragment extends Fragment {
             }
 
             @Override
+            public void onDeleteClicked(Task task) {
+                var activeRoutineId = currentRoutine.id();
+                var taskId = task.id();
+
+                assert activeRoutineId != null && taskId != null;
+                var params = new DeleteTaskDialogParams(activeRoutineId, taskId, task.sortOrder());
+                openDeleteTaskDialog(params);
+            }
+
+            @Override
             public void onCheckOffClicked(Task task) {
                 task.setCheckedOff(true);
                 int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
@@ -136,6 +155,9 @@ public class MainFragment extends Fragment {
                 task.setTaskTime(Math.max(taskTime, 1)); // make sure minimum is 1 second
 
                 currentRoutine.taskList().setLastCheckoffTime(currentElapsed);
+
+                // reset task timer to 0 after checkoff
+                view.taskTimerText.setText(String.valueOf(0));
 
                 if (currentRoutine.taskList().currentTaskId() < task.sortOrder()) {
                     currentRoutine.taskList().setCurrentTaskId(task.sortOrder() + 1);
@@ -158,8 +180,10 @@ public class MainFragment extends Fragment {
 
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
             // Update a TextView to show elapsed minutes
-            int minutes = seconds / 60;
-            view.timerText.setText(String.valueOf(minutes));
+            int timerMinutes = seconds / 60;
+            int taskMinutes = (seconds - currentRoutine.taskList().lastTaskCheckoffTime()) / 60;
+            view.timerText.setText(String.valueOf(timerMinutes));
+            view.taskTimerText.setText(String.valueOf(taskMinutes));
         });
 
         view.routineEditButton.setOnClickListener(v -> {
@@ -176,6 +200,9 @@ public class MainFragment extends Fragment {
 
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
+            appSubject.updateTimerState(TimerState.MOCK);
+            updatePauseResumeButton();
+            updateButtonVisibilities();
         });
 
         view.endButton.setOnClickListener(v -> {
@@ -208,6 +235,10 @@ public class MainFragment extends Fragment {
             openAddTaskDialog();
         });
 
+        view.pauseResumeButton.setOnClickListener(v -> {
+           updatePauseResumeButton();
+        });
+
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 // The user finished editing "time" vvv
@@ -227,27 +258,28 @@ public class MainFragment extends Fragment {
 
     private void startRoutine() {
         timerViewModel.startTimer();
-        state.setValue(RoutineState.DURING);
+        appSubject.updateRoutineState(RoutineState.DURING);
         updateButtonVisibilities();
-        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
+        recyclerView.invalidate();
     }
     private void endRoutine() {
         timerViewModel.stopTimer();
-        state.setValue(RoutineState.AFTER);
+        appSubject.updateRoutineState(RoutineState.AFTER);
         updateButtonVisibilities();
         view.startButton.setText("Routine Ended"); // We should really stop doing this...
         view.startButton.setEnabled(false);
-        recyclerView.post(() -> {
-            adapter.notifyDataSetChanged();
-        });
+        recyclerView.setAdapter(adapter);
+        recyclerView.invalidate();
     }
 
     private void updateButtonVisibilities() {
         view.startButton.setVisibility(uiRoutineUpdater.showStart() ? View.VISIBLE : View.GONE);
         view.startButton.setEnabled(!currentRoutine.taskList().isEmpty());
-        view.stopButton.setVisibility(uiRoutineUpdater.showStop() ? View.VISIBLE : View.GONE);
-        view.endButton.setVisibility(uiRoutineUpdater.showEnd() ? View.VISIBLE : View.GONE);
-        view.fastforwardButton.setVisibility(uiRoutineUpdater.showFastForward() ? View.VISIBLE : View.GONE);
+        view.stopButton.setVisibility((uiRoutineUpdater.showStop() && uiTimerUpdater.showStop()) ? View.VISIBLE : View.GONE);
+        view.endButton.setVisibility((uiRoutineUpdater.showEnd() && uiTimerUpdater.showEnd()) ? View.VISIBLE : View.GONE);
+        view.fastforwardButton.setVisibility((uiRoutineUpdater.showFastForward() && uiTimerUpdater.showFastForward()) ? View.VISIBLE : View.GONE);
+        view.pauseResumeButton.setVisibility((uiRoutineUpdater.showPause() && uiTimerUpdater.showPauseResume()) ? View.VISIBLE : View.GONE);
         view.addTaskButton.setVisibility(uiRoutineUpdater.showAdd() ? View.VISIBLE : View.GONE);
         view.time.setEnabled(uiRoutineUpdater.canEditRoutine());
         view.createRoutineButton.setVisibility(uiRoutineUpdater.showCreateRoutine() ? View.VISIBLE : View.GONE);
@@ -275,6 +307,18 @@ public class MainFragment extends Fragment {
     private void openEditTaskDialog(EditTaskDialogParams params) {
         var dialogFragment = EditTaskDialogFragment.newInstance(params);
         dialogFragment.show(getParentFragmentManager(), "EditTaskDialogFragment");
+    }
+
+    private void openDeleteTaskDialog(DeleteTaskDialogParams params) {
+        var dialogFragment = DeleteTaskDialogFragment.newInstance(params);
+        dialogFragment.show(getParentFragmentManager(), "DeleteTaskDialogFragment");
+
+        // listen for when the dialog is closed
+        getParentFragmentManager().setFragmentResultListener("DELETE_TASK_DIALOG_DISMISSED", this, (requestKey, result) -> {
+            if (result.getBoolean("dialog_dismissed", false)) {
+                recyclerView.post(() -> updateButtonVisibilities()); // Ensure UI updates after task addition
+            }
+        });
     }
 
     private void openAddTaskDialog() {
@@ -323,6 +367,7 @@ public class MainFragment extends Fragment {
                 Routine selectedRoutine = routines.get(position);
                 activityModel.setCurrentRoutineId(selectedRoutine.id());
                 updateCurrentRoutine();
+                updateButtonVisibilities();
             }
 
             @Override
@@ -337,5 +382,17 @@ public class MainFragment extends Fragment {
         view.time.setText(currentRoutine.time() != null ? String.valueOf(currentRoutine.time()) : "");
         adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void updatePauseResumeButton() {
+        if (timerViewModel.isPaused()) {
+            timerViewModel.resumeTimer();
+            view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
+            view.fastforwardButton.setEnabled(true);
+        } else {
+            timerViewModel.pauseTimer();
+            view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
+            view.fastforwardButton.setEnabled(false);
+        }
     }
 }

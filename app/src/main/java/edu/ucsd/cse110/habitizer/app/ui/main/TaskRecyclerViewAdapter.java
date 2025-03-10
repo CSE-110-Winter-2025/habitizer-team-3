@@ -2,6 +2,7 @@ package edu.ucsd.cse110.habitizer.app.ui.main;
 
 import android.annotation.SuppressLint;
 import android.graphics.Paint;
+import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.function.Consumer;
+
 import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
@@ -23,7 +26,6 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
     private final TaskList taskList;
     private final TaskItemListener listener;
     private final UITaskUpdater taskUpdater;
-
     boolean flagDragButtonTouch = false;
 
     public TaskRecyclerViewAdapter(TaskList taskList, TaskItemListener listener, UITaskUpdater taskUpdater) {
@@ -43,8 +45,8 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         ImageButton editButton;
         TextView leftBracket;
         TextView rightBracket;
-
         ImageButton reorderButton;
+        ImageButton deleteButton;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -52,16 +54,13 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             time = itemView.findViewById(R.id.task_time);
             checkBox = itemView.findViewById(R.id.task_checkbox);
             editButton = itemView.findViewById(R.id.task_edit_button);
-            leftBracket = itemView.findViewById(R.id.task_time_left_bracket);
-            rightBracket = itemView.findViewById(R.id.task_time_right_bracket);
-
+            deleteButton = itemView.findViewById(R.id.delete_button);
             reorderButton = itemView.findViewById(R.id.task_sort_button);
         }
 
         public TextView name() {
             return name;
         }
-
         public TextView time() {
             return time;
         }
@@ -71,15 +70,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         public ImageButton editButton() {
             return editButton;
         }
-
-        public TextView leftBracket() {
-            return leftBracket;
-        }
-
-        public TextView rightBracket() {
-            return rightBracket;
-        }
-
+        public ImageButton deleteButton() { return deleteButton; }
         public ImageButton reorderButton() { return reorderButton; }
     }
 
@@ -106,8 +97,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         TextView time = holder.time();
         CheckBox checkBox = holder.checkBox();
         ImageButton editButton = holder.editButton();
-        TextView leftBracket = holder.leftBracket();
-        TextView rightBracket = holder.rightBracket();
+        ImageButton deleteButton = holder.deleteButton();
         ImageButton reorderButton = holder.reorderButton();
 
         reorderButton.setVisibility(taskUpdater.canReorder() ? View.VISIBLE : View.GONE);
@@ -165,12 +155,14 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             listener.onEditClicked(task);
         });
 
+        deleteButton.setOnClickListener((v -> {
+            listener.onDeleteClicked(task);
+        }));
+
         if (taskList.allTasksChecked()) listener.onAllTaskCheckedOff();
 
         editButton.setVisibility(taskUpdater.canEdit() ? View.VISIBLE : View.GONE);
-
-        leftBracket.setVisibility(taskUpdater.showBrackets() ? View.VISIBLE : View.GONE);
-        rightBracket.setVisibility(taskUpdater.showBrackets() ? View.VISIBLE : View.GONE);
+        deleteButton.setVisibility(taskUpdater.canDelete() ? View.VISIBLE : View.GONE);
 
     }
 
