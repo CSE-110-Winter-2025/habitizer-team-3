@@ -12,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import edu.ucsd.cse110.habitizer.app.R;
@@ -139,8 +138,8 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         String timeText = " "; // default to nothing
 
         if (task.isCheckedOff() && task.taskTime() != null) { // task is checked off, show the time
-            if(task.taskTime() < 60){
-                timeText = (task.taskTime()+5) + " s";
+            if(task.taskTime() < 5){
+                timeText = "5 s";
             }
             else if(task.taskTime() == 60){
                 timeText = "1 m";
