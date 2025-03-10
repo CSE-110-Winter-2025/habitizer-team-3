@@ -307,6 +307,13 @@ public class MainFragment extends Fragment {
     private void openDeleteTaskDialog(DeleteTaskDialogParams params) {
         var dialogFragment = DeleteTaskDialogFragment.newInstance(params);
         dialogFragment.show(getParentFragmentManager(), "DeleteTaskDialogFragment");
+
+        // listen for when the dialog is closed
+        getParentFragmentManager().setFragmentResultListener("DELETE_TASK_DIALOG_DISMISSED", this, (requestKey, result) -> {
+            if (result.getBoolean("dialog_dismissed", false)) {
+                recyclerView.post(() -> updateButtonVisibilities()); // Ensure UI updates after task addition
+            }
+        });
     }
 
     private void openAddTaskDialog() {
@@ -355,6 +362,7 @@ public class MainFragment extends Fragment {
                 Routine selectedRoutine = routines.get(position);
                 activityModel.setCurrentRoutineId(selectedRoutine.id());
                 updateCurrentRoutine();
+                updateButtonVisibilities();
             }
 
             @Override
