@@ -28,6 +28,7 @@ import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.DeleteTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditRoutineDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppSubject;
 import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
