@@ -20,9 +20,9 @@
         android:layout_width="wrap_content"
         android:layout_height="43dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="Routine"
         android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/task_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,8 +34,7 @@
         android:src="@drawable/edit_icon"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
         app:layout_constraintStart_toEndOf="@+id/routine_spinner"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.508" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/time"
@@ -51,12 +50,14 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/task_view"
-        android:layout_width="411dp"
-        android:layout_height="715dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/routine_spinner"
         tools:layout="@layout/list_item_task" />
 
     <!-- Buttons (Spread across the bottom) -->
@@ -97,8 +98,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
         android:text="@string/add_task"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/start_button"
@@ -109,9 +108,7 @@
         android:id="@+id/start_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:text="Start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

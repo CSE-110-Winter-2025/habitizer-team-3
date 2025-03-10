@@ -24,10 +24,13 @@ import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.app.databinding.FragmentMainBinding;
 import edu.ucsd.cse110.habitizer.app.TimerViewModel;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.DeleteTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditRoutineDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
-
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppSubject;
+import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskDialogParams;
+import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
@@ -131,6 +134,16 @@ public class MainFragment extends Fragment {
                 assert activeRoutineId != null && taskId != null;
                 var params = new EditTaskDialogParams(activeRoutineId, taskId, task.sortOrder(), task.taskTime());
                 openEditTaskDialog(params);
+            }
+
+            @Override
+            public void onDeleteClicked(Task task) {
+                var activeRoutineId = currentRoutine.id();
+                var taskId = task.id();
+
+                assert activeRoutineId != null && taskId != null;
+                var params = new DeleteTaskDialogParams(activeRoutineId, taskId, task.sortOrder());
+                openDeleteTaskDialog(params);
             }
 
             @Override
@@ -289,6 +302,11 @@ public class MainFragment extends Fragment {
     private void openEditTaskDialog(EditTaskDialogParams params) {
         var dialogFragment = EditTaskDialogFragment.newInstance(params);
         dialogFragment.show(getParentFragmentManager(), "EditTaskDialogFragment");
+    }
+
+    private void openDeleteTaskDialog(DeleteTaskDialogParams params) {
+        var dialogFragment = DeleteTaskDialogFragment.newInstance(params);
+        dialogFragment.show(getParentFragmentManager(), "DeleteTaskDialogFragment");
     }
 
     private void openAddTaskDialog() {
