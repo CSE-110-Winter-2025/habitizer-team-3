@@ -13,7 +13,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.function.Consumer;
@@ -129,7 +128,14 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         String timeText = " "; // default to nothing
 
         if (task.isCheckedOff() && task.taskTime() != null) { // task is checked off, show the time
-            timeText = task.taskTime() + " m";
+            if(task.taskTime() < 60){
+                int numIncrements = (task.taskTime() + 4)/ 5;
+                int newTaskTime = numIncrements * 5;
+                timeText = newTaskTime + " s";
+            } else {
+                int minutesRoundedUp = (task.taskTime() + 59)/60;
+                timeText = minutesRoundedUp + " m";
+            }
         } else if (task.sortOrder() < taskList.currentTaskId()) { // task is skipped
             timeText = "-";
         }
