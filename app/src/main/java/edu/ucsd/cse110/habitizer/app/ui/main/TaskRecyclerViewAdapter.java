@@ -143,6 +143,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         checkBox.setEnabled(!task.isCheckedOff() && taskUpdater.isCheckoffEnabled());
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) listener.onCheckOffClicked(task);
+            if (taskList.allTasksChecked()) listener.onAllTaskCheckedOff();
         });
 
         editButton.setOnClickListener(v -> {
@@ -152,8 +153,6 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         deleteButton.setOnClickListener((v -> {
             listener.onDeleteClicked(task);
         }));
-
-        if (taskList.allTasksChecked()) listener.onAllTaskCheckedOff();
 
         editButton.setVisibility(taskUpdater.canEdit() ? View.VISIBLE : View.GONE);
         deleteButton.setVisibility(taskUpdater.canDelete() ? View.VISIBLE : View.GONE);
