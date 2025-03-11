@@ -73,6 +73,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/task_timer_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Time"
+        android:textColor="#139401"
+        app:layout_constraintBottom_toTopOf="@+id/task_view"
+        app:layout_constraintStart_toEndOf="@+id/routine_edit_button"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/of"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,6 +91,17 @@
         android:text="of"
         app:layout_constraintBottom_toTopOf="@+id/task_view"
         app:layout_constraintEnd_toStartOf="@+id/time"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/task_minutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="m"
+        android:textColor="#139401"
+        app:layout_constraintBottom_toTopOf="@+id/task_view"
+        app:layout_constraintStart_toEndOf="@+id/task_timer_text"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView

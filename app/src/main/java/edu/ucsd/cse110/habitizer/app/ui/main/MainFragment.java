@@ -1,8 +1,5 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,10 +27,12 @@ import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.DeleteTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditRoutineDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
+import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppSubject;
 import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
+import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineBuilder;
@@ -57,7 +56,9 @@ public class MainFragment extends Fragment {
     private UITaskUpdater uiTaskUpdater;
     private Routine currentRoutine;
     private AppSubject appSubject;
+
     ItemTouchHelper itemTouchHelper;
+
 
     public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         @Override
@@ -124,7 +125,6 @@ public class MainFragment extends Fragment {
         recyclerView = view.taskView;
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        // Initialize the adapter (with an empty list for now)
         adapter = new TaskRecyclerViewAdapter(new TaskList(List.of()), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
         taskItemListener = new TaskItemListener() {
@@ -158,6 +158,9 @@ public class MainFragment extends Fragment {
 
                 currentRoutine.taskList().setLastCheckoffTime(currentElapsed);
 
+                // reset task timer to 0 after checkoff
+                view.taskTimerText.setText(String.valueOf(0));
+
                 if (currentRoutine.taskList().currentTaskId() < task.sortOrder()) {
                     currentRoutine.taskList().setCurrentTaskId(task.sortOrder() + 1);
                 }
@@ -178,8 +181,10 @@ public class MainFragment extends Fragment {
 
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
             // Update a TextView to show elapsed minutes
-            int minutes = seconds / 60;
-            view.timerText.setText(String.valueOf(minutes));
+            int timerMinutes = seconds / 60;
+            int taskMinutes = currentRoutine == null ? 0 : (seconds - currentRoutine.taskList().lastTaskCheckoffTime()) / 60;
+            view.timerText.setText(String.valueOf(timerMinutes));
+            view.taskTimerText.setText(String.valueOf(taskMinutes));
         });
 
         view.routineEditButton.setOnClickListener(v -> {
@@ -222,6 +227,7 @@ public class MainFragment extends Fragment {
             }
             updateButtonVisibilities();
         });
+
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
 
@@ -312,6 +318,13 @@ public class MainFragment extends Fragment {
     private void openDeleteTaskDialog(DeleteTaskDialogParams params) {
         var dialogFragment = DeleteTaskDialogFragment.newInstance(params);
         dialogFragment.show(getParentFragmentManager(), "DeleteTaskDialogFragment");
+
+        // listen for when the dialog is closed
+        getParentFragmentManager().setFragmentResultListener("DELETE_TASK_DIALOG_DISMISSED", this, (requestKey, result) -> {
+            if (result.getBoolean("dialog_dismissed", false)) {
+                recyclerView.post(() -> updateButtonVisibilities()); // Ensure UI updates after task addition
+            }
+        });
     }
 
     private void openAddTaskDialog() {
@@ -362,6 +375,7 @@ public class MainFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
                 Routine selectedRoutine = routines.get(position);
                 activityModel.setCurrentRoutineId(selectedRoutine.id());
+                updateButtonVisibilities();
             }
 
             @Override
