@@ -18,6 +18,15 @@ public class TaskTimeTest {
     }
 
     @Test
+    public void testTimeTextCheckedOffUnder1Minute() {
+        Task task = new Task(1, "TimeTask1",0,17);
+        task.setCheckedOff(true);
+
+        String text = getTimeText(task);
+        assertEquals("20 s", text);
+    }
+
+    @Test
     public void testTimeTextCheckedOffExactlyOneMinute() {
         Task task = new Task(1, "TimeTask2",0,60);
         task.setCheckedOff(true);
@@ -39,19 +48,15 @@ public class TaskTimeTest {
         String timeText = " ";
 
         if (task.isCheckedOff() && task.taskTime() != null) {
-            if(task.taskTime() < 5){
-                timeText = "5 s";
-            }
-            else if(task.taskTime()== 60){
-                timeText = "1 m";
-            }
-            else{
-                timeText = (task.taskTime()/60 + 1) + " m";
+            if(task.taskTime() < 60){
+                int numIncrements = (task.taskTime() + 4)/ 5;
+                int newTaskTime = numIncrements * 5;
+                timeText = newTaskTime + " s";
+            } else {
+                int minutesRoundedUp = (task.taskTime() + 59)/60;
+                timeText = minutesRoundedUp + " m";
             }
         }
         return timeText;
     }
 }
-
-
-
