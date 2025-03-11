@@ -11,12 +11,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.habitizer.app.util.LiveDataSubjectAdapter;
+import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskRequest;
+import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
-import edu.ucsd.cse110.habitizer.lib.util.SimpleSubject;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class RoomRoutineRepository implements RoutineRepository {
@@ -36,37 +37,14 @@ public class RoomRoutineRepository implements RoutineRepository {
 
     @Override
     public Subject<Routine> find(int id) {
-        // First get the routine entity
-        RoutineEntity entity = routinesDao.find(id);
-        if (entity == null) return null;
-
-        // Get the tasks for this routine
-        List<TaskEntity> taskEntities = taskDao.findByRoutineId(id);
-        List<Task> tasks = new ArrayList<>();
-
-        if (taskEntities != null && !taskEntities.isEmpty()) {
-            // Convert task entities to domain tasks
-            for (TaskEntity taskEntity : taskEntities) {
-                tasks.add(taskEntity.toDomain());
-            }
-        }
-
-        // Create the routine with tasks
-        TaskList taskList = new TaskList(tasks);
-        Routine routine = new Routine(entity.id, entity.name, taskList, entity.time);
-
-        // Create a simple subject with this routine
-        var subject = new SimpleSubject<Routine>();
-        subject.setValue(routine);
-        return subject;
+        LiveData<RoutineEntity> entityLiveData = routinesDao.findAsLiveData(id);
+        LiveData<Routine> routineLiveData = Transformations.map(entityLiveData, RoutineEntity::toRoutine);
+        return new LiveDataSubjectAdapter<>(routineLiveData);
     }
 
     @Override
     public Subject<List<Routine>> findAll() {
-        // 1) Get LiveData<List<RoutineEntity>>
         var entitiesLiveData = routinesDao.findAllAsLiveData();
-
-        // 2) Convert each entity to domain Routine with tasks
         var routinesLiveData = Transformations.map(entitiesLiveData, entities -> {
             Log.d(TAG, "Transforming " + entities.size() + " routine entities to domain objects");
 
@@ -137,7 +115,7 @@ public class RoomRoutineRepository implements RoutineRepository {
         Log.d("RoomRoutineRepository", "Inserting TaskEntity. ID: " + entity.id +
                 ", RoutineID: " + entity.routineId);
 
-        long result = taskDao.insert(entity);
+        int result = taskDao.append(entity);
 
         Log.d("RoomRoutineRepository", "Insert result: " + result);
     }
@@ -154,11 +132,21 @@ public class RoomRoutineRepository implements RoutineRepository {
         Log.d(TAG, "Editing task: " + oldEntity.id + " (" + oldEntity.name + " -> " + req.taskName() + ")");
 
         // Update fields
-        oldEntity.name      = req.taskName();
+        oldEntity.name = req.taskName();
         oldEntity.sortOrder = req.sortOrder();
-        oldEntity.taskTime  = req.taskTime();
+        oldEntity.taskTime = req.taskTime();
 
         // Then update in DB
         taskDao.update(oldEntity);
+    }
+
+    @Override
+    public void deleteTask(DeleteTaskRequest req) {
+        taskDao.delete(req.taskId());
+    }
+
+    @Override
+    public void editRoutineName(EditRoutineRequest req) {
+
     }
 }

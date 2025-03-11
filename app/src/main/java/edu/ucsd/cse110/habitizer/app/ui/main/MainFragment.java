@@ -57,6 +57,8 @@ public class MainFragment extends Fragment {
     private AppSubject appSubject;
 
     ItemTouchHelper itemTouchHelper;
+    private AppState state;
+    private boolean initialDataLoaded = false;
 
 
     public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
@@ -365,11 +367,17 @@ public class MainFragment extends Fragment {
     }
 
     private void updateCurrentRoutine() {
-        currentRoutine = activityModel.getCurrentRoutine();
+        if (currentRoutine == null) {
+            Log.w("MainFragment", "Current routine is null!");
+            return;
+        }
+
         view.time.setText(currentRoutine.time() != null ? String.valueOf(currentRoutine.time()) : "");
+
         adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
     }
+
 
     private void updatePauseResumeButton() {
         if (timerViewModel.isPaused()) {

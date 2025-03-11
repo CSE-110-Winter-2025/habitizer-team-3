@@ -1,7 +1,6 @@
 package edu.ucsd.cse110.habitizer.app.util;
 
 
-import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
