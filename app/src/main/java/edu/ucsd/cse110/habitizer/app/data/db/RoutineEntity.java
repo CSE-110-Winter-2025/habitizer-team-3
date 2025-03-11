@@ -5,8 +5,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.List;
+
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
+import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 
 @Entity(tableName = "routines")
 public class RoutineEntity {
@@ -37,6 +40,6 @@ public class RoutineEntity {
     }
 
     public @NonNull Routine toRoutine() {
-        return new Routine(this.id, this.name, null, this.time);
+        return new Routine(this.id, this.name, new TaskList(List.of()), this.time);
     }
 }

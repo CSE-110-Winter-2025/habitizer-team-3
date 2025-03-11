@@ -1,5 +1,8 @@
 package edu.ucsd.cse110.habitizer.app.ui.main;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,12 +30,10 @@ import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.DeleteTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditRoutineDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
-import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppSubject;
 import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
-import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineBuilder;
@@ -42,6 +43,7 @@ import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITimerUpdater;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
+import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
@@ -55,11 +57,7 @@ public class MainFragment extends Fragment {
     private UITaskUpdater uiTaskUpdater;
     private Routine currentRoutine;
     private AppSubject appSubject;
-
     ItemTouchHelper itemTouchHelper;
-    private AppState state;
-    private boolean initialDataLoaded = false;
-
 
     public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         @Override
@@ -74,6 +72,8 @@ public class MainFragment extends Fragment {
             Log.wtf("#", "onMove");
             adapter.exchangeOrder(from, to);
             adapter.notifyItemMoved(from, to);
+
+            // TODO: add database logic to change sort orders
 
             return false;
         }
@@ -105,8 +105,8 @@ public class MainFragment extends Fragment {
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
 
-        currentRoutine = activityModel.getCurrentRoutine();
         appSubject = new AppSubject(RoutineState.BEFORE, TimerState.REAL);
+        activityModel.setCurrentRoutineId(0);
 
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
@@ -124,9 +124,9 @@ public class MainFragment extends Fragment {
         recyclerView = view.taskView;
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
+        // Initialize the adapter (with an empty list for now)
+        adapter = new TaskRecyclerViewAdapter(new TaskList(List.of()), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
-
         taskItemListener = new TaskItemListener() {
             @Override
             public void onEditClicked(Task task) {
@@ -172,7 +172,6 @@ public class MainFragment extends Fragment {
                 endRoutine();
             }
         };
-
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         updateButtonVisibilities();
@@ -224,7 +223,6 @@ public class MainFragment extends Fragment {
             updateButtonVisibilities();
         });
 
-
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
 
         // Open the add task dialog upon clicking the add task button
@@ -253,6 +251,28 @@ public class MainFragment extends Fragment {
         return view.getRoot();
     }
 
+    public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view2, savedInstanceState);
+
+        activityModel.getCurrentRoutine().observe(curr -> {
+            if (curr == null) return;
+            currentRoutine = curr;
+            updateCurrentRoutine();
+        });
+
+        activityModel.getAllRoutines().observe(routines -> {
+            if (routines == null) return;
+            updateRoutineDropdown();
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // If you want to stop the timer when the Fragment is destroyed
+        // timerViewModel.stopTimer();
+    }
+
     private void startRoutine() {
         timerViewModel.startTimer();
         appSubject.updateRoutineState(RoutineState.DURING);
@@ -272,7 +292,7 @@ public class MainFragment extends Fragment {
 
     private void updateButtonVisibilities() {
         view.startButton.setVisibility(uiRoutineUpdater.showStart() ? View.VISIBLE : View.GONE);
-        view.startButton.setEnabled(!currentRoutine.taskList().isEmpty());
+        view.startButton.setEnabled(currentRoutine == null || !currentRoutine.taskList().isEmpty());
         view.stopButton.setVisibility((uiRoutineUpdater.showStop() && uiTimerUpdater.showStop()) ? View.VISIBLE : View.GONE);
         view.endButton.setVisibility((uiRoutineUpdater.showEnd() && uiTimerUpdater.showEnd()) ? View.VISIBLE : View.GONE);
         view.fastforwardButton.setVisibility((uiRoutineUpdater.showFastForward() && uiTimerUpdater.showFastForward()) ? View.VISIBLE : View.GONE);
@@ -283,23 +303,6 @@ public class MainFragment extends Fragment {
         view.routineEditButton.setVisibility(uiRoutineUpdater.canEditRoutine() ? View.VISIBLE : View.GONE);
         view.routineSpinner.setEnabled(uiRoutineUpdater.canEditRoutine());
     }
-
-    public void onViewCreated(@NonNull View view2, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view2, savedInstanceState);
-
-        activityModel.getAllRoutines().observe(routines -> {
-            if (routines == null) return;
-            updateRoutineDropdown();
-        });
-
-    }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // If you want to stop the timer when the Fragment is destroyed
-        // timerViewModel.stopTimer();
-    }
-
 
     private void openEditTaskDialog(EditTaskDialogParams params) {
         var dialogFragment = EditTaskDialogFragment.newInstance(params);
@@ -330,7 +333,10 @@ public class MainFragment extends Fragment {
 
     private void updateRoutineDropdown() {
         List<Routine> routines = activityModel.getAllRoutines().getValue();
-        if (routines == null || routines.isEmpty()) return;
+        Routine curr = activityModel.getCurrentRoutine().getValue();
+
+        if (routines == null || curr == null || routines.isEmpty()) return;
+        Log.d("updateRoutineDropdown", "Updating dropdown with routines: " + routines.size());
 
         List<String> routineNames = new ArrayList<>();
         for (Routine routine : routines) {
@@ -344,7 +350,7 @@ public class MainFragment extends Fragment {
         // Find the index of the current routine safely
         int currentRoutineIndex = 0;
         for (int i = 0; i < routines.size(); i++) {
-            if (Objects.equals(routines.get(i).id(), activityModel.getCurrentRoutine().id())) {
+            if (Objects.equals(routines.get(i).id(), curr.id())) {
                 currentRoutineIndex = i;
                 break;
             }
@@ -356,7 +362,6 @@ public class MainFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
                 Routine selectedRoutine = routines.get(position);
                 activityModel.setCurrentRoutineId(selectedRoutine.id());
-                updateCurrentRoutine();
             }
 
             @Override
@@ -367,17 +372,10 @@ public class MainFragment extends Fragment {
     }
 
     private void updateCurrentRoutine() {
-        if (currentRoutine == null) {
-            Log.w("MainFragment", "Current routine is null!");
-            return;
-        }
-
         view.time.setText(currentRoutine.time() != null ? String.valueOf(currentRoutine.time()) : "");
-
         adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
     }
-
 
     private void updatePauseResumeButton() {
         if (timerViewModel.isPaused()) {

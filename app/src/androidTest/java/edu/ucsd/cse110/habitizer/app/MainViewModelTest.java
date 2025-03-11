@@ -111,10 +111,10 @@ public class MainViewModelTest {
         Routine eveningRoutine = new Routine(2, "Evening Routine", new TaskList(Collections.emptyList()), 35);
         List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
 
-        Routine selected = viewModel.getCurrentRoutine();
+        Routine selected = viewModel.getCurrentRoutine().getValue();
         assertEquals(morningRoutine, selected);
         viewModel.setCurrentRoutineId(1);
-        selected = viewModel.getCurrentRoutine();
+        selected = viewModel.getCurrentRoutine().getValue();
         assertEquals(eveningRoutine, selected);
     }
 
@@ -133,10 +133,10 @@ public class MainViewModelTest {
         Routine eveningRoutine = new Routine(1, "Evening Routine", new TaskList(eveningTasks), 25);
         List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
 
-        Routine selectedRoutine = viewModel.getCurrentRoutine();
+        Routine selectedRoutine = viewModel.getCurrentRoutine().getValue();
         assertEquals("Morning routine", morningTasks, selectedRoutine.taskList().tasks());
         viewModel.setCurrentRoutineId(1);
-        selectedRoutine = viewModel.getCurrentRoutine();
+        selectedRoutine = viewModel.getCurrentRoutine().getValue();
         assertEquals("Evening routine", eveningTasks, selectedRoutine.taskList().tasks());
     }
 

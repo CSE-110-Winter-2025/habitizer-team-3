@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -28,8 +29,11 @@ public interface RoutinesDao {
     @Query("SELECT * FROM routines")
     LiveData<List<RoutineEntity>> findAllAsLiveData();
 
-    @Query("SELECT COUNT(*) FROM routines")
+    @Query("SELECT COUNT(*) from routines")
     int count();
+
+    @Update
+    int update(RoutineEntity routine);
 
     @Query("DELETE FROM routines WHERE id = :id")
     void delete(int id);

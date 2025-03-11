@@ -53,12 +53,10 @@ public class HabitizerApplication extends Application {
                 database.routinesDao().insert(routineEntity);
 
                 // Then manually add each task
-                if (r.taskList() != null && r.taskList().tasks() != null) {
-                    for (Task t : r.taskList().tasks()) {
-                        Log.d(TAG, "Adding task: " + t.id() + " - " + t.name() + " to routine: " + r.id());
-                        TaskEntity taskEntity = TaskEntity.fromDomain(t, r.id());
-                        database.tasksDao().insert(taskEntity);
-                    }
+                for (Task t : r.taskList().tasks()) {
+                    Log.d(TAG, "Adding task: " + t.id() + " - " + t.name() + " to routine: " + r.id());
+                    TaskEntity taskEntity = TaskEntity.fromDomain(t, r.id());
+                    database.tasksDao().insert(taskEntity);
                 }
             }
 

@@ -38,7 +38,7 @@ public class RoomRoutineRepository implements RoutineRepository {
     @Override
     public Subject<Routine> find(int id) {
         LiveData<RoutineEntity> entityLiveData = routinesDao.findAsLiveData(id);
-        LiveData<Routine> routineLiveData = Transformations.map(entityLiveData, RoutineEntity::toRoutine);
+        LiveData<Routine> routineLiveData = Transformations.map(entityLiveData, this::convertEntityToDomainWithTasks);
         return new LiveDataSubjectAdapter<>(routineLiveData);
     }
 
@@ -147,6 +147,15 @@ public class RoomRoutineRepository implements RoutineRepository {
 
     @Override
     public void editRoutineName(EditRoutineRequest req) {
+        var oldEntity = routinesDao.find(req.routineId());
+        if (oldEntity == null) {
+            Log.e(TAG, "Routine with ID " + req.routineId() + " not found");
+            return;
+        }
 
+        Log.d(TAG, "Editing routine: " + oldEntity.id + " (" + oldEntity.name + " -> " + req.routineName() + ")");
+
+        oldEntity.name = req.routineName();
+        routinesDao.update(oldEntity);
     }
 }
