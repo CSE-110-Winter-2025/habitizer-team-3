@@ -152,7 +152,7 @@ public class MainFragment extends Fragment {
                 task.setCheckedOff(true);
                 int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
                         timerViewModel.getElapsedSeconds().getValue() : 0;
-                int taskTime = (int) Math.ceil((double) (currentElapsed - currentRoutine.taskList().lastTaskCheckoffTime()) / 60);
+                int taskTime = (int) Math.ceil((double) (currentElapsed - currentRoutine.taskList().lastTaskCheckoffTime()));
                 task.setTaskTime(Math.max(taskTime, 1)); // make sure minimum is 1 second
 
                 currentRoutine.taskList().setLastCheckoffTime(currentElapsed);
@@ -387,6 +387,8 @@ public class MainFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
                 Routine selectedRoutine = routines.get(position);
                 activityModel.setCurrentRoutineId(selectedRoutine.id());
+                updateCurrentRoutine();
+                updateButtonVisibilities();
             }
 
             @Override
