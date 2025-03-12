@@ -202,8 +202,8 @@ public class MainFragment extends Fragment {
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
             appSubject.updateTimerState(TimerState.MOCK);
-            updatePauseResumeButton();
             updateButtonVisibilities();
+            updatePauseResumeButton();
         });
 
         view.endButton.setOnClickListener(v -> {
@@ -228,7 +228,13 @@ public class MainFragment extends Fragment {
         });
 
         view.pauseResumeButton.setOnClickListener(v -> {
-           updatePauseResumeButton();
+            if (timerViewModel.isPaused()) {
+                timerViewModel.resumeTimer();
+                updatePauseResumeButton();
+            } else {
+                timerViewModel.pauseTimer();
+                updatePauseResumeButton();
+            }
         });
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
@@ -390,13 +396,17 @@ public class MainFragment extends Fragment {
 
     private void updatePauseResumeButton() {
         if (timerViewModel.isPaused()) {
-            timerViewModel.resumeTimer();
-            view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
-            view.fastforwardButton.setEnabled(true);
-        } else {
-            timerViewModel.pauseTimer();
             view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
             view.fastforwardButton.setEnabled(false);
+            appSubject.updateRoutineState(RoutineState.PAUSED);
+            recyclerView.setAdapter(adapter);
+            recyclerView.invalidate();
+        } else {
+            view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
+            view.fastforwardButton.setEnabled(true);
+            appSubject.updateRoutineState(RoutineState.DURING);
+            recyclerView.setAdapter(adapter);
+            recyclerView.invalidate();
         }
     }
 }
