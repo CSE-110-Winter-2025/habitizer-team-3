@@ -393,8 +393,12 @@ public class MainFragment extends Fragment {
             timerViewModel.resumeTimer();
             view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
             view.fastforwardButton.setEnabled(true);
+            view.endButton.setEnabled(true);
+            view.stopButton.setEnabled(true);
         } else {
             timerViewModel.pauseTimer();
+            view.endButton.setEnabled(false);
+            view.stopButton.setEnabled(false);
             view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
             view.fastforwardButton.setEnabled(false);
         }
