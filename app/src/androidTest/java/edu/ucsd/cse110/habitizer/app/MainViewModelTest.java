@@ -109,14 +109,19 @@ public class MainViewModelTest {
     public void testSelectedRoutine() {
         Routine morningRoutine = new Routine(1, "Morning Routine", new TaskList(Collections.emptyList()), 50);
         Routine eveningRoutine = new Routine(2, "Evening Routine", new TaskList(Collections.emptyList()), 35);
-        List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
 
-        Routine selected = viewModel.getCurrentRoutine().getValue();
-        assertEquals(morningRoutine, selected);
+        List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
+        fakeRepo.fakeAllRoutines.setValue(routines);
+
         viewModel.setCurrentRoutineId(1);
+        Routine selected = viewModel.getCurrentRoutine().getValue();
+        assertEquals("Expected morning routine to be selected", morningRoutine, selected);
+
+        viewModel.setCurrentRoutineId(2);
         selected = viewModel.getCurrentRoutine().getValue();
-        assertEquals(eveningRoutine, selected);
+        assertEquals("Expected evening routine to be selected", eveningRoutine, selected);
     }
+
 
     @Test
     public void testSelectedRoutineTasks() {
@@ -132,12 +137,15 @@ public class MainViewModelTest {
         Routine morningRoutine = new Routine(0, "Morning Routine", new TaskList(morningTasks), 20);
         Routine eveningRoutine = new Routine(1, "Evening Routine", new TaskList(eveningTasks), 25);
         List<Routine> routines = Arrays.asList(morningRoutine, eveningRoutine);
+        fakeRepo.fakeAllRoutines.setValue(routines);
 
+        viewModel.setCurrentRoutineId(0);
         Routine selectedRoutine = viewModel.getCurrentRoutine().getValue();
-        assertEquals("Morning routine", morningTasks, selectedRoutine.taskList().tasks());
+        assertEquals("Morning routine tasks", morningTasks, selectedRoutine.taskList().tasks());
+
         viewModel.setCurrentRoutineId(1);
         selectedRoutine = viewModel.getCurrentRoutine().getValue();
-        assertEquals("Evening routine", eveningTasks, selectedRoutine.taskList().tasks());
+        assertEquals("Evening routine tasks", eveningTasks, selectedRoutine.taskList().tasks());
     }
 
     //    A fake implementation of RoutineRepository.
@@ -152,6 +160,21 @@ public class MainViewModelTest {
         public FakeRoutineRepository() {
             // Pass a fake InMemoryDataSource to satisfy the superclass constructor.
             super(new FakeInMemoryDataSource());
+        }
+
+        @Override
+        public Subject<Routine> find(int id) {
+            var subject = new SimpleSubject<Routine>();
+            var routines = fakeAllRoutines.getValue();
+            if (routines != null) {
+                for (Routine routine : routines) {
+                    if (routine.id().equals(id)) {
+                        subject.setValue(routine);
+                        break;
+                    }
+                }
+            }
+            return subject;
         }
 
         @Override
