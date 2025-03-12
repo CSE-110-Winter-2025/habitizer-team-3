@@ -218,7 +218,7 @@ public class MainFragment extends Fragment {
             activityModel.updateRoutine(newRoutine);
             activityModel.setCurrentRoutineId(newRoutineId);
 
-            activityModel.refreshCurrentRoutine();
+//            activityModel.refreshCurrentRoutine();
         });
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
@@ -241,7 +241,7 @@ public class MainFragment extends Fragment {
                     var updateRoutine = currentRoutine.withTime(newTime);
 
                     activityModel.updateRoutine(updateRoutine);
-                    activityModel.refreshCurrentRoutine();
+//                    activityModel.refreshCurrentRoutine();
                 }
             }
         });
