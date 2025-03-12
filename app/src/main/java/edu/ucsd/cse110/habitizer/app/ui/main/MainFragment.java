@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import edu.ucsd.cse110.habitizer.app.MainViewModel;
 import edu.ucsd.cse110.habitizer.app.R;
@@ -58,6 +57,11 @@ public class MainFragment extends Fragment {
 
 
     public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
+        private final MainViewModel activityModel;
+
+        public ItemTouchHelperCallback(MainViewModel activityModel) {
+            this.activityModel = activityModel;
+        }
         @Override
         public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
             return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
@@ -70,8 +74,7 @@ public class MainFragment extends Fragment {
             Log.wtf("#", "onMove");
             adapter.exchangeOrder(from, to);
             adapter.notifyItemMoved(from, to);
-
-            // TODO: add database logic to change sort orders
+            activityModel.updateTasks(adapter.getTaskList().tasks());
 
             return false;
         }
@@ -81,7 +84,6 @@ public class MainFragment extends Fragment {
     }
 
     public MainFragment() {
-        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback());
     }
 
     public static MainFragment newInstance() {
@@ -102,11 +104,9 @@ public class MainFragment extends Fragment {
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
         var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
         this.activityModel = modelProvider.get(MainViewModel.class);
+        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback(activityModel));
 
         appSubject = new AppSubject(RoutineState.BEFORE, TimerState.REAL);
-
-        // TODO: save the previous current routine id to local storage as default
-//        activityModel.setCurrentRoutineId(0);
 
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
@@ -219,27 +219,6 @@ public class MainFragment extends Fragment {
             activityModel.setCurrentRoutineId(newRoutineId);
 
             activityModel.refreshCurrentRoutine();
-
-//            // Observe the list of all routines to detect the new entry
-//            activityModel.getAllRoutines().observe(routines -> {
-//                if (routines == null || routines.isEmpty()) return;
-//
-//                // Find the routine with the highest ID
-//                Routine latestRoutine = null;
-//                for (Routine routine : routines) {
-//                    if (latestRoutine == null || routine.id() > latestRoutine.id()) {
-//                        latestRoutine = routine;
-//                    }
-//                }
-//
-//                if (latestRoutine != null) {
-//                    // Set the current routine to the newly created one
-//                    activityModel.setCurrentRoutineId(latestRoutine.id());
-//                    // Stop observing to avoid multiple triggers
-////                    activityModel.getAllRoutines().removeObserver(this::updateRoutineDropdown);
-//                    updateCurrentRoutine();
-//                }
-//            });
         });
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
@@ -284,6 +263,8 @@ public class MainFragment extends Fragment {
             if (routines == null || routines.isEmpty()) return;
             updateRoutineDropdown();
         });
+
+
     }
 
     @Override

@@ -94,4 +94,17 @@ public class MainViewModel extends ViewModel {
     }
 
     public Integer getNumRoutines() { return allRoutines.getValue().size(); }
+
+    public void updateTasks(List<Task> tasks) {
+        for (var task : tasks) {
+            var req = new EditTaskRequest(
+                    Objects.requireNonNull(currentRoutineId.getValue()),
+                    Objects.requireNonNull(task.id()),
+                    task.sortOrder(),
+                    task.name(),
+                    task.taskTime()
+            );
+            routineRepository.editTask(req);
+        }
+    }
 }
