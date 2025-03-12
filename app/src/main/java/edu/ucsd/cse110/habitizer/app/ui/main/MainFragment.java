@@ -149,11 +149,6 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onCheckOffClicked(Task task) {
-                if (timerViewModel.isPaused()) {
-                    task.setCheckedOff(false);  // Ensure it stays unchecked
-                    adapter.notifyDataSetChanged(); // Refresh UI
-                    return;
-                }
                 task.setCheckedOff(true);
                 int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
                         timerViewModel.getElapsedSeconds().getValue() : 0;
@@ -207,8 +202,8 @@ public class MainFragment extends Fragment {
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
             appSubject.updateTimerState(TimerState.MOCK);
-            //updatePauseResumeButton();
             updateButtonVisibilities();
+            updatePauseResumeButton();
         });
 
         view.endButton.setOnClickListener(v -> {
@@ -233,7 +228,13 @@ public class MainFragment extends Fragment {
         });
 
         view.pauseResumeButton.setOnClickListener(v -> {
-           updatePauseResumeButton();
+            if (timerViewModel.isPaused()) {
+                timerViewModel.resumeTimer();
+                updatePauseResumeButton();
+            } else {
+                timerViewModel.pauseTimer();
+                updatePauseResumeButton();
+            }
         });
 
         view.time.setOnFocusChangeListener((v, hasFocus) -> {
@@ -395,19 +396,15 @@ public class MainFragment extends Fragment {
 
     private void updatePauseResumeButton() {
         if (timerViewModel.isPaused()) {
-            timerViewModel.resumeTimer();
-            view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
-            view.endButton.setEnabled(true);
-            view.stopButton.setEnabled(true);
-            appSubject.updateRoutineState(RoutineState.DURING);
+            view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
+            view.fastforwardButton.setEnabled(false);
+            appSubject.updateRoutineState(RoutineState.PAUSED);
             recyclerView.setAdapter(adapter);
             recyclerView.invalidate();
         } else {
-            timerViewModel.pauseTimer();
-            view.endButton.setEnabled(false);
-            view.stopButton.setEnabled(false);
-            view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
-            appSubject.updateRoutineState(RoutineState.PAUSED);
+            view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
+            view.fastforwardButton.setEnabled(true);
+            appSubject.updateRoutineState(RoutineState.DURING);
             recyclerView.setAdapter(adapter);
             recyclerView.invalidate();
         }

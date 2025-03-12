@@ -58,6 +58,7 @@ public class TimerViewModel extends ViewModel {
             timer = null;
         }
         isMocking = true;
+        isPaused = true;
     }
 
     public void forwardTimer() {
