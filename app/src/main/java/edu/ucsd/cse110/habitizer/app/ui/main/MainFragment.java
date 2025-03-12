@@ -149,6 +149,11 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onCheckOffClicked(Task task) {
+                if (timerViewModel.isPaused()) {
+                    task.setCheckedOff(false);  // Ensure it stays unchecked
+                    adapter.notifyDataSetChanged(); // Refresh UI
+                    return;
+                }
                 task.setCheckedOff(true);
                 int currentElapsed = timerViewModel.getElapsedSeconds().getValue() != null ?
                         timerViewModel.getElapsedSeconds().getValue() : 0;
