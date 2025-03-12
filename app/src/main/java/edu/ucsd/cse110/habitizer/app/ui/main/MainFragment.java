@@ -397,15 +397,19 @@ public class MainFragment extends Fragment {
         if (timerViewModel.isPaused()) {
             timerViewModel.resumeTimer();
             view.pauseResumeButton.setImageResource(R.drawable.baseline_pause_24);
-            //view.fastforwardButton.setEnabled(true);
             view.endButton.setEnabled(true);
             view.stopButton.setEnabled(true);
+            appSubject.updateRoutineState(RoutineState.DURING);
+            recyclerView.setAdapter(adapter);
+            recyclerView.invalidate();
         } else {
             timerViewModel.pauseTimer();
             view.endButton.setEnabled(false);
             view.stopButton.setEnabled(false);
             view.pauseResumeButton.setImageResource(R.drawable.baseline_play_arrow_24);
-            //view.fastforwardButton.setEnabled(false);
+            appSubject.updateRoutineState(RoutineState.PAUSED);
+            recyclerView.setAdapter(adapter);
+            recyclerView.invalidate();
         }
     }
 }

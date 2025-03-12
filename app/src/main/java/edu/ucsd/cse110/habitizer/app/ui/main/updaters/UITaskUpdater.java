@@ -54,6 +54,15 @@ public class UITaskUpdater implements Observer<AppState> {
                 canReorder = false;
                 break;
 
+            case PAUSED:
+                canEdit = false;
+                canDelete = false;
+                canCheckoff = true;
+                isCheckoffEnabled = false;
+                showBrackets = false;
+                canReorder = false;
+                break;
+
             case AFTER:
                 canEdit = false;
                 canDelete = false;
