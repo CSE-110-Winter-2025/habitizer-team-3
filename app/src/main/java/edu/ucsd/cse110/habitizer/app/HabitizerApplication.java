@@ -5,10 +5,12 @@ import android.util.Log;
 
 import androidx.room.Room;
 
+import edu.ucsd.cse110.habitizer.app.data.db.AppRoomRepository;
 import edu.ucsd.cse110.habitizer.app.data.db.HabitizerDatabase;
 import edu.ucsd.cse110.habitizer.app.data.db.RoomRoutineRepository;
 import edu.ucsd.cse110.habitizer.app.data.db.RoutineEntity;
 import edu.ucsd.cse110.habitizer.app.data.db.TaskEntity;
+import edu.ucsd.cse110.habitizer.lib.domain.AppRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
@@ -17,6 +19,7 @@ import edu.ucsd.cse110.habitizer.lib.data.InMemoryDataSource;
 public class HabitizerApplication extends Application {
     private static final String TAG = "HabitizerApplication";
     private RoutineRepository routineRepository;
+    private AppRepository appRepository;
 
     @Override
     public void onCreate() {
@@ -35,6 +38,10 @@ public class HabitizerApplication extends Application {
         this.routineRepository = new RoomRoutineRepository(
                 database.routinesDao(),
                 database.tasksDao()
+        );
+
+        this.appRepository = new AppRoomRepository(
+                database.appDao()
         );
 
         // 3) If first run, populate default data.
@@ -73,5 +80,8 @@ public class HabitizerApplication extends Application {
 
     public RoutineRepository getRoutineRepository() {
         return routineRepository;
+    }
+    public AppRepository getAppRepository() {
+        return appRepository;
     }
 }

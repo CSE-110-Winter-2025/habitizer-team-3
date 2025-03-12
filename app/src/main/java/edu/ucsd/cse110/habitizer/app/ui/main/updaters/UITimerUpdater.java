@@ -1,16 +1,13 @@
 package edu.ucsd.cse110.habitizer.app.ui.main.updaters;
 
-
-
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
+import edu.ucsd.cse110.habitizer.lib.domain.App;
 import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
-public class UITimerUpdater implements Observer<AppState> {
+public class UITimerUpdater implements Observer<App> {
     private boolean showStop;
     private boolean showEnd;
     private boolean showFastForward;
@@ -31,7 +28,7 @@ public class UITimerUpdater implements Observer<AppState> {
     public boolean showPauseResume() { return showPauseResume; }
 
     @Override
-    public void onChanged(@Nullable AppState value) {
+    public void onChanged(@Nullable App value) {
         if (value == null) return;
 
         switch (value.timerState()) {

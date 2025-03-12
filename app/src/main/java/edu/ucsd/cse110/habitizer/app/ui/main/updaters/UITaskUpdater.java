@@ -4,9 +4,10 @@ import androidx.annotation.Nullable;
 
 import edu.ucsd.cse110.habitizer.app.ui.main.state.AppState;
 import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
+import edu.ucsd.cse110.habitizer.lib.domain.App;
 import edu.ucsd.cse110.habitizer.lib.util.Observer;
 
-public class UITaskUpdater implements Observer<AppState> {
+public class UITaskUpdater implements Observer<App> {
     private boolean canEdit = true;
     private boolean canDelete = true;
     private boolean canCheckoff = false;
@@ -33,7 +34,7 @@ public class UITaskUpdater implements Observer<AppState> {
     }
     public boolean canReorder() { return canReorder; }
     @Override
-    public void onChanged(@Nullable AppState value) {
+    public void onChanged(@Nullable App value) {
         if (value == null) return;
         switch (value.routineState()) {
             case BEFORE:

@@ -26,20 +26,21 @@ import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.AddTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.DeleteTaskDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditRoutineDialogFragment;
 import edu.ucsd.cse110.habitizer.app.ui.main.dialogs.EditTaskDialogFragment;
-import edu.ucsd.cse110.habitizer.app.ui.main.state.AppSubject;
+import edu.ucsd.cse110.habitizer.lib.domain.App;
+import edu.ucsd.cse110.habitizer.lib.domain.AppSubject;
 import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineDialogParams;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskDialogParams;
-import edu.ucsd.cse110.habitizer.app.ui.main.state.RoutineState;
-import edu.ucsd.cse110.habitizer.app.ui.main.state.TimerState;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineBuilder;
 
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UIRoutineUpdater;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITimerUpdater;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
+import edu.ucsd.cse110.habitizer.lib.domain.TimerState;
 
 public class MainFragment extends Fragment {
     private MainViewModel activityModel;
@@ -106,7 +107,7 @@ public class MainFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
         itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallback(activityModel));
 
-        appSubject = new AppSubject(RoutineState.BEFORE, TimerState.REAL);
+//        appSubject = new AppSubject(RoutineState.BEFORE, TimerState.REAL);
 
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
@@ -201,7 +202,9 @@ public class MainFragment extends Fragment {
 
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
-            appSubject.updateTimerState(TimerState.MOCK);
+//            appSubject.updateTimerState(TimerState.MOCK);
+            activityModel.updateTimerState(TimerState.MOCK);
+            appSubject.setValue(activityModel.getAppState().getValue());
             updatePauseResumeButton();
             updateButtonVisibilities();
         });
@@ -264,11 +267,19 @@ public class MainFragment extends Fragment {
             updateRoutineDropdown();
         });
 
+        activityModel.getAppState().observe(state -> {
+            if (state == null) return;
+            updateButtonVisibilities();
+            updatePauseResumeButton();
+        });
+
 
     }
 
     @Override
     public void onDestroy() {
+        activityModel.updateTimerTime(timerViewModel.getElapsedSeconds().getValue());
+        activityModel.updateTaskTime(currentRoutine.taskList().lastTaskCheckoffTime());
         super.onDestroy();
         // If you want to stop the timer when the Fragment is destroyed
         // timerViewModel.stopTimer();
@@ -276,14 +287,16 @@ public class MainFragment extends Fragment {
 
     private void startRoutine() {
         timerViewModel.startTimer();
-        appSubject.updateRoutineState(RoutineState.DURING);
+        activityModel.updateRoutineState(RoutineState.DURING);
+        appSubject.setValue(activityModel.getAppState().getValue());
         updateButtonVisibilities();
         recyclerView.setAdapter(adapter);
         recyclerView.invalidate();
     }
     private void endRoutine() {
         timerViewModel.stopTimer();
-        appSubject.updateRoutineState(RoutineState.AFTER);
+        activityModel.updateRoutineState(RoutineState.AFTER);
+        appSubject.setValue(activityModel.getAppState().getValue());
         updateButtonVisibilities();
         view.startButton.setText("Routine Ended"); // We should really stop doing this...
         view.startButton.setEnabled(false);

@@ -10,18 +10,23 @@ import androidx.lifecycle.viewmodel.ViewModelInitializer;
 import java.util.List;
 import java.util.Objects;
 
+import edu.ucsd.cse110.habitizer.lib.domain.AppRepository;
 import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.EditTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.Routine;
+import edu.ucsd.cse110.habitizer.lib.domain.App;
 import edu.ucsd.cse110.habitizer.lib.domain.RoutineRepository;
+import edu.ucsd.cse110.habitizer.lib.domain.RoutineState;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
+import edu.ucsd.cse110.habitizer.lib.domain.TimerState;
 import edu.ucsd.cse110.habitizer.lib.util.MutableSubject;
 import edu.ucsd.cse110.habitizer.lib.util.SimpleSubject;
 import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class MainViewModel extends ViewModel {
     private final RoutineRepository routineRepository;
+    private final AppRepository appRepository;
     private final MutableSubject<List<Routine>> allRoutines;
     private final MutableSubject<Routine> currentRoutine;
     private final MutableSubject<Integer> currentRoutineId;
@@ -31,12 +36,13 @@ public class MainViewModel extends ViewModel {
                     creationExtras -> {
                         var app = (HabitizerApplication) creationExtras.get(APPLICATION_KEY);
                         assert app != null;
-                        return new MainViewModel(app.getRoutineRepository());
+                        return new MainViewModel(app.getRoutineRepository(), app.getAppRepository());
                     }
             );
 
-    public MainViewModel(RoutineRepository routineRepository) {
+    public MainViewModel(RoutineRepository routineRepository, AppRepository appRepository) {
         this.routineRepository = routineRepository;
+        this.appRepository = appRepository;
         this.allRoutines = new SimpleSubject<>();
         this.currentRoutine = new SimpleSubject<>();
         this.currentRoutineId = new SimpleSubject<>();
@@ -106,5 +112,34 @@ public class MainViewModel extends ViewModel {
             );
             routineRepository.editTask(req);
         }
+    }
+
+    public Subject<App> getAppState() {
+        return appRepository.find();
+    }
+
+    public void updateRoutineState(RoutineState rs) {
+        App currApp = appRepository.find().getValue();
+        appRepository.save(new App(rs, currApp.timerState(), currApp.timerTime(), currApp.taskTime(), currApp.currentRoutineId()));
+    }
+
+    public void updateTimerState(TimerState ts) {
+        App currApp = appRepository.find().getValue();
+        appRepository.save(new App(currApp.routineState(), ts, currApp.timerTime(), currApp.taskTime(), currApp.currentRoutineId()));
+    }
+
+    public void updateTimerTime(Integer timerTime) {
+        App currApp = appRepository.find().getValue();
+        appRepository.save(new App(currApp.routineState(), currApp.timerState(), timerTime, currApp.taskTime(), currApp.currentRoutineId()));
+    }
+
+    public void updateTaskTime(Integer taskTime) {
+        App currApp = appRepository.find().getValue();
+        appRepository.save(new App(currApp.routineState(), currApp.timerState(), currApp.timerTime(), taskTime, currApp.currentRoutineId()));
+    }
+
+    public void updateCurrentRoutineId(Integer routineId) {
+        App currApp = appRepository.find().getValue();
+        appRepository.save(new App(currApp.routineState(), currApp.timerState(), currApp.timerTime(), currApp.taskTime(), routineId));
     }
 }
