@@ -53,6 +53,7 @@ public class TimerViewModelTest {
         assertEquals(0, (int) viewModel.getElapsedSeconds().getValue());
 
         viewModel.stopTimer();
+        viewModel.setMockResume();
         viewModel.forwardTimer();
         Thread.sleep(500);
 
@@ -121,6 +122,7 @@ public class TimerViewModelTest {
 
         // ForwardTimer only works when isMocking = true
         viewModel.stopTimer();
+        viewModel.setMockResume();
 
         // Call forwardTimer() twice consecutively
         viewModel.forwardTimer();
@@ -140,6 +142,7 @@ public class TimerViewModelTest {
         viewModel.startTimer();
         Thread.sleep(1500);
         viewModel.stopTimer();
+        viewModel.setMockResume();
 
         int stoppedValue = viewModel.getElapsedSeconds().getValue();
 

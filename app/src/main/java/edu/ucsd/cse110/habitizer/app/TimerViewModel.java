@@ -41,6 +41,10 @@ public class TimerViewModel extends ViewModel {
         }
     }
 
+    public void setMockResume() {
+        isPaused = false;
+    }
+
     // Safely update LiveData from a background thread
     private void scheduleTimerTask() {
         timer.schedule(new TimerTask() {
