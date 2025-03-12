@@ -58,7 +58,6 @@ public class AddTaskDialogFragment extends DialogFragment {
         Integer routineId = activityModel.getCurrentRoutineId();
         Routine currentRoutine = activityModel.getCurrentRoutine().getValue();
         Integer listSize = currentRoutine.taskList().tasks().size();
-        //TODO: change id to something else
         Task task = new Task(null, taskName, listSize, null);
 
         activityModel.addTaskToRoutine(routineId, task);

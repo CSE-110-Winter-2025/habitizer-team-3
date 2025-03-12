@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.habitizer.app.data.db;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -26,11 +27,12 @@ public interface TasksDao {
     @Query("DELETE FROM tasks WHERE id = :id")
     int delete(int id);
 
-    // Query all tasks for a given routine
+    @Query("SELECT * FROM tasks")
+    LiveData<List<TaskEntity>> findAllAsLiveData();
+
     @Query("SELECT * FROM tasks WHERE routineId = :routineId ORDER BY sortOrder ASC")
     List<TaskEntity> findByRoutineId(int routineId);
 
-    // Query a single task by ID
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     TaskEntity findById(int taskId);
 

@@ -2,12 +2,11 @@ package edu.ucsd.cse110.habitizer.app;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
-import android.content.SharedPreferences;
-
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
 import java.util.List;
+import java.util.Objects;
 
 import edu.ucsd.cse110.habitizer.lib.domain.DeleteTaskRequest;
 import edu.ucsd.cse110.habitizer.lib.domain.EditRoutineRequest;
@@ -37,28 +36,22 @@ public class MainViewModel extends ViewModel {
 
     public MainViewModel(RoutineRepository routineRepository) {
         this.routineRepository = routineRepository;
-
-        // Create the observable subjects.
         this.allRoutines = new SimpleSubject<>();
         this.currentRoutine = new SimpleSubject<>();
         this.currentRoutineId = new SimpleSubject<>();
 
-        // Observe all routines from the repo
+        // Auto-select first routine when data loads
         routineRepository.findAll().observe(routines -> {
             if (routines == null) return;
             allRoutines.setValue(routines);
         });
 
         this.currentRoutineId.observe(currId -> {
-           if (currId == null) return;
-           routineRepository.find(currId).observe(curr -> {
-               if (curr == null) return;
-               currentRoutine.setValue(curr);
-           });
+            if (currId == null) return;
+            refreshCurrentRoutine();
         });
     }
 
-    // Getters so the Activity/Fragment can observe or retrieve the Subjects
     public Subject<List<Routine>> getAllRoutines() {
         return allRoutines;
     }
@@ -86,4 +79,11 @@ public class MainViewModel extends ViewModel {
         currentRoutineId.setValue(id);
     }
     public Integer getCurrentRoutineId() { return currentRoutineId.getValue(); }
+
+    public void refreshCurrentRoutine() {
+        Integer id = Objects.requireNonNull(currentRoutineId.getValue());
+        routineRepository.find(id).observe(routine -> {
+            if (routine != null) currentRoutine.setValue(routine);
+        });
+    }
 }
