@@ -62,7 +62,7 @@ public class TimerViewModel extends ViewModel {
     }
 
     public void forwardTimer() {
-        if (isMocking) {
+        if (!isPaused && isMocking) {
             Integer currentValue = elapsedSeconds.getValue();
             if (currentValue == null) currentValue = 0;
             elapsedSeconds.postValue(currentValue + 15);
