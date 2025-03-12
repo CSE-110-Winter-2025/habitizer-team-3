@@ -207,7 +207,7 @@ public class MainFragment extends Fragment {
         view.stopButton.setOnClickListener(v -> {
             timerViewModel.stopTimer();
             appSubject.updateTimerState(TimerState.MOCK);
-            updatePauseResumeButton();
+            //updatePauseResumeButton();
             updateButtonVisibilities();
         });
 
