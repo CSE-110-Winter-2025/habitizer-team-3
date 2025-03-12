@@ -47,6 +47,8 @@ public class MainViewModel extends ViewModel {
             allRoutines.setValue(routines);
         });
 
+        this.currentRoutineId.setValue(0);
+
         this.currentRoutineId.observe(currId -> {
             if (currId == null) return;
             refreshCurrentRoutine();

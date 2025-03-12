@@ -106,7 +106,7 @@ public class MainFragment extends Fragment {
         appSubject = new AppSubject(RoutineState.BEFORE, TimerState.REAL);
 
         // TODO: save the previous current routine id to local storage as default
-        activityModel.setCurrentRoutineId(0);
+//        activityModel.setCurrentRoutineId(0);
 
         uiRoutineUpdater = new UIRoutineUpdater();
         uiTaskUpdater = new UITaskUpdater();
@@ -220,8 +220,6 @@ public class MainFragment extends Fragment {
 
             activityModel.refreshCurrentRoutine();
 
-            Log.d("From create routine", "aaa");
-
 //            // Observe the list of all routines to detect the new entry
 //            activityModel.getAllRoutines().observe(routines -> {
 //                if (routines == null || routines.isEmpty()) return;
@@ -264,6 +262,7 @@ public class MainFragment extends Fragment {
                     var updateRoutine = currentRoutine.withTime(newTime);
 
                     activityModel.updateRoutine(updateRoutine);
+                    activityModel.refreshCurrentRoutine();
                 }
             }
         });
@@ -276,6 +275,7 @@ public class MainFragment extends Fragment {
 
         activityModel.getCurrentRoutine().observe(curr -> {
             if (curr == null) return;
+            Log.d("onViewCreated", String.valueOf(activityModel.getCurrentRoutineId()));
             currentRoutine = curr;
             updateCurrentRoutine();
         });
@@ -378,13 +378,7 @@ public class MainFragment extends Fragment {
                 android.R.layout.simple_spinner_dropdown_item, routineNames);
         view.routineSpinner.setAdapter(spinnerAdapter);
 
-        int currentRoutineIndex = 0;
-        for (int i = 0; i < routines.size(); i++) {
-            if (routines.get(i) != null) {
-                currentRoutineIndex = i;
-                break;
-            }
-        }
+        int currentRoutineIndex = activityModel.getCurrentRoutineId();
 
         view.routineSpinner.setSelection(currentRoutineIndex);
 
