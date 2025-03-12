@@ -231,6 +231,7 @@ public class MainFragment extends Fragment {
                     activityModel.setCurrentRoutineId(latestRoutine.id());
                     // Stop observing to avoid multiple triggers
                     activityModel.getAllRoutines().removeObserver(this::updateRoutineDropdown);
+                    updateCurrentRoutine();
                 }
             });
         });
