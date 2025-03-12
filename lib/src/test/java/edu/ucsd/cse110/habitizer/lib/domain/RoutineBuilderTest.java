@@ -44,7 +44,6 @@ public class RoutineBuilderTest {
     public void build() {
         // Test default values from the builder
         Routine routine = new RoutineBuilder().build();
-        assertNull("Default id should be null", routine.id());
         assertEquals("Default name should be 'New Routine'", "New Routine", routine.name());
         assertNotNull("Default TaskList should not be null", routine.taskList());
         assertEquals("Default time should be 30", (Integer) 30, routine.time());

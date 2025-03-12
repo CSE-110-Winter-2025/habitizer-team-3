@@ -20,7 +20,7 @@ public class RoutineRepositoryTest {
     @Before
     public void setup() {
         dataSource = new InMemoryDataSource();
-        repository = new RoutineRepository(dataSource);
+        repository = new SimpleRoutineRepository(dataSource);
     }
 
 

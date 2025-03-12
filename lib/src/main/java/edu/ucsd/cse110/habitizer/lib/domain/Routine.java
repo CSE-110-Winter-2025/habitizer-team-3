@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Routine implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String name;
-    private @NonNull TaskList taskList;
+    private final @NonNull TaskList taskList;
     private final @Nullable Integer time;
 
     public Routine(@Nullable Integer id, @NonNull String name, @NonNull TaskList taskList, @Nullable Integer time) {

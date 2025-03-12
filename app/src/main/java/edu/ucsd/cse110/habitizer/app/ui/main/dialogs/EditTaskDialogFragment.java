@@ -75,11 +75,19 @@ public class EditTaskDialogFragment extends DialogFragment {
         var taskName = view.taskNameInput.getText().toString().trim();
         EditTaskRequest req = new EditTaskRequest(routineId, taskId, taskSortOrder, taskName, taskTime);
         activityModel.editTask(req);
-
         dialog.dismiss();
     }
 
     private void onNegativeButtonClick(DialogInterface dialog, int which) {
         dialog.cancel();
+    }
+
+    @Override
+    public void onDismiss(@Nullable DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        Bundle result = new Bundle();
+        result.putBoolean("dialog_dismissed", true);
+        getParentFragmentManager().setFragmentResult("EDIT_TASK_DIALOG_DISMISSED", result);
     }
 }

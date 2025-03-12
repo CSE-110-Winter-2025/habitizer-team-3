@@ -15,27 +15,38 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import edu.ucsd.cse110.habitizer.app.R;
 import edu.ucsd.cse110.habitizer.lib.domain.Task;
 import edu.ucsd.cse110.habitizer.lib.domain.TaskList;
 import edu.ucsd.cse110.habitizer.app.ui.main.updaters.UITaskUpdater;
+import edu.ucsd.cse110.habitizer.lib.util.MutableSubject;
+import edu.ucsd.cse110.habitizer.lib.util.SimpleSubject;
+import edu.ucsd.cse110.habitizer.lib.util.Subject;
 
 public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerViewAdapter.TaskViewHolder> {
     private final TaskList taskList;
     private final TaskItemListener listener;
     private final UITaskUpdater taskUpdater;
+
+    private final MutableSubject<List<Task>> taskListSubject;
     boolean flagDragButtonTouch = false;
 
     public TaskRecyclerViewAdapter(TaskList taskList, TaskItemListener listener, UITaskUpdater taskUpdater) {
         this.taskList = taskList;
         this.listener = listener;
         this.taskUpdater = taskUpdater;
+        this.taskListSubject = new SimpleSubject<>();
     }
 
     public TaskList getTaskList() {
         return taskList;
+    }
+
+    public Subject<List<Task>> getTaskListSubject() {
+        return taskListSubject;
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -77,9 +88,8 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
     public void exchangeOrder(int from, int to) {
         Log.wtf("#", "exchangeOrder: " + taskList.tasks().get(from).name() + " & " + taskList.tasks().get(to).name());
         taskList.exchangeOrder(from, to);
+        taskListSubject.setValue(taskList.tasks());
     }
-
-
 
     @NonNull
     @Override
@@ -167,6 +177,6 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
 
     @Override
     public int getItemCount() {
-        return taskList.tasks().size();
+        return taskList == null ? 0 : taskList.tasks().size();
     }
 }

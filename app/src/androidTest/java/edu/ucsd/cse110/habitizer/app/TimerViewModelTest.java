@@ -50,15 +50,13 @@ public class TimerViewModelTest {
     @Test
     public void testForwardTimer() throws InterruptedException {
         TimerViewModel viewModel = new TimerViewModel();
-
-        // Initially 0
         assertEquals(0, (int) viewModel.getElapsedSeconds().getValue());
 
-        // Forward 30 seconds
+        viewModel.stopTimer();
         viewModel.forwardTimer();
-        // Sleep to allow LiveData update
         Thread.sleep(500);
-        assertEquals(30, (int) viewModel.getElapsedSeconds().getValue());
+
+        assertEquals(15, (int) viewModel.getElapsedSeconds().getValue());
     }
 
     @Test
@@ -120,26 +118,37 @@ public class TimerViewModelTest {
     @Test
     public void testMultipleForwardTimer() throws InterruptedException {
         TimerViewModel viewModel = new TimerViewModel();
+
+        // ForwardTimer only works when isMocking = true
+        viewModel.stopTimer();
+
         // Call forwardTimer() twice consecutively
         viewModel.forwardTimer();
         Thread.sleep(500);
         viewModel.forwardTimer();
         Thread.sleep(500);
-        assertEquals("Elapsed time should be 60 after calling forwardTimer() twice",
-                60, (int) viewModel.getElapsedSeconds().getValue());
+
+        // Expected value = 15 + 15 = 30
+        assertEquals("Elapsed time should be 30 after calling forwardTimer() twice",
+                30, (int) viewModel.getElapsedSeconds().getValue());
     }
 
     @Test
     public void testForwardTimerAfterStop() throws InterruptedException {
         TimerViewModel viewModel = new TimerViewModel();
+
         viewModel.startTimer();
         Thread.sleep(1500);
         viewModel.stopTimer();
+
         int stoppedValue = viewModel.getElapsedSeconds().getValue();
-        // Even with the timer stopped forwardTimer should add 30 to the current value.
+
+        // After stopping, forwardTimer should still increment by 15 seconds
         viewModel.forwardTimer();
         Thread.sleep(500);
-        assertEquals("Elapsed time should increment by 30 after forwardTimer() when timer is stopped",
-                stoppedValue + 30, (int) viewModel.getElapsedSeconds().getValue());
+
+        assertEquals("Elapsed time should increment by 15 after forwardTimer() when timer is stopped",
+                stoppedValue + 15, (int) viewModel.getElapsedSeconds().getValue());
     }
+
 }

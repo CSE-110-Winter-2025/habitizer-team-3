@@ -67,7 +67,6 @@ public class TimerViewModel extends ViewModel {
             if (currentValue == null) currentValue = 0;
             elapsedSeconds.postValue(currentValue + 15);
         }
-
     }
 
     // The Fragment/Activity can observe this LiveData

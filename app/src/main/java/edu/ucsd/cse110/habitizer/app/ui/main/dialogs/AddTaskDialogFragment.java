@@ -56,10 +56,9 @@ public class AddTaskDialogFragment extends DialogFragment {
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         String taskName = view.taskNameInput.getText().toString().trim();
         Integer routineId = activityModel.getCurrentRoutineId();
-        Routine currentRoutine = activityModel.getCurrentRoutine();
+        Routine currentRoutine = activityModel.getCurrentRoutine().getValue();
         Integer listSize = currentRoutine.taskList().tasks().size();
-        //TODO: change id to something else
-        Task task = new Task(-1, taskName, listSize, null);
+        Task task = new Task(null, taskName, listSize, null);
 
         activityModel.addTaskToRoutine(routineId, task);
 

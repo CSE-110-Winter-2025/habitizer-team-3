@@ -1,8 +1,8 @@
 package edu.ucsd.cse110.habitizer.app.ui.main.state;
 
-import edu.ucsd.cse110.habitizer.lib.util.Subject;
+import edu.ucsd.cse110.habitizer.lib.util.SimpleSubject;
 
-public class AppSubject extends Subject<AppState> {
+public class AppSubject extends SimpleSubject<AppState> {
     public AppSubject(RoutineState rs, TimerState ts) {
         super();
         setValue(new AppState(rs, ts));
