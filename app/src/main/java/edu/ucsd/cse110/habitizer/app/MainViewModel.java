@@ -2,6 +2,8 @@ package edu.ucsd.cse110.habitizer.app;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
+import android.util.Log;
+
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
@@ -23,7 +25,6 @@ public class MainViewModel extends ViewModel {
     private final MutableSubject<List<Routine>> allRoutines;
     private final MutableSubject<Routine> currentRoutine;
     private final MutableSubject<Integer> currentRoutineId;
-
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
                     MainViewModel.class,
@@ -50,6 +51,8 @@ public class MainViewModel extends ViewModel {
             if (currId == null) return;
             refreshCurrentRoutine();
         });
+
+
     }
 
     public Subject<List<Routine>> getAllRoutines() {
@@ -82,8 +85,11 @@ public class MainViewModel extends ViewModel {
 
     public void refreshCurrentRoutine() {
         Integer id = Objects.requireNonNull(currentRoutineId.getValue());
+        Log.d("MainViewModel", String.valueOf(id));
         routineRepository.find(id).observe(routine -> {
             if (routine != null) currentRoutine.setValue(routine);
         });
     }
+
+    public Integer getNumRoutines() { return allRoutines.getValue().size(); }
 }

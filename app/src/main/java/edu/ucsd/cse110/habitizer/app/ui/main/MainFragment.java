@@ -177,6 +177,7 @@ public class MainFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         updateButtonVisibilities();
+        updateRoutineDropdown();
 
         timerViewModel.getElapsedSeconds().observe(getViewLifecycleOwner(), seconds -> {
             // Update a TextView to show elapsed minutes
@@ -211,29 +212,36 @@ public class MainFragment extends Fragment {
 
         view.createRoutineButton.setOnClickListener(v -> {
             // Create a new routine with a default name
-            Routine newRoutine = new RoutineBuilder().build();
+            Integer newRoutineId = activityModel.getNumRoutines();
+            Routine newRoutine = new RoutineBuilder().setId(newRoutineId).build();
+
             activityModel.updateRoutine(newRoutine);
+            activityModel.setCurrentRoutineId(newRoutineId);
 
-            // Observe the list of all routines to detect the new entry
-            activityModel.getAllRoutines().observe(routines -> {
-                if (routines == null || routines.isEmpty()) return;
+            activityModel.refreshCurrentRoutine();
 
-                // Find the routine with the highest ID
-                Routine latestRoutine = null;
-                for (Routine routine : routines) {
-                    if (latestRoutine == null || routine.id() > latestRoutine.id()) {
-                        latestRoutine = routine;
-                    }
-                }
+            Log.d("From create routine", "aaa");
 
-                if (latestRoutine != null) {
-                    // Set the current routine to the newly created one
-                    activityModel.setCurrentRoutineId(latestRoutine.id());
-                    // Stop observing to avoid multiple triggers
-                    activityModel.getAllRoutines().removeObserver(this::updateRoutineDropdown);
-                    updateCurrentRoutine();
-                }
-            });
+//            // Observe the list of all routines to detect the new entry
+//            activityModel.getAllRoutines().observe(routines -> {
+//                if (routines == null || routines.isEmpty()) return;
+//
+//                // Find the routine with the highest ID
+//                Routine latestRoutine = null;
+//                for (Routine routine : routines) {
+//                    if (latestRoutine == null || routine.id() > latestRoutine.id()) {
+//                        latestRoutine = routine;
+//                    }
+//                }
+//
+//                if (latestRoutine != null) {
+//                    // Set the current routine to the newly created one
+//                    activityModel.setCurrentRoutineId(latestRoutine.id());
+//                    // Stop observing to avoid multiple triggers
+////                    activityModel.getAllRoutines().removeObserver(this::updateRoutineDropdown);
+//                    updateCurrentRoutine();
+//                }
+//            });
         });
 
         view.fastforwardButton.setOnClickListener(v -> timerViewModel.forwardTimer());
@@ -274,7 +282,7 @@ public class MainFragment extends Fragment {
 
         activityModel.getAllRoutines().observe(routines -> {
             if (routines == null || routines.isEmpty()) return;
-            updateRoutineDropdown(routines);
+            updateRoutineDropdown();
         });
     }
 
@@ -357,9 +365,9 @@ public class MainFragment extends Fragment {
         dialogFragment.show(getParentFragmentManager(), "EditRoutineDialogFragment");
     }
 
-    private void updateRoutineDropdown(List<Routine> routines) {
-        Routine curr = activityModel.getCurrentRoutine().getValue();
-        if (curr == null || routines.isEmpty()) return;
+    private void updateRoutineDropdown() {
+        List<Routine> routines = activityModel.getAllRoutines().getValue();
+        if (routines == null) return;
 
         List<String> routineNames = new ArrayList<>();
         for (Routine routine : routines) {
@@ -372,7 +380,7 @@ public class MainFragment extends Fragment {
 
         int currentRoutineIndex = 0;
         for (int i = 0; i < routines.size(); i++) {
-            if (Objects.equals(routines.get(i).id(), curr.id())) {
+            if (routines.get(i) != null) {
                 currentRoutineIndex = i;
                 break;
             }
@@ -395,6 +403,8 @@ public class MainFragment extends Fragment {
     }
 
     private void updateCurrentRoutine() {
+        Log.d("Main Fragment", "Current Routine Id: " + String.valueOf(currentRoutine.id()));
+        currentRoutine = activityModel.getCurrentRoutine().getValue();
         view.time.setText(currentRoutine.time() != null ? String.valueOf(currentRoutine.time()) : "");
         adapter = new TaskRecyclerViewAdapter(currentRoutine.taskList(), taskItemListener, uiTaskUpdater);
         recyclerView.setAdapter(adapter);
